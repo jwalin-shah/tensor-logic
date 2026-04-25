@@ -8,6 +8,37 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp42 (phase 6a): TL sample efficiency — bias wins at low data
+
+**Session focus:** Address the strongest open critique of the exp40/41 falsifications: maybe TL's prior matters MOST when data is scarce, and our 2000-trajectory training simply gave MLP enough data to overcome the prior advantage. Test by sweeping data sizes (50, 200, 500, 2000 trajectories) with FIXED compute budget (1000 gradient steps so smaller datasets just see same data more times). 4 models × 3 seeds × 4 sizes = 48 runs.
+
+**What we tried:**
+- `train_phase6a_sample_eff.py`: same world as phase 5 (no collision, center occluder, N=2). Each (model, seed) trained at each data size with the SAME 1000-gradient-step compute budget for fair comparison.
+
+**Key results:**
+- **Overall P@2**: TL plateaus at 88.0% regardless of data size (50 → 2000). Its structural ceiling is unchanged by more data. MLP h=128 scales 90.5% (n=50) → 92.9% (n=200) → 92.4% (n=2000). **MLP wins overall P@2 at every data size.**
+- **In-occluder recall**: at n=50, TL=95.5% beats MLP h=64=91.1% by 4.4pp (TL also has 2.6× lower variance: ±1.9 vs ±5.0). At n=200, TL=97.5% still beats MLP h=64=93.3% by 4.2pp. **Crossover at n=500** (TL=98.2% vs MLP h=64=97.5%, near-tie). At n=2000, MLP h=64 wins 99.9% vs TL 97.9%.
+
+**What surprised us:**
+- The bias-vs-capacity tradeoff played out *textbook-precisely*. TL's prior helps at small data (4pp advantage on the structural sub-task at n=50/200), MLP capacity wins at scale (n=2000). Crossover between them. This is exactly what inductive-bias theory predicts and we got the cleanest demonstration possible.
+- **TL hits a hard ceiling.** Its P@2 is 88.0% at n=50 AND at n=2000. More data doesn't help — the constraint W[a,x,y,p,q] just can't represent some aspect of the dynamics. (Likely the obs-correction-reliant cells: TL's W gets gradient where mass propagates, but in pure occluder regions where `belief = obs + (1-obs)*prior` and obs=0 always, the gradient flow may be subtly compromised. Worth investigating later.)
+- **Variance pattern**: TL has consistently lower std across seeds at small data (±1.9 vs MLP's ±5.0 at n=50). The structural prior stabilizes training when data is scarce, in addition to giving better mean accuracy. This is another classic bias-effect: regularization through inductive constraints.
+- **TL's win is NARROW**: it's specifically on in-occluder recall at small data. On overall P@2, TL never wins. So the salvageable claim isn't "TL is better at world modeling" — it's "TL gives sample-efficient generalization for the specific sub-task its structural prior addresses (object permanence under occlusion)."
+
+**Takeaway / next:**
+- We now have THREE complementary findings:
+  - **exp40 (in-distribution, collision)**: MLP wins. TL has structural ceiling under collision dynamics.
+  - **exp41 (transfer, no collision)**: MLP wins absolute, TL has flatter degradation curves.
+  - **exp42 (sample efficiency, no collision)**: MLP wins overall P@2 at all sizes; TL wins in-occluder recall at small data (n<500) with lower variance.
+- Combined picture: **TL's per-cell prior is a sample-efficiency multiplier on the structural sub-task it models well; it doesn't compete on overall accuracy or under distribution shifts that violate its assumptions.** The honest research contribution is: "TL prior gives 4pp / 2.5× variance reduction for object permanence at n<500."
+- This MOTIVATES the multi-task transfer setup the user described ("teach navigation → easier pickup"). Sample efficiency advantages compound across tasks: if TL learns dynamics with less data, every downstream task that reuses those dynamics inherits that efficiency. This is the exp7+ direction.
+- Phase 7 design (preliminary): same gridworld dynamics, but instead of just predicting next state, define K different downstream tasks (navigate to (4,4), navigate to (1,1), avoid the occluder, occupy 3 specific cells, etc.). Train forward model ONCE on dynamics, then for each task: do model-predictive control / planning using the learned dynamics. Metric: how quickly each model class achieves each task given the shared dynamics model. TL hypothesis: TL forward model → faster downstream task acquisition because its learned dynamics generalize better with less training.
+- An alternative cheap step before that: try TL with translation-equivariant W (`W[a, dx, dy]`, ~1100 params instead of 16K). Should both lift the structural ceiling on P@2 (the dynamics ARE shift-invariant) and fix occluder-position transfer. That's exp43 — small bet, potentially shifts the whole story if it works.
+
+**Methodological note:** The fixed-grad-steps protocol matters. Earlier sweeps used fixed epochs which gives different total compute at different data sizes. Phase 6a's protocol is what makes the bias-vs-capacity comparison fair. For future sample-efficiency experiments, default to fixed gradient steps with batch sampling-with-replacement.
+
+---
+
 ## 2026-04-25 — exp41 (phase 5): TL transfer test — flatter curves, lower peaks
 
 **Session focus:** After exp40 falsified "TL+memory > MLP+memory" in-distribution, test the steel-manned version of the inductive-bias claim: *does TL's prior give better OUT-OF-DISTRIBUTION generalization?* Run on the no-collision world so TL's per-cell assumption actually holds. Six transfer conditions: in-distribution sanity check + count transfer (N=1/3/4) + occluder-position transfer (top-left and bottom-right shifted occluders).
