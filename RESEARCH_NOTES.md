@@ -8,6 +8,39 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp41 (phase 5): TL transfer test — flatter curves, lower peaks
+
+**Session focus:** After exp40 falsified "TL+memory > MLP+memory" in-distribution, test the steel-manned version of the inductive-bias claim: *does TL's prior give better OUT-OF-DISTRIBUTION generalization?* Run on the no-collision world so TL's per-cell assumption actually holds. Six transfer conditions: in-distribution sanity check + count transfer (N=1/3/4) + occluder-position transfer (top-left and bottom-right shifted occluders).
+
+**What we tried:**
+- `train_phase5_transfer.py`: 4 models (TL + MLP h=64/128/256) × 3 seeds = 12 trainings. Each trained on N=2, center occluder, no collision, 30 epochs. Then evaluated on all 6 transfer conditions.
+- Decision rule: TL drops less than MLP under transfer → inductive bias gives generalization.
+
+**Key results:**
+- **Absolute P@N (best of each)**: TL 87.8% in-dist, drops to 82.9% at N=4. MLP h=128 92.3% in-dist, drops to 85.6% at N=4. **MLP wins absolute accuracy in every condition.**
+- **Transfer DROP (P@N from in-dist)**: TL drops -5.0pp at N=4, MLP h=256 drops -7.9pp. TL drops -5.0pp at occluder-shift-TL, MLP h=256 drops -10.5pp. **TL's drops are smaller across 4 of 5 transfer axes.**
+- **Cleanest TL-specific win — in-occluder recall under count transfer**: TL holds 99.8-99.9% at N=3 and N=4. MLP h=128 drops to 91.9% at N=4. MLP h=256 drops to 86.3% at N=4. (MLP h=64 also holds at 99.8% — the smallest MLP doesn't overfit.)
+- **Occluder-position transfer fails for ALL models**: in-occluder recall collapses to <25% for TL, <12% for MLPs. Neither has translation invariance built in.
+
+**What surprised us:**
+- The result is genuinely mixed in a way I didn't predict. TL's flatter degradation curves are real — across most transfer axes TL drops less than MLP. But MLP wins absolute everywhere, so TL "transfers better" in the relative sense without ever beating MLP in absolute terms. This is subtle: the inductive bias gives a flatter curve at a lower peak.
+- **Larger MLPs overfit to N=2 input distribution**. MLP h=256 has 34K params (2x TL); on count transfer to N=4, its in-occluder recall drops 12pp from in-dist while TL's stays flat. That's a clean overfitting-vs-prior tradeoff. The prior wins on transfer specifically because the prior CAN'T overfit (it's structurally constrained).
+- **MLP h=64 is the most robust baseline overall.** It matches TL on transfer flatness, beats TL on absolute accuracy, and uses half TL's params. If the goal is "don't overfit, generalize," small MLP+memory is competitive with TL+memory and easier to train.
+- **Occluder-position transfer is a setup limitation, not a TL question.** With absolute-position W and a recurrent belief that only fires the prior at observed-empty cells, the model never learns "what to predict in occluder regions" outside the training occluder location. Both TL and MLP fail similarly. To test occluder transfer cleanly, we'd need translation-equivariant W (`W[a, dx, dy]` relative shifts) so the dynamics are spatially uniform. That's exp42 territory.
+- **N=1 transfer is the one axis where TL drops MORE than MLP** on in-occluder recall (TL 76% vs MLP h=64 100%). Probable cause: TL has been trained to output ~2 high-confidence cells (the 2 objects); at N=1 it predicts an extra phantom cell. MLP h=64 outputs sparser predictions and handles N=1 cleanly.
+
+**Takeaway / next:**
+- The exp40 falsification stands. The exp41 partial confirmation softens it slightly: TL has a real but small inductive-bias-for-generalization signal on count transfer, particularly for in-occluder recall under larger N.
+- **Honest scope of the TL claim**: "TL's per-cell prior prevents overfitting to a particular input distribution and gives flatter accuracy curves under count transfer, especially for hidden-object recall. It does NOT give better absolute accuracy on these gridworld tasks. Translation-equivariance is not built in and would require a different parameterization."
+- **Two natural next directions:**
+  - **(a) exp42: translation-equivariant TL.** Parameterize W as relative shifts `W[a, dx, dy]` (size 4×17×17 = 1156 params instead of 16K). This is a much sharper prior that matches the actual dynamics. Hypothesis: occluder-position transfer should improve dramatically; in-distribution accuracy should also improve (TL was overparameterized for shifts). ~30 lines, ~2 min wall.
+  - **(b) Pivot away from gridworld.** TL's actual sweet spot per Domingos's paper is **compositional symbolic reasoning** (finite-domain logic, knowledge graphs, transitive closure). We've already shown TL wins those (exp1, exp2, exp36). Gridworld dynamics may be the WRONG task for TL — they're dense, continuous-ish, spatially structured. Compositional rule-learning tasks (e.g., chained kinship rules with novel combinations) would test TL's actual claim much more directly.
+- I lean toward (a) first because it's cheap and would close out the gridworld arc cleanly. If translation-equivariant TL DOESN'T fix occluder transfer, the gridworld really is the wrong testbed and we should pivot. If it DOES fix it, we have a clean positive TL story for spatial dynamics.
+
+**Methodological note for self:** The decision rule I wrote ("TL must drop LESS than MLP") was actually too generous — it's satisfied by 4/5 axes but the absolute-accuracy comparison shows MLP still wins everywhere. A stronger decision rule would have been "TL's transfer-condition accuracy must MEET OR EXCEED MLP's transfer-condition accuracy." Under that rule, TL fails. Picking the framing matters a lot for what the experiment "shows."
+
+---
+
 ## 2026-04-25 — exp40 (phase 3c+3d): TL+memory falsified vs MLP+memory baseline
 
 **Session focus:** Run the missing comparison from phase 3b — does TL+memory actually beat MLP+memory at equal param count, or is "memory" the active ingredient and TL incidental? Originally framed as "the experiment that turns the demo into a research result." Then ground the finding against published literature.
