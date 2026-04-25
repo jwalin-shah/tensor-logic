@@ -88,6 +88,7 @@ class EinsumTransformer(torch.nn.Module):
         # KG object embedding for tokens 0..7.
         self.tok_emb = torch.nn.Parameter(torch.randn(VOCAB, D) * 0.1)
         self.pos_emb = torch.nn.Parameter(torch.randn(SEQ_LEN, D) * 0.1)
+        self.M_compose = torch.nn.Parameter(torch.eye(D) + torch.randn(D, D) * 0.1)
 
         self.Wq = torch.nn.Parameter(torch.randn(N_LAYERS, D, D) * 0.1)
         self.Wk = torch.nn.Parameter(torch.randn(N_LAYERS, D, D) * 0.1)
@@ -142,7 +143,7 @@ def kg_rule_loss(model, T):
     """
     e = F.normalize(model.tok_emb[:N_PEOPLE], dim=1)
     EmbP = torch.einsum("uv,ui,vj->ij", P_true, e, e)
-    EmbGP = EmbP @ EmbP
+    EmbGP = EmbP @ model.M_compose @ EmbP
     scores = torch.einsum("ij,ai,bj->ab", EmbGP, e, e)
     pred = torch.sigmoid(scores / T)
     return F.binary_cross_entropy(pred.clamp(1e-6, 1 - 1e-6), GP_true), pred
@@ -203,7 +204,7 @@ with torch.no_grad():
     print("\nKG embedding-space query (rule applied to learned emb, no LM):")
     e = F.normalize(model.tok_emb[:N_PEOPLE], dim=1)
     EmbP = torch.einsum("uv,ui,vj->ij", P_true, e, e)
-    EmbGP = EmbP @ EmbP
+    EmbGP = EmbP @ model.M_compose @ EmbP
     for x, z in gp_pairs:
         # "who are grandparents of z?" -> contract second index with e[z]
         q = torch.einsum("ij,j->i", EmbGP, e[z])
