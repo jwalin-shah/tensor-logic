@@ -127,23 +127,28 @@ for (name, p), g in zip(model_ewc.named_parameters(), grads):
 anchor = {n: p.detach().clone() for n, p in model_ewc.named_parameters()}
 
 # EWC penalty: λ/2 · Σ Fisher_i · (θ_i - θ_i*)²
-LAMBDA = 5000.0
+
+for LAMBDA in [0.0, 100.0, 1000.0, 5000.0, 10000.0]:
+    print(f"\n  --- LAMBDA = {LAMBDA} ---")
+
+    # We must reset the model to the exact anchor state before training Task B
+    model_ewc_clone = make_model()
+    model_ewc_clone.load_state_dict(anchor)
+
+    def ewc_penalty(model):
+        loss = torch.tensor(0.0)
+        for name, p in model.named_parameters():
+            loss = loss + (fisher[name] * (p - anchor[name]) ** 2).sum()
+        return (LAMBDA / 2) * loss
 
 
-def ewc_penalty(model):
-    loss = torch.tensor(0.0)
-    for name, p in model.named_parameters():
-        loss = loss + (fisher[name] * (p - anchor[name]) ** 2).sum()
-    return (LAMBDA / 2) * loss
-
-
-train(model_ewc, task_B_X, task_B_y, ewc_penalty=ewc_penalty)
-acc_A_after_B = accuracy(model_ewc, task_A_X, task_A_y)
-acc_B_after_B = accuracy(model_ewc, task_B_X, task_B_y)
-print(f"  After Task B (with EWC):  acc(A) = {acc_A_after_B:.3f}   "
-      f"acc(B) = {acc_B_after_B:.3f}")
-print(f"  ==> Task A accuracy retained at {acc_A_after_B:.3f} "
-      f"(EWC prevents forgetting)")
+    train(model_ewc_clone, task_B_X, task_B_y, ewc_penalty=ewc_penalty)
+    acc_A_after_B = accuracy(model_ewc_clone, task_A_X, task_A_y)
+    acc_B_after_B = accuracy(model_ewc_clone, task_B_X, task_B_y)
+    print(f"  After Task B (with EWC):  acc(A) = {acc_A_after_B:.3f}   "
+          f"acc(B) = {acc_B_after_B:.3f}")
+    print(f"  ==> Task A accuracy retained at {acc_A_after_B:.3f} "
+          f"(EWC prevents forgetting)")
 
 
 # ============================================================

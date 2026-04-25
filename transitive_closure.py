@@ -42,10 +42,11 @@ print(deductive.int())
 
 # --- Mode 2: T>0, sigmoid => analogical / soft reasoning
 #     Same equation, just relaxed nonlinearity. Values become "belief strengths".
-print("\n=== Analogical (sigmoid, T=0.5) ===")
-T = 0.5
-analogical = closure(lambda x: torch.sigmoid(x / T))
-print(analogical.round(decimals=2))
+for T in [0.1, 0.5, 1.0, 2.0, 10.0]:
+    print(f"\n=== Analogical (sigmoid, T={T}) ===")
+    # Using default parameter binding in lambda to avoid late binding issue in loops
+    analogical = closure((lambda T_val: lambda x: torch.sigmoid(x / T_val))(T))
+    print(analogical.round(decimals=2))
 
 # --- Mode 3: embedding-space sanity check
 #     Represent each node as a unit vector. Edge becomes a superposition of

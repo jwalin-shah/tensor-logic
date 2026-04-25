@@ -147,76 +147,83 @@ def kg_rule_loss(model, T):
     pred = torch.sigmoid(scores / T)
     return F.binary_cross_entropy(pred.clamp(1e-6, 1 - 1e-6), GP_true), pred
 
-# ============================================================
-# 5. Train
-# ============================================================
-model = EinsumTransformer()
-opt = torch.optim.Adam(model.parameters(), lr=3e-3)
+def run_experiment(BETA):
+    print(f"\n======================================")
+    print(f"Experiment: BETA={BETA}")
+    print(f"======================================")
 
-ALPHA = 1.0   # weight on LM loss
-BETA = 1.0    # weight on KG rule loss
-N_STEPS = 600
+    # ============================================================
+    # 5. Train
+    # ============================================================
+    model = EinsumTransformer()
+    opt = torch.optim.Adam(model.parameters(), lr=3e-3)
 
-print("\nTraining (joint LM + KG, T annealed 1.0 -> 0.05)...")
-for step in range(N_STEPS):
-    # Anneal T
-    T = 1.0 * (0.05 / 1.0) ** (step / max(1, N_STEPS - 1))
+    ALPHA = 1.0   # weight on LM loss
+    N_STEPS = 600
 
-    # LM loss: predict next token
-    logits = model(train_tensor[:, :-1])
-    targets = train_tensor[:, 1:]
-    lm_loss = F.cross_entropy(
-        logits.reshape(-1, VOCAB), targets.reshape(-1), ignore_index=PAD
-    )
+    print("\nTraining (joint LM + KG, T annealed 1.0 -> 0.05)...")
+    for step in range(N_STEPS):
+        # Anneal T
+        T = 1.0 * (0.05 / 1.0) ** (step / max(1, N_STEPS - 1))
 
-    # KG rule loss
-    rule_loss, _ = kg_rule_loss(model, T)
+        # LM loss: predict next token
+        logits = model(train_tensor[:, :-1])
+        targets = train_tensor[:, 1:]
+        lm_loss = F.cross_entropy(
+            logits.reshape(-1, VOCAB), targets.reshape(-1), ignore_index=PAD
+        )
 
-    loss = ALPHA * lm_loss + BETA * rule_loss
-    opt.zero_grad()
-    loss.backward()
-    opt.step()
+        # KG rule loss
+        rule_loss, _ = kg_rule_loss(model, T)
 
-    if step % 100 == 0:
-        print(f"  step {step:3d}  T={T:.3f}  lm={lm_loss.item():.3f}  "
-              f"rule={rule_loss.item():.3f}")
+        loss = ALPHA * lm_loss + BETA * rule_loss
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
 
-# ============================================================
-# 6. Eval
-# ============================================================
-print("\n=== EVAL ===")
-model.eval()
-with torch.no_grad():
-    # 6a. LM-side: ask grandparent questions including HELD-OUT pairs
-    print("\nLM completion of '<gp> <of> z <is> ?' (greedy argmax over person tokens):")
-    for x, z in gp_pairs:
-        prompt = torch.tensor([[BOS, GP, OF, z, IS, PAD]])
-        logits = model(prompt)
-        # Restrict to person tokens (0..7)
-        person_logits = logits[0, -2, :N_PEOPLE]
-        pred = int(person_logits.argmax())
-        seen = "TRAIN" if (x, z) in train_gp else "HELD-OUT"
-        ok = "OK " if pred == x else "MISS"
-        print(f"  {ok} [{seen:8s}] grandparent of {z} -> pred={pred}  truth={x}")
+        if step % 100 == 0:
+            print(f"  step {step:3d}  T={T:.3f}  lm={lm_loss.item():.3f}  "
+                  f"rule={rule_loss.item():.3f}")
 
-    # 6b. KG-side: query in embedding space directly (no transformer)
-    print("\nKG embedding-space query (rule applied to learned emb, no LM):")
-    e = F.normalize(model.tok_emb[:N_PEOPLE], dim=1)
-    EmbP = torch.einsum("uv,ui,vj->ij", P_true, e, e)
-    EmbGP = EmbP @ EmbP
-    for x, z in gp_pairs:
-        # "who are grandparents of z?" -> contract second index with e[z]
-        q = torch.einsum("ij,j->i", EmbGP, e[z])
-        scores = e @ q
-        pred = int(scores.argmax())
-        ok = "OK " if pred == x else "MISS"
-        print(f"  {ok} grandparent of {z} -> pred={pred}  truth={x}")
+    # ============================================================
+    # 6. Eval
+    # ============================================================
+    print("\n=== EVAL ===")
+    model.eval()
+    with torch.no_grad():
+        # 6a. LM-side: ask grandparent questions including HELD-OUT pairs
+        print("\nLM completion of '<gp> <of> z <is> ?' (greedy argmax over person tokens):")
+        for x, z in gp_pairs:
+            prompt = torch.tensor([[BOS, GP, OF, z, IS, PAD]])
+            logits = model(prompt)
+            # Restrict to person tokens (0..7)
+            person_logits = logits[0, -2, :N_PEOPLE]
+            pred = int(person_logits.argmax())
+            seen = "TRAIN" if (x, z) in train_gp else "HELD-OUT"
+            ok = "OK " if pred == x else "MISS"
+            print(f"  {ok} [{seen:8s}] grandparent of {z} -> pred={pred}  truth={x}")
 
-    # 6c. Show the KG rule produces the right boolean matrix (T -> 0)
-    _, pred_GP = kg_rule_loss(model, T=0.05)
-    print("\nFinal predicted Grandparent matrix (threshold 0.5) vs truth:")
-    print((pred_GP > 0.5).int())
-    print("Truth:")
-    print(GP_true.int())
-    acc = ((pred_GP > 0.5).float() == GP_true).float().mean()
-    print(f"Cell-wise accuracy: {acc.item():.3f}")
+        # 6b. KG-side: query in embedding space directly (no transformer)
+        print("\nKG embedding-space query (rule applied to learned emb, no LM):")
+        e = F.normalize(model.tok_emb[:N_PEOPLE], dim=1)
+        EmbP = torch.einsum("uv,ui,vj->ij", P_true, e, e)
+        EmbGP = EmbP @ EmbP
+        for x, z in gp_pairs:
+            # "who are grandparents of z?" -> contract second index with e[z]
+            q = torch.einsum("ij,j->i", EmbGP, e[z])
+            scores = e @ q
+            pred = int(scores.argmax())
+            ok = "OK " if pred == x else "MISS"
+            print(f"  {ok} grandparent of {z} -> pred={pred}  truth={x}")
+
+        # 6c. Show the KG rule produces the right boolean matrix (T -> 0)
+        _, pred_GP = kg_rule_loss(model, T=0.05)
+        print("\nFinal predicted Grandparent matrix (threshold 0.5) vs truth:")
+        print((pred_GP > 0.5).int())
+        print("Truth:")
+        print(GP_true.int())
+        acc = ((pred_GP > 0.5).float() == GP_true).float().mean()
+        print(f"Cell-wise accuracy: {acc.item():.3f}")
+
+for BETA in [0.0, 1.0, 10.0]:
+    run_experiment(BETA)

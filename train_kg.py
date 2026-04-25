@@ -34,7 +34,6 @@ for i in range(N):
             print(f"  Grandparent({i}, {j})")
 
 # ---------- model ----------
-D = 16  # embedding dim
 
 class TensorLogicKG(torch.nn.Module):
     def __init__(self, n_objects, dim):
@@ -66,44 +65,52 @@ class TensorLogicKG(torch.nn.Module):
         # Apply temperature-controlled sigmoid (Section 5, eq. for σ(x,T))
         return torch.sigmoid(scores / T)
 
-model = TensorLogicKG(N, D)
-opt = torch.optim.Adam(model.parameters(), lr=0.05)
+def run_experiment(D, lr):
+    print(f"\n======================================")
+    print(f"Experiment: D={D}, lr={lr}")
+    print(f"======================================")
+    model = TensorLogicKG(N, D)
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
 
-# ---------- training loop ----------
-print("\nTraining...")
-for step in range(400):
-    pred = model(P_true)
-    loss = F.binary_cross_entropy(pred.clamp(1e-6, 1 - 1e-6), GP_true)
-    opt.zero_grad()
-    loss.backward()
-    opt.step()
-    if step % 50 == 0:
-        with torch.no_grad():
-            acc = ((pred > 0.5).float() == GP_true).float().mean()
-            print(f"  step {step:3d}  loss={loss.item():.4f}  acc={acc.item():.3f}")
+    # ---------- training loop ----------
+    print("\nTraining...")
+    for step in range(400):
+        pred = model(P_true)
+        loss = F.binary_cross_entropy(pred.clamp(1e-6, 1 - 1e-6), GP_true)
+        opt.zero_grad()
+        loss.backward()
+        opt.step()
+        if step % 50 == 0:
+            with torch.no_grad():
+                acc = ((pred > 0.5).float() == GP_true).float().mean()
+                print(f"  step {step:3d}  loss={loss.item():.4f}  acc={acc.item():.3f}")
 
-# ---------- evaluate ----------
-print("\nFinal predictions (threshold 0.5):")
-with torch.no_grad():
-    pred = model(P_true)
-    for i in range(N):
-        for j in range(N):
-            p = pred[i, j].item()
-            t = GP_true[i, j].item()
-            if p > 0.5 or t > 0.5:
-                mark = "OK " if (p > 0.5) == (t > 0.5) else "MISS"
-                print(f"  {mark} ({i},{j})  pred={p:.2f}  true={int(t)}")
+    # ---------- evaluate ----------
+    print("\nFinal predictions (threshold 0.5):")
+    with torch.no_grad():
+        pred = model(P_true)
+        for i in range(N):
+            for j in range(N):
+                p = pred[i, j].item()
+                t = GP_true[i, j].item()
+                if p > 0.5 or t > 0.5:
+                    mark = "OK " if (p > 0.5) == (t > 0.5) else "MISS"
+                    print(f"  {mark} ({i},{j})  pred={p:.2f}  true={int(t)}")
 
-# ---------- the "reasoning in embedding space" test ----------
-# Ask: who are the grandparents of node 7?  (Truth: 2, since 2->5->7)
-# Do it WITHOUT touching the boolean tensors — only embeddings.
-print("\nQuery in embedding space: 'who are grandparents of 7?'")
-with torch.no_grad():
-    e = F.normalize(model.emb, dim=1)
-    EmbP = model.parent_relation_tensor(P_true)
-    EmbGP = EmbP @ EmbP
-    q = torch.einsum("ij,bj->bi", EmbGP, e[7:8])   # contract 'b' index with node 7
-    scores = (e @ q.T).squeeze()
-    for i, s in enumerate(scores.tolist()):
-        print(f"  candidate {i}: score={s:.3f}")
-    print(f"  argmax = {int(scores.argmax())}  (truth: 2)")
+    # ---------- the "reasoning in embedding space" test ----------
+    # Ask: who are the grandparents of node 7?  (Truth: 2, since 2->5->7)
+    # Do it WITHOUT touching the boolean tensors — only embeddings.
+    print("\nQuery in embedding space: 'who are grandparents of 7?'")
+    with torch.no_grad():
+        e = F.normalize(model.emb, dim=1)
+        EmbP = model.parent_relation_tensor(P_true)
+        EmbGP = EmbP @ EmbP
+        q = torch.einsum("ij,bj->bi", EmbGP, e[7:8])   # contract 'b' index with node 7
+        scores = (e @ q.T).squeeze()
+        for i, s in enumerate(scores.tolist()):
+            print(f"  candidate {i}: score={s:.3f}")
+        print(f"  argmax = {int(scores.argmax())}  (truth: 2)")
+
+for D in [4, 8, 16]:
+    for lr in [0.01, 0.05, 0.1]:
+        run_experiment(D, lr)
