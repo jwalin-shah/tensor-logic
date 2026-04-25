@@ -8,6 +8,65 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — world model phases 1–3b: object permanence via TL + SSM
+
+**Session focus:** Build the smallest possible TL world model end-to-end, following the README's stated research goal. Strip cheats progressively (god-view → identity loss → occlusion → no memory), then add memory back and see if it recovers object permanence.
+
+**What we tried:**
+- Phase 1 (`train.py`): TL forward model on 8×8 grid, 2 objects, 4 actions. State `R[obj,x,y]`; transition tensor `W[action,x,y,x',y']`. Random rollouts, MSE loss.
+- Phase 2 (`train_phase2.py`): + collision rule (objects can't share cells). Multi-step rollout eval at k=1,2,5,10.
+- Phase 3a (`train_phase3.py`): strip identity (collapse to single occupancy channel) and add a 3×3 occluder zone in the center. Train `(obs, action) → true_next`, no memory.
+- Phase 3b (`train_phase3b.py`): add Dreamer/RSSM-style belief tensor. `R̂[t+1] = obs[t+1] + (1−obs[t+1])·forward(R̂[t], action[t])`. Train with full BPTT through 20-step trajectories.
+
+**Key results:**
+- Phase 1: val_acc 100% — trivial; 16K params for a 16K-cell lookup table.
+- Phase 2: val_acc 99.1%; 10-step rollout drift 99.9→97.3%. Per-object factorization can't represent collisions exactly, but only ~6% of steps involve them.
+- Phase 3a: P@2 = 87.27%, in-occluder recall 67.55%. The drop characterizes what's lost without memory: the model handles "first step of disappearance" but cannot track over multiple hidden steps.
+- Phase 3b: **P@2 = 90.63%, in-occluder recall = 98.84%, stable across 20-step trajectories (88-92% P@2 throughout).** The 31-point jump in object-permanence recall is the headline.
+
+**What surprised us:**
+- Phase 3a's failure was less catastrophic than expected. 67% in-occluder recall without any memory means the model handles a lot of cases via "I just saw it disappear into the occluder, predict it's there" — implicit one-step memory via the observation itself.
+- Phase 3b's recall jumping to **99%** — not 80%, not 90%, but near-perfect — means the SSM-style recurrence essentially fully recovered the gap to ground-truth permanence.
+- The recurrence is stable across 20 steps with no architectural tricks (no gradient clipping, no orthogonal init, no truncation). BPTT through einsum + sigmoid + obs-correction is well-conditioned at this scale.
+- exp8's framing ("SSM A-matrix as tensor-logic rule") panned out. We didn't need to *add* an SSM — the einsum forward step IS the recurrence, the action-conditioned W slice IS the per-step A matrix. The thing the project has been building all along was already an SSM.
+
+**Takeaway / next:**
+- This is the project's first clean *positive* result on the world-model thread. exp29–37 were 5 nulls and 1 informative falsification chasing TL-as-auxiliary-loss in transformers. This one tested TL-as-substrate and it worked.
+- The obs-correction trick `belief = obs + (1−obs)·prior` was the key — pure recurrence with no observation anchoring would likely drift over a long trajectory.
+- **Next (phase 3c, exp40): MLP-with-memory baseline at equal param count.** Without this comparison, we can't claim the gain is TL-specific. If MLP+memory ties, then "memory" is the active ingredient and TL is just one possible substrate. If TL+memory wins, then TL's einsum structure matters specifically. This is the experiment that turns 3b from "a working demo" into a research result.
+- **Then (phase 3d): add Spelke continuity prior** as an explicit TL constraint — predicted next position must be adjacent (or equal) to a current position. Should improve sample efficiency and tighten the belief.
+- Bigger picture: stripping cheats progressively was the right disciplinary move. Phase 1 looked impressive but was trivial; phase 3a's failure mode was informative; phase 3b's success only became interpretable because we'd characterized the failure first.
+
+---
+
+## 2026-04-25 — exp37 (TL inductive bias, NULL result)
+
+**Session focus:** Test whether a tensor-logic auxiliary loss makes a from-scratch transformer generalize better to deeper hops than CE alone.
+
+**What we tried:**
+- 858k-param TinyTransformer, 6 epochs × 3 seeds × 2 conditions on synthetic call-graph DAGs.
+- Train depth distribution 1–3; test 1–5 (deep bucket = 3–5).
+- Vanilla: next-token CE only. +TL: CE + λ · MSE(relation_logits, transitive_closure_target).
+
+**Result:**
+- shallow (1–2): vanilla 0.614, +TL 0.606, Δ=-0.008
+- deep (3–5): vanilla 0.328, +TL 0.337, Δ=+0.009
+- Both deltas well within seed σ (~0.07–0.11). Per-seed deep ranges 0.24–0.45 — bigger than any effect.
+- TL auxiliary loss did converge cleanly (0.26 → 0.13), so the relation head learned closure. It just didn't transfer to the LM head.
+
+**What surprised us:**
+- Aux loss converging without helping the main task. The encoder is producing closure-respecting features in some subspace, but the LM head doesn't necessarily query that subspace. Gradients flow back through the encoder; they don't *force* the LM head to use the rule-shaped features.
+- Both models near chance on deep (33%). The "compositional generalization" comparison is meaningless when neither model has mastered the shallow base case (60%). We diagnosed a loss-function question with a model that couldn't do the task either way.
+- Hours of MPS training to learn that the architecture is wrong, not the loss.
+
+**Takeaway / next:**
+- "Auxiliary TL loss" at this scale is decoration. To do real work, closure has to be wired into the prediction path: relation head computes closure → output is added/concatenated into the residual stream the LM head reads from. Then the LM head has no choice but to use the closure feature.
+- Floor must be lifted before the architecture-vs-loss question is testable. ~5–10M params, more data, more epochs. If vanilla itself can hit ~70% on deep, then the loss/architecture comparison becomes interpretable.
+- This makes 5 of the last 6 experiments null/falsified attempts to inject TL into a learning system (exp29, exp31, exp32, exp34, exp37). exp35 was a clean confirmation but trivially so. The pattern is increasingly clear: **TL works as a primitive; every attempt to inject it as auxiliary supervision has come back null at toy scale.** Either toy scale is wrong, or auxiliary supervision is wrong.
+- Bigger pivot question now on the table: stop running diagnostic toy experiments and pick a real capability + real data. Code dependency reasoning is the natural target — exp36 was already pointing here.
+
+---
+
 ## 2026-04-25 — exp33, 34, 35 sprint
 
 **Session focus:** Knock out three queued experiments after the big exp32 finding.
