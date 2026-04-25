@@ -8,6 +8,31 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp29, 30, 31 sprint
+
+**Session focus:** First disciplined-loop experiments after setting up the infrastructure.
+
+**What we tried:**
+- exp29: pure log-odds tensor logic (logsumexp soft-OR throughout fixpoint).
+- exp30: re-test exp1 with absent-edge logits initialized to -LARGE instead of 0.
+- exp31: surprise-gated parameter updates on object_permanence forward model, two-phase continual setup (vel=+1 then vel=+2).
+
+**What worked:**
+- exp30 confirmed the diagnostic from exp29: **the sigmoid floor problem is essentially an init bug.** With init=-10, F1=1.0 across all temperatures.
+- exp31 technically passed both falsification axes (convergence within 20%, better retention).
+
+**What surprised us:**
+- exp29's logsumexp soft-OR over-saturates spectacularly — every cell goes to 1.0. Logsumexp is an upper bound on max, not a tight surrogate for fuzzy-OR. The "log-odds tensor logic" idea needs a different operator entirely.
+- exp30 revealed an invariant we hadn't noticed: **init magnitude must scale with max temperature**. At init=-6, T=2.0 leaks because (E+ε)/T amplifies leakage faster than the negative init suppresses it.
+- exp31's "wins" were tiny (29.87 vs 31.99 loss on A after B) — both models forgot phase A almost completely. Surprise gating is a real concept but doesn't manifest at toy scale; the per-batch surprise filter just barely changes anything when batches are small and homogeneous.
+
+**What we'd do next:**
+- **exp32 (nanoGPT/GPT-2 attention probe)** — most exciting next step, deliberate mode (option B chosen by user).
+- exp33 (tighter logit-space soft-OR — fix exp29's saturation issue).
+- exp34 (energy-based) and exp35 (two-tower) deferred to next session.
+
+---
+
 ## 2026-04-25 — Synthesis & infrastructure
 
 **Session focus:** Stop and figure out what we actually know after 28 experiments + 6 outsourced PRs. Set up real research infrastructure.

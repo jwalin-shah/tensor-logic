@@ -6,6 +6,8 @@ Status legend: ✅ confirmed hypothesis | ❌ falsified hypothesis | ⚠️ part
 
 | # | File | Hypothesis (one sentence) | Tier | Result | Key number | Learning → next |
 |---|---|---|---|---|---|---|
+| 31 | `exp31_surprise_gated.py` | Surprise-gated updates beat uniform for both convergence and retention. | T1 | ⚠️ technically passes, practically weak | uniform: 260 ep / forget A→32; surprise: 300 ep / forget A→30 | Both models forgot phase A almost entirely. Surprise gating barely helps at this scale; needs bigger model or different formulation. |
+| 30 | `exp30_init_fix.py` | Initializing absent-edge logits to -LARGE eliminates the sigmoid floor at all T. | T1 | ⚠️ direction confirmed, magnitude matters | init=-10 → F1=1.0 across T∈[0.1, 2.0]; init=-6 leaks at T=2.0 | Floor is essentially an init bug; init magnitude must scale with max T. Updates exp1's verdict. |
 | 29 | `exp29_log_odds.py` | Pure log-odds fixpoint eliminates the sigmoid floor problem. | T1 | ❌ but illuminating | log-odds F1=0.485, log-odds+calib F1=0.552, **naive sigmoid with proper -LARGE init: F1=1.000** | The floor problem was an artifact of using logit=0 for "absent" edges, not of sigmoid itself. Fix: init absent-edge logits to a strong negative. Logsumexp soft-OR over-saturates. |
 | 28 | `exp28_unified_system.py` | Semantic embeddings beat random ones for relational learning. | T1 | ✅ | random F1=0.077, semantic F1=1.000 | Need transformer-grounded `E_i` for any real KG → motivates exp31 (composed-attention) |
 | 27 | `exp27_blocks_world.py` | Tensor-logic rules can plan via BFS over relation states. | T1 | ✅ | finds plans in toy blocks-world | Planning works structurally; representations too thin → exp32 (richer state) |
