@@ -13,6 +13,7 @@ A learning project, not a product. Each demo is intended to make one idea click 
 | `joint_lm_kg.py` | Joint LM + KG training in one autograd graph. Tiny einsum-form transformer + tensor-logic rule head, sharing token/object embeddings. T-annealing from 1.0 to 0.05. |
 | `throwing.py` | Embodied learner: agent learns "force → distance" from 100 random throws, then plans inverse to hit unseen targets. Probes the network and finds an emergent "force magnitude" neuron. |
 | `catastrophic_forgetting.py` | Continual learning demo. Naive sequential training forgets Task A completely; EWC (Kirkpatrick 2017) preserves it by anchoring weights important to past tasks. |
+| `curiosity_gridworld.py` | Curiosity-driven explorer in a gridworld. Intrinsic reward is one-step prediction error of its own world model; compared against a random baseline for exploration coverage. |
 | `SESSION_TRANSCRIPT.md` | Full transcript of the conversation that produced this repo. ~25 questions walking from "what is tensor logic" to "how do you build a continual learner that knows over time." |
 
 ## Run
@@ -23,6 +24,7 @@ uv run --with torch python train_kg.py
 uv run --with torch python joint_lm_kg.py
 uv run --with torch python throwing.py
 uv run --with torch python catastrophic_forgetting.py
+uv run --with torch python curiosity_gridworld.py
 ```
 
 Each runs on CPU in seconds to a few minutes.
@@ -34,6 +36,7 @@ Each runs on CPU in seconds to a few minutes.
 3. **`joint_lm_kg.py`**: language and symbolic structure can share parameters. One model, two loss terms, three predictions.
 4. **`throwing.py`**: concepts (force, distance) emerge as compression coordinates of action-outcome pairs. No textbook required.
 5. **`catastrophic_forgetting.py`**: weights move when you train; without selective plasticity, learning new things destroys old. Memory + replay + selective plasticity is how brains avoid this.
+6. **`curiosity_gridworld.py`**: intrinsic motivation can be implemented as prediction-error seeking. Exploration emerges from model surprise, not external reward.
 
 ## What's tensor logic, in one paragraph
 
