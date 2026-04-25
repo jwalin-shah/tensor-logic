@@ -13,8 +13,13 @@ backprop pushes embeddings into a configuration where the rule produces the
 right answers.
 """
 
+import argparse
 import torch
 import torch.nn.functional as F
+
+parser = argparse.ArgumentParser(description="Trainable Tensor Logic")
+parser.add_argument("--dim", type=int, default=16, help="Embedding dimension")
+args = parser.parse_args()
 
 # ---------- ground truth ----------
 # 8 people, indexed 0..7. Parent edges:
@@ -34,7 +39,7 @@ for i in range(N):
             print(f"  Grandparent({i}, {j})")
 
 # ---------- model ----------
-D = 16  # embedding dim
+D = args.dim  # embedding dim
 
 class TensorLogicKG(torch.nn.Module):
     def __init__(self, n_objects, dim):

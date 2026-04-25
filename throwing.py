@@ -20,9 +20,17 @@ The plan is the inverse:
 This is closed-loop sensorimotor learning in ~150 lines.
 """
 
+import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+
+parser = argparse.ArgumentParser(description="Throwing physics discovery")
+parser.add_argument("--hidden", type=int, default=32, help="Hidden dimension of ForwardModel")
+parser.add_argument("--lr", type=float, default=5e-3, help="Learning rate for Phase 2")
+parser.add_argument("--n_iters", type=int, default=200, help="Number of iterations for Phase 3 planning")
+args = parser.parse_args()
 
 
 # ============================================================
@@ -84,8 +92,8 @@ print(f"  Range: f ∈ [{forces.min():.1f}, {forces.max():.1f}]   "
 # 4. Phase 2 — train the forward model on self-collected data
 # ============================================================
 print("\n=== PHASE 2: Fit forward model (learn 'force → distance') ===")
-model = ForwardModel()
-opt = torch.optim.Adam(model.parameters(), lr=5e-3)
+model = ForwardModel(hidden=args.hidden)
+opt = torch.optim.Adam(model.parameters(), lr=args.lr)
 
 for step in range(800):
     pred = model(forces)
@@ -106,7 +114,7 @@ print(f"  Final MSE: {loss.item():.4f}")
 # ============================================================
 print("\n=== PHASE 3: Planning (use learned model to hit targets) ===")
 
-def plan_throw(target_d, model, n_iters=200):
+def plan_throw(target_d, model, n_iters=args.n_iters):
     """Inverse the forward model via gradient descent on the action."""
     f = torch.tensor([10.0], requires_grad=True)
     inner_opt = torch.optim.Adam([f], lr=0.5)

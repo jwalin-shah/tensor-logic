@@ -20,9 +20,15 @@ We compare:
   - EWC:   train A, compute Fisher, train B with penalty. (Retention.)
 """
 
+import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+
+parser = argparse.ArgumentParser(description="Catastrophic Forgetting and EWC")
+parser.add_argument("--lam", type=float, default=5000.0, help="EWC penalty LAMBDA")
+args = parser.parse_args()
 
 
 # ============================================================
@@ -127,7 +133,7 @@ for (name, p), g in zip(model_ewc.named_parameters(), grads):
 anchor = {n: p.detach().clone() for n, p in model_ewc.named_parameters()}
 
 # EWC penalty: λ/2 · Σ Fisher_i · (θ_i - θ_i*)²
-LAMBDA = 5000.0
+LAMBDA = args.lam
 
 
 def ewc_penalty(model):
