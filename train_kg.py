@@ -41,6 +41,7 @@ class TensorLogicKG(torch.nn.Module):
         super().__init__()
         # Learnable per-object embeddings — the ONLY parameters.
         self.emb = torch.nn.Parameter(torch.randn(n_objects, dim) * 0.3)
+        self.M_compose = torch.nn.Parameter(torch.eye(dim) + torch.randn(dim, dim) * 0.1)
         # Embedded relation tensor for Parent (computed from facts each forward pass).
         # We could also make this a parameter; here we ground it in known facts.
 
@@ -57,7 +58,7 @@ class TensorLogicKG(torch.nn.Module):
         # Grandparent(x,z) :- Parent(x,y), Parent(y,z)
         # =>  EmbGP = einsum over shared y of (EmbP) ⋅ (EmbP)
         #     but in embedding space this is just EmbP @ EmbP  (chained einsum)
-        EmbGP = EmbP @ EmbP                                       # [D, D]
+        EmbGP = EmbP @ self.M_compose @ EmbP                      # [D, D]
 
         # Decode: score each (a, b) pair by querying EmbGP with their embeddings.
         # D_pred[a,b] ≈ Grandparent(a, b)
@@ -101,7 +102,7 @@ print("\nQuery in embedding space: 'who are grandparents of 7?'")
 with torch.no_grad():
     e = F.normalize(model.emb, dim=1)
     EmbP = model.parent_relation_tensor(P_true)
-    EmbGP = EmbP @ EmbP
+    EmbGP = EmbP @ model.M_compose @ EmbP
     q = torch.einsum("ij,bj->bi", EmbGP, e[7:8])   # contract 'b' index with node 7
     scores = (e @ q.T).squeeze()
     for i, s in enumerate(scores.tolist()):
