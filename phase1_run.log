@@ -1,0 +1,28 @@
+Collecting rollouts (train + val)...
+  train: 20000 triples, val: 4000 triples (0.2s)
+
+Training (params: 16,384)
+  win condition: val_acc >= 80%
+  epoch  1  train_loss=0.01973  val_loss=0.01495  val_acc=100.00%
+  epoch  2  train_loss=0.01198  val_loss=0.00923  val_acc=100.00%
+  epoch  3  train_loss=0.00717  val_loss=0.00536  val_acc=100.00%
+  epoch  4  train_loss=0.00417  val_loss=0.00319  val_acc=100.00%
+  epoch  5  train_loss=0.00258  val_loss=0.00208  val_acc=100.00%
+  epoch  6  train_loss=0.00175  val_loss=0.00147  val_acc=100.00%
+  epoch  7  train_loss=0.00127  val_loss=0.00110  val_acc=100.00%
+  epoch  8  train_loss=0.00097  val_loss=0.00086  val_acc=100.00%
+  epoch  9  train_loss=0.00077  val_loss=0.00069  val_acc=100.00%
+  epoch 10  train_loss=0.00063  val_loss=0.00057  val_acc=100.00%
+  epoch 11  train_loss=0.00052  val_loss=0.00048  val_acc=100.00%
+  epoch 12  train_loss=0.00044  val_loss=0.00041  val_acc=100.00%
+  epoch 13  train_loss=0.00038  val_loss=0.00036  val_acc=100.00%
+  epoch 14  train_loss=0.00033  val_loss=0.00031  val_acc=100.00%
+  epoch 15  train_loss=0.00029  val_loss=0.00028  val_acc=100.00%
+  epoch 16  train_loss=0.00026  val_loss=0.00024  val_acc=100.00%
+  epoch 17  train_loss=0.00023  val_loss=0.00022  val_acc=100.00%
+  epoch 18  train_loss=0.00021  val_loss=0.00020  val_acc=100.00%
+  epoch 19  train_loss=0.00019  val_loss=0.00018  val_acc=100.00%
+  epoch 20  train_loss=0.00017  val_loss=0.00016  val_acc=100.00%
+
+Final val_acc = 100.00%
+Win condition (>= 80%): PASS

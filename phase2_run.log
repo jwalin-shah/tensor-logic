@@ -1,0 +1,26 @@
+=== Phase 2: collision dynamics + multi-step rollout eval ===
+
+Collecting rollouts (train + val)...
+  train: 40000 triples, val: 4000 triples (0.4s)
+  fraction of steps where state didn't change (proxy for collisions): 6.01%
+
+Training (params: 16,384)
+  epoch  1  train_loss=0.01587  val_loss=0.00923  val_acc(k=1)=99.10%
+  epoch  5  train_loss=0.00093  val_loss=0.00080  val_acc(k=1)=99.10%
+  epoch 10  train_loss=0.00044  val_loss=0.00041  val_acc(k=1)=99.10%
+  epoch 15  train_loss=0.00034  val_loss=0.00033  val_acc(k=1)=99.10%
+  epoch 20  train_loss=0.00031  val_loss=0.00030  val_acc(k=1)=99.10%
+  epoch 25  train_loss=0.00029  val_loss=0.00028  val_acc(k=1)=99.10%
+  epoch 30  train_loss=0.00028  val_loss=0.00028  val_acc(k=1)=99.10%
+
+=== Multi-step rollout eval ===
+    k     per-object accuracy
+    1                 99.90%
+    2                 99.70%
+    5                 99.00%
+   10                 97.30%
+
+What to look for:
+  - val_acc(k=1) below 100% means the model can't perfectly fit collision dynamics
+    (its W tensor factors per-object; collisions need joint state).
+  - rollout accuracy decay tells us how per-step error compounds over k steps.

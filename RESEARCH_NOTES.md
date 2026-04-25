@@ -8,6 +8,38 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp40 (phase 3c+3d): TL+memory falsified vs MLP+memory baseline
+
+**Session focus:** Run the missing comparison from phase 3b — does TL+memory actually beat MLP+memory at equal param count, or is "memory" the active ingredient and TL incidental? Originally framed as "the experiment that turns the demo into a research result." Then ground the finding against published literature.
+
+**What we tried:**
+- Phase 3c (`train_phase3c.py`): single-seed MLP (h=128, ~17K params, slight edge over TL's 16,384). Same world, same belief mechanism, same loss, only the forward model swapped.
+- Phase 3d (`train_phase3d_sweep.py`): multi-seed sweep — 3 seeds × 4 configs (TL + MLP h=64/128/256) = 12 runs. Mean ± std on P@2 and in-occluder recall.
+- Searched arxiv for current literature: Domingos's TL paper (2510.12269, Oct 2025), object-centric world models (2511.06136, 2511.02225), V-JEPA 2 (2506.09985), C-JEPA, cRSSM.
+
+**Key results:**
+- TL+memory (3-seed mean): P@2 = **91.20% ± 0.61**, in-occ recall = 98.64% ± 0.67.
+- MLP h=64+memory (8,576 params, **HALF of TL**): P@2 = **95.69% ± 0.55**, in-occ recall = **99.76% ± 0.42**. Beats TL on both metrics.
+- MLP h=128+memory: P@2 = 96.12% ± 0.33, in-occ = 95.75% ± 4.65 (high variance).
+- MLP h=256+memory: P@2 = 97.34% ± 0.91, in-occ = 96.80% ± 0.89.
+- Decision rule: TL beats MLP h=128 and h=256 on in-occ by >1pp; MLP h=64 beats TL on in-occ. Headline: **TL has no robust advantage; smaller MLP wins**.
+
+**What surprised us:**
+- **The original phase 3c writeup quoted TL's P@2 as 99.16%, which was wrong.** Phase 3b log shows TL P@2 = 90.63%. The "99%" in our memory was in-occluder recall (98.84%), not P@2 — I misread the number when writing phase 3c's docstring and propagated it forward to my own analysis. The single-seed phase 3c said "TL beats MLP by 3pp/9pp" — that was based on the wrong baseline. Correct picture even at single seed: TL 90.63% vs MLP 96.34%, MLP wins by 6pp.
+- The falsification IS the value here. We expected to confirm "TL+memory > MLP+memory." Instead got a clean, reproducible negative result with a clear structural explanation: TL's per-cell einsum factorization can't represent collision dynamics (a cross-cell AND condition), so it plateaus at ~91% while an MLP absorbs the interaction terms.
+- **The Nov 2025 OCWM literature found exactly this pattern at scale.** "When Object-Centric World Models Meet Policy Learning" (2511.06136) reports OCWM "underperforms SOTA" precisely because of "representation shift during multi-object interactions." Our toy result mirrors their bigger finding. Independently arrived, same story.
+- V-JEPA 2 (2506.09985) demonstrates object permanence "intuitively" at 1M+ hours of video pre-training. We hit it cleanly at 16K params and 30 epochs of belief-tensor recurrence. Memory is enough; you don't need scale (for permanence specifically).
+
+**Takeaway / next:**
+- Update `EXPERIMENTS.md` exp39 to flag that the TL-specific framing was falsified by exp40. The recurrence-recovers-permanence claim still stands — just not the TL-is-load-bearing version of it.
+- This is a real research contribution, just not the one we expected: **a small, controlled, reproducible falsification of "TL is the active ingredient" for object permanence**, corroborating large-scale OCWM findings.
+- **Next (phase 5): transfer test on a no-collision world** where TL's assumptions actually hold. Train at N=2 with center occluder; test at N=1/3/4 (object-count transfer) and shifted occluder positions. Decision rule: if TL's accuracy drops <2pp under transfer while MLP's drops >5pp, the inductive-bias-for-generalization claim survives. If TL transfers no better than MLP, the falsification deepens.
+- The natural next-after-that step (if phase 5 doesn't save TL): consider an FIOC-WM-style two-level factorization (per-object + interaction primitives) or simply abandon the TL framing for memory-equipped world-modeling.
+
+**Methodological note:** Always read the raw run-log when comparing across sessions. Don't trust paraphrased numbers in code comments — those are exactly where misreads silently propagate. The phase 3b log was on disk the whole time; one direct read would have prevented the entire phase 3c misframing.
+
+---
+
 ## 2026-04-25 — world model phases 1–3b: object permanence via TL + SSM
 
 **Session focus:** Build the smallest possible TL world model end-to-end, following the README's stated research goal. Strip cheats progressively (god-view → identity loss → occlusion → no memory), then add memory back and see if it recovers object permanence.
