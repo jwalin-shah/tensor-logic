@@ -8,6 +8,34 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp32: attention composition probe
+
+**Session focus:** Test whether GPT-2 small's attention heads compose like tensor-logic rules.
+
+**What we tried:**
+- Built 11 kinship sentences ("Story: G's son is P. P's son is C.") with single-token names so causal attention could flow C → P → G.
+- Loaded GPT-2 small (124M) via `transformers`, extracted 12×12=144 attention matrices per sentence.
+- Found best single heads for each relation (parent: L11H8 score=0.159, grandparent: L0H6 score=0.151).
+- Composition test: A_parent @ A_parent → grandparent? Two versions: (a) full search across 144 heads, (b) "clean" search excluding heads already encoding grandparent.
+
+**What worked:**
+- The infrastructure works perfectly — 11 usable sentences, attention extracted cleanly, ground-truth correlation computable.
+- Clean falsification result rather than ambiguous noise.
+- Took ~3 iterations to debug tokenization (multi-token names, sentence-start BPE split, causal directionality).
+
+**What surprised us:**
+- **GPT-2 has *dedicated* heads for parent and grandparent separately.** L11H8 fires for parent, L0H6 fires for grandparent. They're not derived from composition; they're learned independently.
+- The unrestricted head-pair search hit Pearson 0.471 — but only because it could pick L0H6 (which already does grandparent) and stack it with L11H8. Smuggled signal.
+- The clean head-pair search (excluding heads with solo grandparent score > 0.05) drops to Pearson 0.192. Real signal but below our 0.3 threshold.
+- Self-composition (A_parent @ A_parent) gives Pearson 0.157 — non-zero but weak.
+
+**Takeaway / next:**
+- Transformers probably don't do tensor-logic-style composition internally. They learn many specialized heads and route signals through them.
+- This **doesn't** kill the broader research direction — it just means tensor logic and transformer attention are different mechanisms, not the same thing in disguise. The interesting question becomes: can we **add** explicit composition as a training-time loss to *force* the model to internalize it? That would be exp37 territory.
+- Two cheaper exps queued first: exp33 (tighter logit-space soft-OR for exp29's saturation issue), and exp34/35 (energy-based and two-tower).
+
+---
+
 ## 2026-04-25 — exp29, 30, 31 sprint
 
 **Session focus:** First disciplined-loop experiments after setting up the infrastructure.
