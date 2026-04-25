@@ -6,6 +6,7 @@ Status legend: ✅ confirmed hypothesis | ❌ falsified hypothesis | ⚠️ part
 
 | # | File | Hypothesis (one sentence) | Tier | Result | Key number | Learning → next |
 |---|---|---|---|---|---|---|
+| 29 | `exp29_log_odds.py` | Pure log-odds fixpoint eliminates the sigmoid floor problem. | T1 | ❌ but illuminating | log-odds F1=0.485, log-odds+calib F1=0.552, **naive sigmoid with proper -LARGE init: F1=1.000** | The floor problem was an artifact of using logit=0 for "absent" edges, not of sigmoid itself. Fix: init absent-edge logits to a strong negative. Logsumexp soft-OR over-saturates. |
 | 28 | `exp28_unified_system.py` | Semantic embeddings beat random ones for relational learning. | T1 | ✅ | random F1=0.077, semantic F1=1.000 | Need transformer-grounded `E_i` for any real KG → motivates exp31 (composed-attention) |
 | 27 | `exp27_blocks_world.py` | Tensor-logic rules can plan via BFS over relation states. | T1 | ✅ | finds plans in toy blocks-world | Planning works structurally; representations too thin → exp32 (richer state) |
 | 9 | `exp9_tannealing_fix.py` | T-annealing alone fixes the sigmoid floor problem. | T1 | ❌ | annealing keeps halluc=1.0; calibration (margin=0.3) gets F1=0.84 | Need baseline subtraction, not just T → exp29 (log-odds) |
