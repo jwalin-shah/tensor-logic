@@ -8,6 +8,32 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp33, 34, 35 sprint
+
+**Session focus:** Knock out three queued experiments after the big exp32 finding.
+
+**What we tried:**
+- exp33: four candidate soft-OR operators (logsumexp T=1, logsumexp T=0.1, max-pool, noisy-OR-in-probability-space) on the exp1 transitive-closure task.
+- exp34: energy-based reconstruction with tree-shape + cycle penalties on a 10-node KG with conflicting facts.
+- exp35: two-tower (Possibility, Actuality) tensors with T ≤ P constraint, counterfactual query that should not pollute base facts.
+
+**What worked:**
+- exp33: noisy-OR in probability space (1 − ∏(1−p)) gives perfect F1=1.0. All log-space OR operators saturate.
+- exp35: cleanly confirmed both falsification axes.
+
+**What surprised us:**
+- exp33 inverts the exp29 framing: we thought "stay in logit space" was the fix; turns out **the fix is "use noisy-OR in PROB space" — logit-space OR is fundamentally too loose.** Logsumexp upper-bounds max which upper-bounds true OR. Even at low temperature.
+- exp34 was a clean falsification with structure: local sigmoid kept conflicts (FP=4), energy-based killed conflicts AND true edges (FN=4). Same total errors, opposite kinds. Tells us global constraints help only with well-tuned strength — and "well-tuned" is task-dependent. No free lunch from energy methods.
+- exp35 worked exactly as designed but the "no pollution" axis is partly trivial (copy = no mutation). The non-trivial finding is that the T ≤ P constraint genuinely held during training (max violation 0.0019) — that's not free, the optimizer had to balance fit vs constraint.
+
+**Takeaway / next:**
+- For any future toy-graph reasoning, **use noisy-OR in probability space**, not logit-space tricks. exp29's framing was wrong.
+- Energy-based methods need careful λ tuning per problem; not a drop-in fix for half-rule problems (exp7).
+- Two-tower architecture is sound; could be useful for any future planning system that needs counterfactuals.
+- Next batch options: exp36 (diffusion over relation matrices, needs Colab/Kaggle), or pivot to a unified mini-system that combines the working pieces (noisy-OR + semantic embeddings + generative replay) into one demo.
+
+---
+
 ## 2026-04-25 — exp32: attention composition probe
 
 **Session focus:** Test whether GPT-2 small's attention heads compose like tensor-logic rules.
