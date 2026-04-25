@@ -13,7 +13,7 @@ A learning project, not a product. Each demo is intended to make one idea click 
 | `joint_lm_kg.py` | Joint LM + KG training in one autograd graph. Tiny einsum-form transformer + tensor-logic rule head, sharing token/object embeddings. T-annealing from 1.0 to 0.05. |
 | `throwing.py` | Embodied learner: agent learns "force → distance" from 100 random throws, then plans inverse to hit unseen targets. Probes the network and finds an emergent "force magnitude" neuron. |
 | `catastrophic_forgetting.py` | Continual learning demo. Naive sequential training forgets Task A completely; EWC (Kirkpatrick 2017) preserves it by anchoring weights important to past tasks. |
-| `curiosity_gridworld.py` | Curiosity-driven explorer in a gridworld. Intrinsic reward is one-step prediction error of its own world model; compared against a random baseline for exploration coverage. |
+| `curiosity_gridworld.py` | Curiosity-driven explorer in a gridworld. Intrinsic reward is one-step prediction error of its own world model; tabular + pure Python so it runs without PyTorch install friction. |
 | `SESSION_TRANSCRIPT.md` | Full transcript of the conversation that produced this repo. ~25 questions walking from "what is tensor logic" to "how do you build a continual learner that knows over time." |
 
 ## Run
@@ -24,7 +24,7 @@ uv run --with torch python train_kg.py
 uv run --with torch python joint_lm_kg.py
 uv run --with torch python throwing.py
 uv run --with torch python catastrophic_forgetting.py
-uv run --with torch python curiosity_gridworld.py
+python curiosity_gridworld.py
 ```
 
 Each runs on CPU in seconds to a few minutes.

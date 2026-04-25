@@ -1,21 +1,19 @@
 """
 Curiosity-driven exploration in a tiny gridworld.
 
-Intrinsic reward is the agent's own one-step prediction error:
-    r_int(s, a) = CE( f_theta(s, a), s_next )
+Efficient setup: pure Python, no external dependencies.
 
-The agent prefers actions with higher expected prediction error, then updates
-its world model online. We compare this against a random explorer baseline.
+Intrinsic reward is one-step prediction error of a tabular world model:
+    r_int(s, a, s') = -log p_model(s' | s, a)
 
-Goal of this demo: show what gets explored first when curiosity = surprise.
+The curiosity policy chooses actions with highest estimated surprise,
+and we compare it against a random baseline.
 """
 
+import math
 import random
+import statistics
 from dataclasses import dataclass
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
 
 ACTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
@@ -23,23 +21,6 @@ ACTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
 
 def state_to_idx(x: int, y: int, size: int) -> int:
     return x * size + y
-
-
-class ForwardModel(nn.Module):
-    """Predict next grid cell from (state, action)."""
-
-    def __init__(self, n_states: int, n_actions: int, hidden: int = 64):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(n_states + n_actions, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, hidden),
-            nn.ReLU(),
-            nn.Linear(hidden, n_states),
-        )
-
-    def forward(self, state_oh: torch.Tensor, action_oh: torch.Tensor) -> torch.Tensor:
-        return self.net(torch.cat([state_oh, action_oh], dim=-1))
 
 
 @dataclass
@@ -53,26 +34,27 @@ class GridWorld:
         return nx, ny
 
 
-def one_hot(index: int, n: int) -> torch.Tensor:
-    t = torch.zeros(1, n)
-    t[0, index] = 1.0
-    return t
+def mean_std(values: list[float]) -> tuple[float, float]:
+    if not values:
+        return float("nan"), float("nan")
+    if len(values) == 1:
+        return values[0], 0.0
+    return statistics.mean(values), statistics.pstdev(values)
 
 
-def run_episode(seed: int, policy: str, steps: int = 250, grid_size: int = 7):
+def run_episode(seed: int, policy: str, steps: int = 250, grid_size: int = 7) -> dict:
     assert policy in {"curiosity", "random"}
-    random.seed(seed)
-    torch.manual_seed(seed)
+    rng = random.Random(seed)
 
     env = GridWorld(size=grid_size)
     n_states = grid_size * grid_size
     n_actions = len(ACTIONS)
 
-    model = ForwardModel(n_states, n_actions)
-    optimizer = torch.optim.Adam(model.parameters(), lr=3e-3)
+    # Transition model counts: counts[s][a][s_next]
+    counts = [[[0 for _ in range(n_states)] for _ in range(n_actions)] for _ in range(n_states)]
 
-    # Estimated novelty per (state, action): initialize high for optimism.
-    novelty = torch.full((n_states, n_actions), 2.0)
+    # Estimated novelty per (state, action), initialized optimistically high.
+    novelty = [[4.0 for _ in range(n_actions)] for _ in range(n_states)]
 
     pos = (grid_size // 2, grid_size // 2)
     visited = {pos}
@@ -85,30 +67,26 @@ def run_episode(seed: int, policy: str, steps: int = 250, grid_size: int = 7):
         s = state_to_idx(pos[0], pos[1], grid_size)
 
         if policy == "random":
-            action = random.randrange(n_actions)
+            action = rng.randrange(n_actions)
         else:
-            if random.random() < 0.1:
-                action = random.randrange(n_actions)
+            if rng.random() < 0.1:
+                action = rng.randrange(n_actions)
             else:
-                action = int(torch.argmax(novelty[s]).item())
+                action = max(range(n_actions), key=lambda a: novelty[s][a])
 
         next_pos = env.step(pos, action)
         s_next = state_to_idx(next_pos[0], next_pos[1], grid_size)
 
-        s_oh = one_hot(s, n_states)
-        a_oh = one_hot(action, n_actions)
-        target = torch.tensor([s_next])
+        # Dirichlet-smoothed likelihood for prediction error.
+        alpha = 1e-3
+        row = counts[s][action]
+        total = sum(row)
+        p_next = (row[s_next] + alpha) / (total + alpha * n_states)
+        pe = -math.log(p_next)
 
-        logits = model(s_oh, a_oh)
-        loss = F.cross_entropy(logits, target)
-
-        # Curiosity signal = own prediction error before learning from this step.
-        pe = float(loss.detach().item())
-        novelty[s, action] = 0.9 * novelty[s, action] + 0.1 * pe
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        # Update novelty estimate and world model.
+        novelty[s][action] = 0.7 * novelty[s][action] + 0.3 * pe
+        counts[s][action][s_next] += 1
 
         pos = next_pos
         visited.add(pos)
@@ -126,29 +104,29 @@ def run_episode(seed: int, policy: str, steps: int = 250, grid_size: int = 7):
     }
 
 
-def summarize(results: list[dict], checkpoints=(20, 50, 100, 200, 250)):
+def summarize(results: list[dict], checkpoints=(20, 50, 100, 200, 250)) -> None:
     print("  coverage (mean ± std)")
     for k in checkpoints:
-        vals = torch.tensor([r["coverage"][k - 1] for r in results])
-        print(f"    step {k:>3}: {vals.mean():.3f} ± {vals.std(unbiased=False):.3f}")
+        vals = [r["coverage"][k - 1] for r in results]
+        mean, std = mean_std(vals)
+        print(f"    step {k:>3}: {mean:.3f} ± {std:.3f}")
 
     corner_times = {c: [] for c in results[0]["first_corner_hit"].keys()}
     for r in results:
         for c, t in r["first_corner_hit"].items():
-            corner_times[c].append(float(t) if t is not None else float("nan"))
+            if t is not None:
+                corner_times[c].append(float(t))
 
     print("  first corner hit times (mean over reached runs)")
     for c, times in corner_times.items():
-        ts = torch.tensor(times)
-        reached = ts[~torch.isnan(ts)]
-        if len(reached) == 0:
+        if not times:
             print(f"    corner {c}: never reached")
         else:
-            print(f"    corner {c}: {reached.mean():.1f} steps (reached {len(reached)}/{len(times)})")
+            print(f"    corner {c}: {statistics.mean(times):.1f} steps (reached {len(times)}/{len(results)})")
 
 
 if __name__ == "__main__":
-    seeds = list(range(8))
+    seeds = list(range(16))
 
     print("=== Curiosity-driven explorer (intrinsic reward = prediction error) ===")
     curiosity_runs = [run_episode(seed=s, policy="curiosity") for s in seeds]
@@ -158,8 +136,8 @@ if __name__ == "__main__":
     random_runs = [run_episode(seed=s, policy="random") for s in seeds]
     summarize(random_runs)
 
-    curiosity_final = torch.tensor([r["final_coverage"] for r in curiosity_runs]).mean().item()
-    random_final = torch.tensor([r["final_coverage"] for r in random_runs]).mean().item()
+    curiosity_final = statistics.mean(r["final_coverage"] for r in curiosity_runs)
+    random_final = statistics.mean(r["final_coverage"] for r in random_runs)
 
     print("\n=== Takeaway ===")
     print(f"  mean final coverage @250: curiosity={curiosity_final:.3f} vs random={random_final:.3f}")
