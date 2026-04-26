@@ -7,18 +7,16 @@ zero-knowledge proof system from
 > Zero-Knowledge Proofs for Circuits and Polynomials over Any Field*,
 > ACM CCS 2021. <https://eprint.iacr.org/2021/076>
 
-The implementation focuses on clarity, not performance: ~600 lines of
-Python, no third-party dependencies, no extension fields, no LPN-based
-VOLE extension. It models the VOLE preprocessing as a trusted dealer
-and then implements the QuickSilver protocol on top. Soundness error
-is `~(m + d) / |F|` for `m` multiplication gates of total degree `d`,
-which over the Mersenne prime `p = 2^127 - 1` is well below `2^-120`
-for any circuit you can run in pure Python.
+About 2,500 lines of Python, no third-party dependencies. Eight
+modules, 76 tests, six runnable demos. Soundness error is `~m / |F|`
+for `m` multiplication gates: well below `2^-120` over the Mersenne
+prime `2^127 - 1`, and below `2^-127` over `GF(2^128)` for boolean
+circuits.
 
 ## What QuickSilver does
 
-Designated-verifier zero-knowledge proofs for arbitrary arithmetic
-circuits over a large prime field, with two key properties:
+Designated-verifier zero-knowledge proofs for arbitrary circuits over
+any field, with three signature properties:
 
 - **Linear operations are free.** Add, subtract, scale-by-constant
   cost no communication. They reduce to local operations on
@@ -45,7 +43,7 @@ A single VOLE preprocessing element is a triple `(u, v, w)` with
 `w = u * Delta + v`, distributed so the prover gets `(u, v)` and the
 verifier gets `w`. To commit to a value `x`, the prover sends
 `d = x - u` and both sides locally derive `(M, K)` with the IT-MAC
-relation above (see `itmac.py`).
+relation above.
 
 Linear gates compose IT-MACs trivially:
 
@@ -53,7 +51,7 @@ Linear gates compose IT-MACs trivially:
     (c * x, c * M_x)     <->   c * K_x
     (x + c, M_x)         <->   K_x + Delta * c
 
-For multiplication `z = x * y`, the verifier can locally compute
+For multiplication `z = x * y`, the verifier locally computes
 
     B = K_x * K_y - Delta * K_z
       = M_x * M_y + Delta * (x*M_y + y*M_x - M_z) + Delta^2 * (x*y - z)
@@ -72,23 +70,27 @@ Delta`. To batch many multiplications and stay zero-knowledge:
    `c = a*Delta + b`.
 4. Verifier accepts iff `B + c == U + V * Delta`.
 
-That is the entire protocol.
+Fiat-Shamir replaces the verifier's challenge in step 1 with a hash
+of the transcript, making the proof a single non-interactive object.
 
 ## Layout
 
     quicksilver/
-        field.py            Mersenne-prime field arithmetic
+        field.py            Mersenne-prime field arithmetic (2^127 - 1)
+        gf2k.py             GF(2^128) arithmetic, GCM polynomial
         vole.py             Trusted-dealer VOLE preprocessing
-        itmac.py            Information-theoretic MAC wires
+        lpn_vole.py         LPN-based PCG: sparse base -> pseudorandom output
+        itmac.py            Information-theoretic MAC wires (prime field)
         circuit.py          Tiny arithmetic-circuit DSL
-        protocol.py         Prover and Verifier walkers, message types
+        protocol.py         Prime-field prover and verifier
         polynomial.py       Degree-d polynomial-zero check (Section 5)
-        zk_reachability.py  Tensor-logic tie-in: ZK proof of graph reachability
+        boolean.py          Subspace-VOLE binary-circuit prover and verifier
+        fiat_shamir.py      Non-interactive variant via SHA-256 transcript
+        einsum.py           Compile tensor-logic einsum into a circuit
+        zk_reachability.py  ZK proof of graph reachability
 
-    tests/test_quicksilver.py        completeness + soundness, 18 tests
-    tests/test_zk_reachability.py    7 tests for the reachability circuit
-    demos/quicksilver_demo.py        factorisation, x^3+x+5=y, batched polys
-    demos/zk_graph_reachability.py   "I know a graph and a walk inside it"
+    tests/                  76 tests across 6 files
+    demos/                  6 runnable demos
 
 ## Usage
 
@@ -105,45 +107,106 @@ c.assert_eq(c.mul(p_w, q_w), N)
 assert run(c, [1_000_003, 999_983])   # honest prover -> verifier accepts
 ```
 
+Same shape with the LPN-based VOLE PCG (drop-in for the trusted
+dealer):
+
+```python
+from quicksilver.lpn_vole import LpnParams, lpn_vole_extend
+from quicksilver.protocol import prove, verify
+from quicksilver.field import F
+
+p_share, v_share = lpn_vole_extend(LpnParams.default(n_out=c.vole_count()))
+msg1, batched = prove(c, [1_000_003, 999_983], p_share)
+chi = F.rand_nonzero()
+msg2 = batched(chi)
+assert verify(c, v_share, msg1, chi, msg2)
+```
+
+Boolean circuits (XOR free, AND charged) over `GF(2^128)`:
+
+```python
+from quicksilver.boolean import BoolCircuit, run
+
+c = BoolCircuit()
+a, b = c.input(), c.input()
+c.assert_eq_const(c.and_(a, b), 1)   # prove AND of two secret bits is 1
+assert run(c, [1, 1])
+```
+
+Tensor-logic einsum compiled to a ZK circuit:
+
+```python
+from quicksilver.circuit import Circuit
+from quicksilver.einsum import (
+    alloc_input_tensor, assert_einsum_equals,
+    evaluate_einsum, flatten_row_major,
+)
+from quicksilver.protocol import run
+
+A = [[1, 2], [3, 4]]; B = [[5, 6], [7, 8]]
+expected = evaluate_einsum("ij,jk->ik", [A, B])
+c = Circuit()
+Aw = alloc_input_tensor(c, (2, 2))
+Bw = alloc_input_tensor(c, (2, 2))
+assert_einsum_equals(c, "ij,jk->ik", [Aw, Bw], [(2, 2), (2, 2)], expected)
+witness = flatten_row_major(A) + flatten_row_major(B)
+assert run(c, witness)
+```
+
+Fiat-Shamir non-interactive proof:
+
+```python
+from quicksilver.fiat_shamir import run_ni
+ok, proof = run_ni(c, [1_000_003, 999_983])
+# ``proof`` is a single object; pass to verify_ni later.
+```
+
 ## Run
 
 ```bash
-python -m pytest tests/ -v                      # 25 passing
-python demos/quicksilver_demo.py                # ~1 ms total
-python demos/zk_graph_reachability.py           # ~30 ms total
+python -m pytest tests/ -v                       # 76 passing in <1s
+
+# Prime-field demos
+python demos/quicksilver_demo.py                 # factorisation, polys
+python demos/zk_graph_reachability.py            # graph + walk in ZK
+python demos/zk_einsum.py                        # matmul, grandparent rule
+
+# Binary-field demos
+python demos/quicksilver_boolean_demo.py         # 8-bit multiplier, mixer
+
+# Real-cryptography demos
+python demos/lpn_vole_demo.py                    # LPN-based PCG
 ```
 
 ## Tensor-logic tie-in
 
-The same einsum recurrence that defines transitive closure in
-`demos/transitive_closure.py`,
+The repo's premise -- a Datalog rule head and an einsum are the same
+operation -- gives a one-line ZK frontend. The recurrence that defines
+boolean transitive closure in `demos/transitive_closure.py`,
 
     Path = step( Edge + einsum('xy,yz->xz', Path, Edge) ),
 
-is also the natural ZK statement: "I know a graph and a walk inside
-it." `zk_reachability.py` builds a QuickSilver circuit that
-constrains, for committed adjacency `E` and a sequence of one-hot
-frontier vectors `alpha_0, ..., alpha_k`, the einsum identity
-`alpha_i^T E alpha_{i+1} = 1` at every step. Verifier learns nothing
-about `E` or about the walk's interior beyond the public boundary
-(n, k, source, target). The same operator, two semantics: deductive
-forward chaining when run on cleartext tensors, ZK reachability proof
-when run on IT-MAC-committed tensors.
+is also the natural ZK statement "I know a graph and a walk inside
+it." `zk_reachability.py` constrains, for committed adjacency `E` and
+one-hot frontier vectors `alpha_0, ..., alpha_k`, the einsum identity
+`alpha_i^T E alpha_{i+1} = 1` at every step. The verifier learns
+nothing about `E` or the walk's interior beyond `(n, k, source,
+target)`.
 
-## What this leaves out
+`einsum.py` generalises this: any tensor-logic rule head expressible
+as an einsum is automatically a QuickSilver circuit. One operator,
+two semantics -- deductive forward chaining on cleartext tensors, ZK
+proof on IT-MAC-committed tensors.
 
-- **Real VOLE.** Production QuickSilver would generate VOLE
-  correlations via an LPN-based extension protocol (SoftSpoken,
-  Wolverine's Ferret) bootstrapped from a small base OT. That phase
-  is the cryptographically heavy part and is orthogonal to the
-  protocol implemented here.
-- **Binary / extension fields.** The paper handles `F_2`, `F_{2^k}`,
-  and small prime fields via a "subspace VOLE" with MACs in an
-  extension. Here we only do a single large prime field, where the
-  base IT-MAC suffices.
-- **Public verifiability / Fiat-Shamir.** The protocol is interactive
-  designated-verifier as in the paper; non-interactive variants would
-  derive `chi` from a transcript hash and add a commitment phase.
-- **Performance.** Pure Python, no batching of field ops into vectors,
-  no precomputation of `chi^i`. A serious implementation would use
-  C/AVX field arithmetic and parallel VOLE expansion.
+## What this still leaves out
+
+- **Base OT / GGM-tree single-point VOLE** to remove the trusted base
+  for `lpn_vole.py`. The LPN expansion step is the cryptographically
+  characteristic part of the PCG; the base would still need OT-style
+  primitives implemented separately.
+- **Disjunctions and lookups** (Mac'n'Cheese, lookup arguments). All
+  expressible on top of this protocol but each its own subproject.
+- **Performance.** Pure Python, scalar arithmetic, no FFT, no
+  vectorisation. A serious implementation would use CLMUL/CLMULNI for
+  GF(2^128), a CRT-friendly prime + montgomery for the prime case,
+  and parallel matrix-vector multiplies for LPN expansion.
