@@ -8,3 +8,7 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+*.log
+POST_*.md
+make_post_charts.py
+chart*.png

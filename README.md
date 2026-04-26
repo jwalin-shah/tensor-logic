@@ -15,6 +15,18 @@ A learning project, not a product. Each demo is intended to make one idea click 
 | `catastrophic_forgetting.py` | Continual learning demo. Naive sequential training forgets Task A completely; EWC (Kirkpatrick 2017) preserves it by anchoring weights important to past tasks. |
 | `SESSION_TRANSCRIPT.md` | Full transcript of the conversation that produced this repo. ~25 questions walking from "what is tensor logic" to "how do you build a continual learner that knows over time." |
 
+Beyond the headline demos, the repo also contains `exp1`–`exp52` and `train_phase*.py` — a longer experimental arc probing the limits of tensor-logic operators (parity, code-closure, scaling, capacity). See `EXPERIMENTS.md` for the running log.
+
+## Memos & writing
+
+| File | What it is |
+|---|---|
+| `EXPERIMENTS.md` | Running log of every experiment, what it tested, what it falsified or confirmed. |
+| `RESEARCH_NOTES.md` | Working notes on the underlying research direction. |
+| `IDEAS.md` | Open questions and things worth trying next. |
+| `OPENHUMAN_TL_MEMO.md` | Memo: tensor logic as a substrate for openhuman, with knowledge-base reframe and related-work convergence. |
+| `OPENHUMAN_TL_PROTOTYPE_PLAN.md` | 7-phase, ~14-day prototype plan for a TL+KB go/no-go spike. |
+
 ## Run
 
 ```bash
@@ -73,6 +85,20 @@ Things worth adding here (in roughly increasing ambition):
 - LeCun, Y. (2022). *A Path Towards Autonomous Machine Intelligence*.
 - Tenenbaum et al. (2017). *Building machines that learn and think like people*.
 - "Downloading Kung Fu" — [statedpreferences.com/essays/downloading-kung-fu](https://statedpreferences.com/essays/downloading-kung-fu/) (the corrected-practice argument from the pedagogy side).
+
+## Citing the paper
+
+This repo is built on Pedro Domingos' *Tensor Logic*. If you write about anything here, cite the paper:
+
+```bibtex
+@article{domingos2025tensorlogic,
+  title   = {Tensor Logic: The Language of AI},
+  author  = {Domingos, Pedro},
+  journal = {arXiv preprint arXiv:2510.12269},
+  year    = {2025},
+  url     = {https://arxiv.org/abs/2510.12269}
+}
+```
 
 ## License
 
