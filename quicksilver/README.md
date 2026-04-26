@@ -77,15 +77,18 @@ That is the entire protocol.
 ## Layout
 
     quicksilver/
-        field.py         Mersenne-prime field arithmetic
-        vole.py          Trusted-dealer VOLE preprocessing
-        itmac.py         Information-theoretic MAC wires
-        circuit.py       Tiny arithmetic-circuit DSL
-        protocol.py      Prover and Verifier walkers, message types
-        polynomial.py    Degree-d polynomial-zero check (Section 5)
+        field.py            Mersenne-prime field arithmetic
+        vole.py             Trusted-dealer VOLE preprocessing
+        itmac.py            Information-theoretic MAC wires
+        circuit.py          Tiny arithmetic-circuit DSL
+        protocol.py         Prover and Verifier walkers, message types
+        polynomial.py       Degree-d polynomial-zero check (Section 5)
+        zk_reachability.py  Tensor-logic tie-in: ZK proof of graph reachability
 
-    tests/test_quicksilver.py     completeness + soundness, 18 tests
-    demos/quicksilver_demo.py     factorisation, x^3+x+5=y, batched polys
+    tests/test_quicksilver.py        completeness + soundness, 18 tests
+    tests/test_zk_reachability.py    7 tests for the reachability circuit
+    demos/quicksilver_demo.py        factorisation, x^3+x+5=y, batched polys
+    demos/zk_graph_reachability.py   "I know a graph and a walk inside it"
 
 ## Usage
 
@@ -105,9 +108,27 @@ assert run(c, [1_000_003, 999_983])   # honest prover -> verifier accepts
 ## Run
 
 ```bash
-python -m pytest tests/test_quicksilver.py -v   # 18 passing
+python -m pytest tests/ -v                      # 25 passing
 python demos/quicksilver_demo.py                # ~1 ms total
+python demos/zk_graph_reachability.py           # ~30 ms total
 ```
+
+## Tensor-logic tie-in
+
+The same einsum recurrence that defines transitive closure in
+`demos/transitive_closure.py`,
+
+    Path = step( Edge + einsum('xy,yz->xz', Path, Edge) ),
+
+is also the natural ZK statement: "I know a graph and a walk inside
+it." `zk_reachability.py` builds a QuickSilver circuit that
+constrains, for committed adjacency `E` and a sequence of one-hot
+frontier vectors `alpha_0, ..., alpha_k`, the einsum identity
+`alpha_i^T E alpha_{i+1} = 1` at every step. Verifier learns nothing
+about `E` or about the walk's interior beyond the public boundary
+(n, k, source, target). The same operator, two semantics: deductive
+forward chaining when run on cleartext tensors, ZK reachability proof
+when run on IT-MAC-committed tensors.
 
 ## What this leaves out
 
