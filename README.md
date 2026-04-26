@@ -22,13 +22,35 @@ On transitive closure (graph reachability), a **3-scalar tensor-logic recurrence
 
 The MLP can't be evaluated at native graph sizes (it's trained at fixed n=16), so its score above is the cropped top-16 subgraph — already a much easier task. TL handles any n for free; the MLP has no zero-shot answer for variable-size graphs.
 
-The two imperfect TL scores (`click`, `rich`) are explained by K=4 recurrence iterations being too short for very dense or large closures. Increasing K closes the gap; that's a knob, not a failure of the inductive bias.
+### Pushing to bigger packages (n up to 1,532)
 
-Stress-testing capacity at larger n: a **71M-parameter MLP fails completely at n=128** on the same closure task (`exp52_mlp_capacity.py`) — the MLP isn't undertrained, it's the wrong inductive bias.
+`exp54_big_imports.py` runs the same TL on substantially larger codebases, with K scaled to graph size:
 
-See `exp53_real_imports.py` (this table), `exp44_import_closure.py` (the original single-graph version), `exp51_bignscale.py` (scaling sweep), `exp52_mlp_capacity.py`, and `EXPERIMENTS.md` for the full log.
+| package | nodes | density | K | TL F1 |
+|---|---|---|---|---|
+| fastapi | 48 | 0.104 | 10 | **1.000** |
+| networkx | 580 | 0.359 | 14 | 0.967 |
+| sqlalchemy | 256 | 0.421 | 12 | 0.879 |
+| sympy | 1,532 | 0.254 | 15 | 0.842 |
+| django | 899 | 0.101 | 14 | **0.657** |
+| **mean** | — | — | — | **0.869** |
 
-This is the narrow claim the experimental arc (exp1–exp52, with gaps) supports: where a closed-form tensor-logic operator exists for a task, SGD-trainable TL beats large MLPs by orders of magnitude. The arc also maps where this *fails* — XOR/parity, code-closure beyond import graphs — see `EXPERIMENTS.md` and `OPENHUMAN_TL_MEMO.md`.
+TL degrades gracefully on bigger graphs rather than failing catastrophically. Django at n=899 is the weakest case (F1=0.657) — likely a combination of cyclic import structure (Django has many) and the trained α/β/γ being tuned for a sparser regime. This is a real limitation, not a hidden caveat.
+
+### Where this fails entirely
+
+The "TL beats MLPs by 4+ orders of magnitude" story is **task-specific**. A 3-scalar TL recurrence works for transitive closure because closure has a clean closed-form tensor expression. It does **not** work for tasks whose target function isn't expressible in TL's operator basis:
+
+- **XOR / parity** (`exp48_crossterm_xor.py`, `exp50_cos_parity.py`): even with a 4-parameter cross-term TL variant, parity is unlearnable — the cross-term cannot create the alternating sign structure XOR requires. Confirmed by trying a cosine activation as a sanity check; it falsifies the "just need a different operator" hypothesis.
+- **Code-closure tasks beyond import graphs** (`exp49_crossterm_imports.py`): when the underlying relation isn't a simple reachability closure (e.g. typed dataflow, control flow with branches), the 3- or 4-scalar TL variants do not capture it.
+
+The honest framing: **TL is enormously parameter-efficient when a closed-form tensor-logic operator exists for the task; it cannot magic one into existence when one doesn't.** See `OPENHUMAN_TL_MEMO.md` for the broader argument about which problem classes this lands on.
+
+### MLP capacity at scale
+
+For completeness on the comparison side: a **71M-parameter MLP fails completely at n=128** on the same closure task (`exp52_mlp_capacity.py`). The MLP isn't undertrained — it's the wrong inductive bias. This is the headline number for the parameter-ratio claim.
+
+See `exp53_real_imports.py` (small/mid packages table), `exp54_big_imports.py` (large packages), `exp44_import_closure.py` (original single-graph version), `exp48–50` (parity-class failures), `exp51_bignscale.py` (scaling sweep), `exp52_mlp_capacity.py`, and `EXPERIMENTS.md` for the full log.
 
 ## What's here
 
