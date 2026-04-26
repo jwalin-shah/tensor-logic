@@ -8,6 +8,46 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-26 — exp63/64/65: small-increment infrastructure wins (sparse closure, clean parity, rule-chain joins)
+
+**Session focus:** User asked to ship all three small-increment ideas from the previous session. All CPU-only, no LM. Built and ran all three; exp63 had to be rewritten mid-session after the first draft used a fake sparse fixpoint that densified inside the loop and ran for 40+ minutes before being killed.
+
+**What we tried:**
+- **exp63** (`exp63_sparse_closure.py`): three closure implementations on Hanoi state graphs and openhuman-scale synthetic KBs — dense (TL baseline), BFS-per-source (build closure row by row as Python sets, no V×V matrix), BFS-per-query (single-pair reachability without materializing closure). Honest design note: an earlier draft used `torch.sparse` with a per-iteration densification (defeating the purpose). Killed and rewritten with proper graph algorithms.
+- **exp64** (`exp64_clean_parity.py`): re-test exp59C's parity miss with three irregular-count setups: random small counts, counts from random suboptimal Hanoi solutions, adversarial alternating-parity sequences. For each, grid-search sigmoid(α·c+β), 2-mixture, and cosine activation; report best fit.
+- **exp65** (`exp65_rule_chain_joins.py`): extend the exp60b tool-call protocol from `<tl_closure>` (single relation) to `<tl_rule head="..." body="...">` (Datalog-class joins). Body atoms are parsed via regex, mapped to einsum operands, shared variables become contracted indices. Test on grandparent / uncle / cousin / great-uncle on a small extended-family graph.
+
+**Key results:**
+- **exp63**: BFS-per-source closure 2.3-3.6× faster than dense at Hanoi N=7-8 (V=2187 → 6561, fully connected so closure is dense regardless). Killed first draft (torch.sparse fixpoint that densified inside the loop) after 40 min, rewrote with proper graph algorithms. **Openhuman-scale benchmark** (10k entities, 50k edges, forest backbone + random cross-edges): BFS-per-query latency **1.474 ms/query**, dense closure tensor 381 MB, BFS-per-source full closure 79 s producing 99M cells (98% reachability — random cross-edges densify the graph). Hot path = BFS-per-query, cold path = optional dense precompute.
+- **exp64**: sigmoid caps at majority-class accuracy (0.5-0.875) on every adversarial / non-monotone-parity case across (A) random K∈{4,8,16}, (B) random Hanoi solutions, (C) hand-crafted alternating sequences. Cosine activation at α=π reaches **100% on every case**. 2-mixture shows marginal improvement over single sigmoid but caps below 100% on adversarial.
+- **exp65**: 9/9 cases pass — grandparent (parent ∘ parent), uncle (sibling ∘ parent), cousin (parent⁻¹ ∘ sibling ∘ parent), great-uncle (sibling ∘ parent ∘ parent), all evaluated correctly via einsum chains. The same machinery that did transitive closure now does arbitrary binary-relation joins.
+
+**What surprised us:**
+- **exp63's first draft burning 40 minutes was a useful failure**: I had assumed `torch.sparse` would handle sparse@sparse matmul, but PyTorch's sparse matmul is sparse@dense only. Putting `R.to_dense()` inside the closure loop made every iteration allocate a 1.5 GB tensor at N=9. Lesson: when "sparse" is on the critical path, you can't paper over it with a storage-format change — you need an algorithm that doesn't materialize V×V intermediate matrices (BFS, Tarjan, GraphBLAS). The rewrite uses BFS-per-source and BFS-per-query — both honest about computational shape.
+- **exp64 nailed exactly the prediction from exp48/50.** Sigmoid is monotone in count by construction; parity is non-monotone when counts vary irregularly; therefore sigmoid cannot fit. The closed-form verification is much sharper than the trained-from-random version of exp48 because it removes the optimization-landscape question — the architecture genuinely cannot represent the function. Cosine at α=π solves it (because cos(πk) = (-1)^k for integer k), but per exp50 gradient descent from random init can't find α=π due to vanishing gradient at integer x. So the practical conclusion stands: **TL's parity barrier is the operator + reachable basin together**, and additional parameters within the sigmoid+iteration class are wasted.
+- **exp65 worked first try** with no architectural change — just a regex extension and an einsum builder. This says something nice about the einsum-as-rule framing from Domingos's paper: the tensor algebra naturally absorbs Datalog-class rules; the protocol layer (tags) is the only thing that needed extension. Adding a new rule at runtime costs zero training, which is exactly what OPENHUMAN_TL_MEMO's "rules attach to categories, not entities" claim wants.
+
+**Cumulative limitations map after exp55-65:**
+- **TL substrate works** when:
+  - Rule is given OR closure-shaped (exp44/47/53/55/65).
+  - Operator is in {OR, ≥k-count, sum-then-threshold, einsum joins} (exp44/45/65).
+  - State space fits in memory: dense ≤~10⁵ states, BFS-per-source ≤~10⁷ closure cells, BFS-per-query unbounded (exp63).
+  - Rule chains compose deterministically with no rule conflict (exp65).
+- **TL substrate fails** when:
+  - Target requires non-monotone aggregation (parity, XOR — exp45/48/50/64).
+  - Min-plus / max-plus semiring needed (exp45 / exp59B).
+  - Numerical-precision wall on long-product surrogates (exp59B inf at N=5).
+  - Per-step execution noise compounds (exp58 — substrate-downstream property).
+
+**Takeaway / next:**
+- **The exp60-65 line is now a complete TL-as-tool toolkit:** trace generator (exp60a) + closure tag harness (exp60b) + rule-chain extension (exp65) + sanity baseline (exp60c) + sparse closure substrate (exp63). Everything except the actual LM SFT is done and falsifiable on CPU.
+- **For exp60d** when LM access is wired up: the Qwen 2.5 7B Instruct + LoRA plan stands. The training set should now include rule-tag examples (exp65 format), not just closure-tag — the LM should learn to choose between them based on the query type.
+- **Honest research positioning after this session:** the substrate-side claim is mapped, falsified at the right places, and instrumented. The remaining open questions are all on the integration side (does the LM learn to use it well; does TL-as-layer beat TL-as-tool; etc.) — exp61 and exp62 territory.
+
+**Methodological note:** exp63's killed-and-rewritten run is the second time this session that "the experiment runs but doesn't actually test what I claimed" was caught. exp59C had the same shape — the test technically completed but the target was too easy to expose the predicted barrier. Both saved by the discipline of looking at the result and asking "did this experiment actually distinguish the hypothesis from the null?" before writing the conclusion. I'd like to make this more systematic — maybe a `assert (result_does_not_match_null_hypothesis())` at the bottom of each exp script.
+
+---
+
 ## 2026-04-26 — exp60a/b/c: TL-as-tool plumbing built in 3 LM-free increments + NVIDIA Dynamo connection
 
 **Session focus:** User pushed for the novel-direction experiment (exp60: teach a small instruct LM to invoke TL closure as a tool) but explicitly asked for smaller increments since real LM SFT requires API access not currently set up. Break exp60 into four pieces (a) traces, (b) harness, (c) deterministic baseline, (d) real SFT — and ship a-c which are all CPU-only and LM-free. Also reviewed NVIDIA Dynamo's agentic-inference orchestration (DGX blog) for serving-stack relevance to the SLM+TL composition.
