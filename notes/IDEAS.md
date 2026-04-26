@@ -10,6 +10,35 @@ Cost legend: 🟢 hours on CPU | 🟡 day on Colab T4 | 🟠 weekend on A10G | �
 
 ## High leverage / low cost (do these next)
 
+### 💡 exp68 — Lazy / top-K proof generation for openhuman scale
+- **Hypothesis:** exp67's full proof enumeration is O(branching^depth) — fine at 7-person graphs, infeasible at 10k+ entities. A lazy generator that yields the K simplest proofs (by tree size or rule-chain length) keeps query latency bounded while preserving the auditability story.
+- **Falsified if:** The lazy generator's first 5 proofs aren't a strict subset of the full enumeration's first 5 (by depth-first order); OR generation time per proof exceeds the BFS-per-query baseline (1.5 ms at 10k entities) by more than 10×.
+- **Smallest test:** Add a `top_k` parameter to `evaluate_with_provenance`; switch from list-construction to generator-yield. Benchmark on the openhuman-scale graph from exp63, query for top-5 derivations of synthetic cousin/uncle queries.
+- **Unlocks:** exp67's auditability scales to OPENHUMAN_TL_MEMO's claimed entity counts.
+- **Cost:** 🟢 ~80 lines, ~30 min wall.
+
+### 💡 exp69 — Proof ranking by simplicity / Occam preference
+- **Hypothesis:** When multiple proofs exist for the same fact, users want the simplest first (fewest rule firings, fewest distinct intermediate entities). Implement a scoring function and return proofs in order. Aligns with the human preference for short explanations and gives the SLM a natural "main reason" to surface to the user.
+- **Falsified if:** Proof scores don't differ across the 3 distinct-proof cases in exp67's test set; OR the ranking puts a longer chain ahead of a shorter equivalent.
+- **Smallest test:** Build a synthetic graph with at least 3 distinct proofs for some fact (multiple parallel kinship paths). Score proofs by tree-node count and rule-firing count; verify ordering.
+- **Unlocks:** OPENHUMAN_TL_MEMO §3 example output (`why did you suggest X?`) gets a single canonical answer instead of N enumerated proofs.
+- **Cost:** 🟢 ~50 lines, ~20 min wall.
+
+### 💡 exp70 — Non-binary relations (arity > 2)
+- **Hypothesis:** The current harness assumes binary relations (`rel(X, Y)`). Real KBs need ternary+: `meeting(person, person, time)`, `transaction(buyer, seller, amount, time)`. Extend tag protocol to `<tl_rule head="rel(X, Y, Z)" body="...">`; tensor representation becomes 3-d (or higher); einsum chains generalize naturally.
+- **Falsified if:** Generalizing einsum to mixed-arity relations breaks the rule-parser (axes don't align); OR memory blows up at openhuman scale (10k entities × 10k × 10k × 4 bytes = 4 TB, infeasible — would need sparse representation from exp63).
+- **Smallest test:** Add a `meeting(P, Q, T)` ternary primitive. Define a rule `co_attended(P, Q) :- meeting(P, _, T), meeting(Q, _, T)`. Test on synthetic data.
+- **Unlocks:** openhuman's actual KB (calendars, transactions, messages) instead of just kinship.
+- **Cost:** 🟡 ~150 lines + sparse extension; needs exp63's BFS substrate at scale.
+
+### ✅ exp67 — Provenance for TL tool-call results (DONE — see EXPERIMENTS.md row 67)
+
+Result: full proof trees built deterministically; 7/7 query types correctly answered with full derivation provenance. Counterfactual retraction (remove `parent(bob, dave)`) propagates 1 → 0 proofs deterministically. OPENHUMAN_TL_MEMO §3 auditability claim landed concretely.
+
+### ✅ exp66 — Datalog negation in tool-call protocol (DONE — see EXPERIMENTS.md row 66)
+
+Result: 9/9 cases pass. Stratified `!atom` negation absorbs cleanly into TL's monoid as element-wise `(1 - neg_tensor)` multiplication. The harness now covers Datalog-with-stratified-negation entirely — no architectural change.
+
 ### ✅ exp63 — Sparse closure substrate (DONE — see EXPERIMENTS.md row 63)
 
 Original entry preserved below for reference. Result: BFS-per-query at 10k entities runs at 1.5 ms/query; BFS-per-source 3.6× faster than dense at Hanoi N=8. Per-source closure on a fully-connected graph still hits a memory wall but is dominated by closure-cells, not adjacency size — the substrate is the right shape now.
