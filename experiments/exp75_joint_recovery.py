@@ -1,15 +1,15 @@
 """
-exp57: end-to-end joint optimization of A_hat through the TL closure
-recurrence (follow-on to exp55/exp56).
+exp75: end-to-end joint optimization of A_hat through the TL closure
+recurrence (follow-on to exp73/exp74).
 
 Two findings:
 
-(1) Methodology bug in exp55/exp56's `perturb_brain`. The earlier
+(1) Methodology bug in exp73/exp74's `perturb_brain`. The earlier
     function applied a 5% per-cell flip to A_star, which on a sparse
     brain (p=0.025, 86 edges out of 4032 cells) flips ~200 random
     cells — adding ~196 new edges to the 86 existing ones. Subject
     brains ended up ~3x denser than A_star, with closure density
-    near 1. This inflated all the "F1 on A_s" numbers in exp55/56.
+    near 1. This inflated all the "F1 on A_s" numbers in exp73/56.
     Fix: density-preserving perturbation — replace `frac` of A_star's
     edges with a same-count random draw from non-edges. Numbers in
     those experiments need re-running with this fix.
@@ -25,7 +25,7 @@ Two findings:
     structure but not infinitely.
 
 Three configurations per subject:
-  init_disc      — Granger top-k discrete A_hat, no opt (= exp56 setup)
+  init_disc      — Granger top-k discrete A_hat, no opt (= exp74 setup)
   init_soft      — Granger soft (max-normalized), no opt
                    [degenerate: max-normalization shrinks most values
                     too small to activate β; pred_density collapses to 0]

@@ -50,7 +50,7 @@ K_TRAIN = 16
 K_BRAIN = 64
 EDGE_PROB_TRAIN = 0.12
 EDGE_PROB_BRAIN = 0.08
-SUBJECT_FLIP_PROB = 0.05
+SUBJECT_FLIP_FRAC = 0.10  # density-preserving: replace 10% of A_star's edges per subject
 N_STIMULI = 200
 T_STEPS = 12
 N_TRAIN_GRAPHS = 500
@@ -111,17 +111,23 @@ def latent_brain(K, p, seed):
     return random_directed(K, p, rng)
 
 
-def perturb_brain(A_star, flip_prob, seed):
-    """Per-subject perturbation: flip a small fraction of edges."""
+def perturb_brain(A_star, frac_edges_changed, seed):
+    """Density-preserving per-subject perturbation: replace a fraction of
+    A_star's edges with same-count random draw from non-edges. (Earlier
+    versions used per-cell flip prob, which inflates density on sparse
+    brains; see exp75 docstring.)"""
     rng = random.Random(seed)
     A = A_star.clone()
     K = A.shape[0]
-    for i in range(K):
-        for j in range(K):
-            if i == j:
-                continue
-            if rng.random() < flip_prob:
-                A[i, j] = 1.0 - A[i, j]
+    edges = [(i, j) for i in range(K) for j in range(K) if i != j and A[i, j] == 1.0]
+    non_edges = [(i, j) for i in range(K) for j in range(K) if i != j and A[i, j] == 0.0]
+    n_change = max(1, int(round(frac_edges_changed * len(edges))))
+    rng.shuffle(edges)
+    rng.shuffle(non_edges)
+    for i, j in edges[:n_change]:
+        A[i, j] = 0.0
+    for i, j in non_edges[:n_change]:
+        A[i, j] = 1.0
     return A
 
 
@@ -255,7 +261,7 @@ def main():
     closures_gt = []
     jaccards_clean, jaccards_noisy = [], []
     for s in range(N_SUBJECTS):
-        A_s = perturb_brain(A_star, SUBJECT_FLIP_PROB, seed=1000 + s)
+        A_s = perturb_brain(A_star, SUBJECT_FLIP_FRAC, seed=1000 + s)
         R_s = transitive_closure(A_s)
 
         V_clean = tribe_stub_voxels(A_s, N_STIMULI, T_STEPS, noise_std=0.0, seed=2000 + s)

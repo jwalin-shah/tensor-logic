@@ -40,7 +40,7 @@ EDGE_PROB_TRAIN = 0.12
 # uninformative. At 0.025 closure density ≈0.12 and chance F1 ≈0.22,
 # so F1 actually discriminates between recovery methods.
 EDGE_PROB_BRAIN = 0.025
-SUBJECT_FLIP_PROB = 0.05
+SUBJECT_FLIP_FRAC = 0.10  # density-preserving: replace 10% of A_star's edges per subject
 N_STIMULI = 200
 T_STEPS = 12
 LAG_K = 4
@@ -101,16 +101,20 @@ def latent_brain(K, p, seed):
     return random_directed(K, p, rng)
 
 
-def perturb_brain(A_star, flip_prob, seed):
+def perturb_brain(A_star, frac_edges_changed, seed):
+    """Density-preserving per-subject perturbation (see exp75 docstring)."""
     rng = random.Random(seed)
     A = A_star.clone()
     K = A.shape[0]
-    for i in range(K):
-        for j in range(K):
-            if i == j:
-                continue
-            if rng.random() < flip_prob:
-                A[i, j] = 1.0 - A[i, j]
+    edges = [(i, j) for i in range(K) for j in range(K) if i != j and A[i, j] == 1.0]
+    non_edges = [(i, j) for i in range(K) for j in range(K) if i != j and A[i, j] == 0.0]
+    n_change = max(1, int(round(frac_edges_changed * len(edges))))
+    rng.shuffle(edges)
+    rng.shuffle(non_edges)
+    for i, j in edges[:n_change]:
+        A[i, j] = 0.0
+    for i, j in non_edges[:n_change]:
+        A[i, j] = 1.0
     return A
 
 
@@ -246,7 +250,7 @@ def main():
     # Build per-subject (A_s, V_clean, V_noisy, R_s) once.
     subjects = []
     for s in range(N_SUBJECTS):
-        A_s = perturb_brain(A_star, SUBJECT_FLIP_PROB, seed=1000 + s)
+        A_s = perturb_brain(A_star, SUBJECT_FLIP_FRAC, seed=1000 + s)
         R_s = transitive_closure(A_s)
         V_clean = tribe_stub_voxels(A_s, N_STIMULI, T_STEPS, noise_std=0.0, seed=2000 + s)
         V_noisy = tribe_stub_voxels(A_s, N_STIMULI, T_STEPS, noise_std=0.20, seed=3000 + s)
