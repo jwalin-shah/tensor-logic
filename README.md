@@ -24,7 +24,7 @@ The MLP can't be evaluated at native graph sizes (it's trained at fixed n=16), s
 
 ### Pushing to bigger packages (n up to 1,532)
 
-`exp54_big_imports.py` runs the same TL on substantially larger codebases, with K scaled to graph size:
+`experiments/exp54_big_imports.py` runs the same TL on substantially larger codebases, with K scaled to graph size:
 
 | package | nodes | density | K | TL F1 |
 |---|---|---|---|---|
@@ -41,59 +41,68 @@ TL degrades gracefully on bigger graphs rather than failing catastrophically. Dj
 
 The "TL beats MLPs by 4+ orders of magnitude" story is **task-specific**. A 3-scalar TL recurrence works for transitive closure because closure has a clean closed-form tensor expression. It does **not** work for tasks whose target function isn't expressible in TL's operator basis:
 
-- **XOR / parity** (`exp48_crossterm_xor.py`, `exp50_cos_parity.py`): even with a 4-parameter cross-term TL variant, parity is unlearnable — the cross-term cannot create the alternating sign structure XOR requires. Confirmed by trying a cosine activation as a sanity check; it falsifies the "just need a different operator" hypothesis.
-- **Code-closure tasks beyond import graphs** (`exp49_crossterm_imports.py`): when the underlying relation isn't a simple reachability closure (e.g. typed dataflow, control flow with branches), the 3- or 4-scalar TL variants do not capture it.
+- **XOR / parity** (`experiments/exp48_crossterm_xor.py`, `experiments/exp50_cos_parity.py`): even with a 4-parameter cross-term TL variant, parity is unlearnable — the cross-term cannot create the alternating sign structure XOR requires. Confirmed by trying a cosine activation as a sanity check; it falsifies the "just need a different operator" hypothesis.
+- **Code-closure tasks beyond import graphs** (`experiments/exp49_crossterm_imports.py`): when the underlying relation isn't a simple reachability closure (e.g. typed dataflow, control flow with branches), the 3- or 4-scalar TL variants do not capture it.
 
-The honest framing: **TL is enormously parameter-efficient when a closed-form tensor-logic operator exists for the task; it cannot magic one into existence when one doesn't.** See `OPENHUMAN_TL_MEMO.md` for the broader argument about which problem classes this lands on.
+The honest framing: **TL is enormously parameter-efficient when a closed-form tensor-logic operator exists for the task; it cannot magic one into existence when one doesn't.** See `notes/OPENHUMAN_TL_MEMO.md` for the broader argument about which problem classes this lands on.
 
 ### MLP capacity at scale
 
-For completeness on the comparison side: a **71M-parameter MLP fails completely at n=128** on the same closure task (`exp52_mlp_capacity.py`). The MLP isn't undertrained — it's the wrong inductive bias. This is the headline number for the parameter-ratio claim.
+For completeness on the comparison side: a **71M-parameter MLP fails completely at n=128** on the same closure task (`experiments/exp52_mlp_capacity.py`). The MLP isn't undertrained — it's the wrong inductive bias. This is the headline number for the parameter-ratio claim.
 
-See `exp53_real_imports.py` (small/mid packages table), `exp54_big_imports.py` (large packages), `exp44_import_closure.py` (original single-graph version), `exp48–50` (parity-class failures), `exp51_bignscale.py` (scaling sweep), `exp52_mlp_capacity.py`, and `EXPERIMENTS.md` for the full log.
+See `experiments/exp53_real_imports.py` (small/mid packages table), `experiments/exp54_big_imports.py` (large packages), `experiments/exp44_import_closure.py` (original single-graph version), `exp48–50` (parity-class failures), `experiments/exp51_bignscale.py` (scaling sweep), `experiments/exp52_mlp_capacity.py`, and `notes/EXPERIMENTS.md` for the full log.
 
 ## What's here
 
 | File | What it shows |
 |---|---|
-| `transitive_closure.py` | Tensor logic in 80 lines. One einsum, three semantics: deductive (step), analogical (sigmoid), embedding-space retrieval. |
-| `train_kg.py` | Knowledge graph completion via gradient descent through einsum-rules. Learns object embeddings such that applying `Parent ∘ Parent` produces the correct grandparent matrix. |
-| `joint_lm_kg.py` | Joint LM + KG training in one autograd graph. Tiny einsum-form transformer + tensor-logic rule head, sharing token/object embeddings. T-annealing from 1.0 to 0.05. |
-| `throwing.py` | Embodied learner: agent learns "force → distance" from 100 random throws, then plans inverse to hit unseen targets. Probes the network and finds an emergent "force magnitude" neuron. |
-| `catastrophic_forgetting.py` | Continual learning demo. Naive sequential training forgets Task A completely; EWC (Kirkpatrick 2017) preserves it by anchoring weights important to past tasks. |
-| `SESSION_TRANSCRIPT.md` | Full transcript of the conversation that produced this repo. ~25 questions walking from "what is tensor logic" to "how do you build a continual learner that knows over time." |
+| `demos/transitive_closure.py` | Tensor logic in 80 lines. One einsum, three semantics: deductive (step), analogical (sigmoid), embedding-space retrieval. |
+| `demos/train_kg.py` | Knowledge graph completion via gradient descent through einsum-rules. Learns object embeddings such that applying `Parent ∘ Parent` produces the correct grandparent matrix. |
+| `demos/joint_lm_kg.py` | Joint LM + KG training in one autograd graph. Tiny einsum-form transformer + tensor-logic rule head, sharing token/object embeddings. T-annealing from 1.0 to 0.05. |
+| `demos/throwing.py` | Embodied learner: agent learns "force → distance" from 100 random throws, then plans inverse to hit unseen targets. Probes the network and finds an emergent "force magnitude" neuron. |
+| `demos/catastrophic_forgetting.py` | Continual learning demo. Naive sequential training forgets Task A completely; EWC (Kirkpatrick 2017) preserves it by anchoring weights important to past tasks. |
+| `notes/SESSION_TRANSCRIPT.md` | Full transcript of the conversation that produced this repo. ~25 questions walking from "what is tensor logic" to "how do you build a continual learner that knows over time." |
 
-Beyond the headline demos, the repo also contains `exp1`–`exp52` and `train_phase*.py` — a longer experimental arc probing the limits of tensor-logic operators (parity, code-closure, scaling, capacity). See `EXPERIMENTS.md` for the running log.
+Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` and `phase_training/train_phase*.py` — a longer experimental arc probing the limits of tensor-logic operators (parity, code-closure, scaling, capacity). See `notes/EXPERIMENTS.md` for the running log.
 
 ## Memos & writing
 
 | File | What it is |
 |---|---|
-| `EXPERIMENTS.md` | Running log of every experiment, what it tested, what it falsified or confirmed. |
-| `RESEARCH_NOTES.md` | Working notes on the underlying research direction. |
-| `IDEAS.md` | Open questions and things worth trying next. |
-| `OPENHUMAN_TL_MEMO.md` | Memo: tensor logic as a substrate for openhuman, with knowledge-base reframe and related-work convergence. |
-| `OPENHUMAN_TL_PROTOTYPE_PLAN.md` | 7-phase, ~14-day prototype plan for a TL+KB go/no-go spike. |
+| `notes/EXPERIMENTS.md` | Running log of every experiment, what it tested, what it falsified or confirmed. |
+| `notes/RESEARCH_NOTES.md` | Working notes on the underlying research direction. |
+| `notes/IDEAS.md` | Open questions and things worth trying next. |
+| `notes/OPENHUMAN_TL_MEMO.md` | Memo: tensor logic as a substrate for openhuman, with knowledge-base reframe and related-work convergence. |
+| `notes/OPENHUMAN_TL_PROTOTYPE_PLAN.md` | 7-phase, ~14-day prototype plan for a TL+KB go/no-go spike. |
 
 ## Run
 
 ```bash
-uv run --with torch python transitive_closure.py
-uv run --with torch python train_kg.py
-uv run --with torch python joint_lm_kg.py
-uv run --with torch python throwing.py
-uv run --with torch python catastrophic_forgetting.py
+uv run --with torch python demos/transitive_closure.py
+uv run --with torch python demos/train_kg.py
+uv run --with torch python demos/joint_lm_kg.py
+uv run --with torch python demos/throwing.py
+uv run --with torch python demos/catastrophic_forgetting.py
 ```
 
 Each runs on CPU in seconds to a few minutes.
 
+## Repo layout
+
+```
+demos/             5 headline runnable demos — one idea each
+experiments/       exp1..exp54 — the broader experimental arc
+phase_training/    train_phase*.py + world/model files (embodied-agent thread)
+notes/             long-form memos, research notes, session transcript
+```
+
 ## The conceptual ladder these demos climb
 
-1. **`transitive_closure.py`**: a rule and an einsum are the same thing. Activation function picks the semantic.
-2. **`train_kg.py`**: rules are differentiable. Gradient descent through einsum-rules learns embeddings that make logical inference work.
-3. **`joint_lm_kg.py`**: language and symbolic structure can share parameters. One model, two loss terms, three predictions.
-4. **`throwing.py`**: concepts (force, distance) emerge as compression coordinates of action-outcome pairs. No textbook required.
-5. **`catastrophic_forgetting.py`**: weights move when you train; without selective plasticity, learning new things destroys old. Memory + replay + selective plasticity is how brains avoid this.
+1. **`demos/transitive_closure.py`**: a rule and an einsum are the same thing. Activation function picks the semantic.
+2. **`demos/train_kg.py`**: rules are differentiable. Gradient descent through einsum-rules learns embeddings that make logical inference work.
+3. **`demos/joint_lm_kg.py`**: language and symbolic structure can share parameters. One model, two loss terms, three predictions.
+4. **`demos/throwing.py`**: concepts (force, distance) emerge as compression coordinates of action-outcome pairs. No textbook required.
+5. **`demos/catastrophic_forgetting.py`**: weights move when you train; without selective plasticity, learning new things destroys old. Memory + replay + selective plasticity is how brains avoid this.
 
 ## What's tensor logic, in one paragraph
 
