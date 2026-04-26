@@ -4,6 +4,32 @@ Working through Pedro Domingos' [Tensor Logic: The Language of AI](https://arxiv
 
 A learning project, not a product. Each demo is intended to make one idea click viscerally.
 
+## Headline result
+
+On transitive closure (graph reachability), a **3-scalar tensor-logic recurrence** generalizes zero-shot from random 16-node DAGs to real Python import graphs of arbitrary size. Trained once on synthetic data, then evaluated on 8 OSS packages without any fine-tuning:
+
+| package | nodes | TL F1 (3 params) | MLP F1 (37k params, cropped to n=16) |
+|---|---|---|---|
+| requests | 18 | **1.000** | 0.370 |
+| httpx | 23 | **1.000** | 0.414 |
+| flask | 24 | **1.000** | 0.322 |
+| markdown | 33 | **1.000** | 0.389 |
+| tqdm | 31 | **1.000** | 0.519 |
+| click | 17 | 0.992 | 0.189 |
+| jinja2 | 25 | 0.982 | 0.221 |
+| rich | 100 | 0.825 | 0.228 |
+| **mean** | — | **0.975** | **0.331** |
+
+The MLP can't be evaluated at native graph sizes (it's trained at fixed n=16), so its score above is the cropped top-16 subgraph — already a much easier task. TL handles any n for free; the MLP has no zero-shot answer for variable-size graphs.
+
+The two imperfect TL scores (`click`, `rich`) are explained by K=4 recurrence iterations being too short for very dense or large closures. Increasing K closes the gap; that's a knob, not a failure of the inductive bias.
+
+Stress-testing capacity at larger n: a **71M-parameter MLP fails completely at n=128** on the same closure task (`exp52_mlp_capacity.py`) — the MLP isn't undertrained, it's the wrong inductive bias.
+
+See `exp53_real_imports.py` (this table), `exp44_import_closure.py` (the original single-graph version), `exp51_bignscale.py` (scaling sweep), `exp52_mlp_capacity.py`, and `EXPERIMENTS.md` for the full log.
+
+This is the narrow claim the experimental arc (exp1–exp52, with gaps) supports: where a closed-form tensor-logic operator exists for a task, SGD-trainable TL beats large MLPs by orders of magnitude. The arc also maps where this *fails* — XOR/parity, code-closure beyond import graphs — see `EXPERIMENTS.md` and `OPENHUMAN_TL_MEMO.md`.
+
 ## What's here
 
 | File | What it shows |
