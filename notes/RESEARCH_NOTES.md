@@ -8,6 +8,48 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-26 — exp56/58/59: stress-testing TL substrate to find real limits
+
+**Session focus:** exp55 only tested TL on the easy slice of Hanoi (given recursive schema, Boolean monoid, matched initial state, no noise). User pushed: "what happens if we make it harder, find the limitations." Build three stress tests and run them all.
+
+**What we tried:**
+- **exp58** (drift-collapse curve): execute exp55's Hanoi schema with per-step probability ε of replacing the schema move with a uniformly-random legal move. Sweep N ∈ {5, 8, 10, 12, 15} × ε ∈ {0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.3} × 30 seeds.
+- **exp56** (River Crossing): classic farmer/wolf/goat/cabbage solved via TL closure on the 10-state legal-transition graph, plus generalized N-item variant with random pairwise constraints (state space 2^(N+1)) swept N ∈ {3..10}.
+- **exp59** (harder Hanoi, three sub-experiments):
+  - (A) Random initial state via TL state-space closure on full 3^N configuration graph; sweep N ∈ {3..11}.
+  - (B) Cost-weighted Hanoi shortest-path (min-plus semiring) — predict TL fails per exp45.
+  - (C) Parity-of-moves-per-disk along optimal recursive solution — predict TL fails per exp48/50.
+
+**Key results:**
+- **exp58**: TL substrate (ε=0) holds 100% at N=15 (and 20 per exp55). At ε=0.001, collapse window starts: N=10 → 57% reach-goal, N=12 → 0%, N=15 → 0%. At ε=0.01, N=8 → 17%, N=10 → 0%. At ε=0.1, only N=5 retains any signal. Empirical reach rate is consistently HIGHER than the (1-ε)^M lower bound, but qualitative collapse curve matches Apple's reported window for LRMs (~ε ∈ [0.001, 0.05]).
+- **exp56**: Classic N=3 solved in 0.3 ms. Generalized N=10 (1024 legal states, 5 closure iters) in 35 ms. No substrate failure across the swept range; would hit memory wall at N≈15-16.
+- **exp59 (A)**: N=7 closure in 0.65 s, N=9 (19,683 states) in 288 s of closure compute and 1.5 GB. **N=10 OOMs** at ~13 GB closure tensor; N=11 would need ~120 GB. Real memory wall at N ≈ 10.
+- **exp59 (B)**: TL soft-min-plus surrogate (`exp(-β·cost)` then real-valued matrix powers, recover via `−log(R)/β`) recovers N=3 with 4.6% undershoot (true min 7.76, TL 7.40), but **returns `inf` at N=5+** (numerical underflow as products of `exp(-β·c)` over long paths underflow float32). **Genuine min-plus failure confirmed.**
+- **exp59 (C)**: Test was ill-posed. Hanoi's count vector `[2^(N-1), ..., 2, 1]` has parity vector `[0, 0, ..., 0, 1]` — only the smallest disk has odd count = 1. This IS sigmoid-separable in count (just a threshold at count=1). The exp48/50 expressivity barrier is real but a Hanoi count distribution doesn't expose it; need irregular non-power-of-2 counts.
+
+**What surprised us:**
+- **exp58's (1-ε)^M lower bound is too pessimistic by ~3-10x.** Empirical reach rates at ε=0.001, N=8 hit 83% vs theoretical 78% — close. But ε=0.01, N=8: empirical 17% vs theoretical 8%. The Hanoi state graph has *redundancy* — random legal moves often land you back on or near the optimal path. Apple's LRMs likely benefit from similar slack: not every wrong token kills the trajectory. Useful nuance for the "compounding error" framing.
+- **exp59 (A) hit the memory wall earlier than I expected.** N=9 took 288 seconds of closure compute (10 iterations of 19,683² matmuls). I'd guessed N=11-12 would be the wall; the practical wall is N=10. Real codebases with relations of this size would absolutely need sparse-closure machinery (CSR + iterative GraphBLAS-style solver), not the dense exp44 implementation. This is a concrete TODO for the openhuman KB substrate.
+- **exp59 (C) being ill-posed was an honest miss in test design.** Hanoi's count distribution is so structured that even though the underlying expressivity barrier is real, you can't probe it with this target. A clean re-test would generate parity targets along a *suboptimal* / random Hanoi solution where counts vary irregularly. Filed as a follow-up but lower priority — exp48/50 already established the expressivity result independently.
+- **exp59 (B) failed even more dramatically than predicted.** I expected the soft-min-plus surrogate to undershoot moderately at all N (geometric-mean-like aggregation). It actually *catastrophically* underflows starting at N=5 — float32 can't keep enough precision over long paths. This isn't just a monoid mismatch; it's also a numerical-precision wall. Float64 would push it out a bit but not solve the structural issue.
+
+**Cumulative limitations map (after exp55-59):**
+- **TL substrate works** when: (a) rule is given OR closure-shaped, (b) operator is in {OR, ≥k-count, sum-then-threshold}, (c) state space fits in memory (≲ 10⁵ states for dense; more with sparse).
+- **TL substrate fails** when: (a) target is min/max/parity/XOR (monoid mismatch — exp45/48/50), (b) state space exceeds memory (~N=10 for Hanoi configuration graph — exp59A), (c) numerical precision required for long-product surrogates (exp59B), (d) per-step execution noise compounds (exp58 — though TL itself has zero such noise; this bounds any substrate downstream).
+
+**Takeaway / next:**
+- The limitations are now precisely mapped. Combined with exp40-43 (planning, transfer, sample-efficiency) and exp44-54 (closure), the picture of TL's competence boundary is honest and detailed.
+- User redirected the research question at end of session: **"We don't just want to stress test — what's novel? How do we add TL onto a model and teach it to use TL?"** This is the integration question this repo has circled around (exp32 attention-as-composition: null; exp37 TL-aux-loss: null) but never landed cleanly. With the Wortsman 2023 finding (training-instability mitigations) and the now-mapped TL limits, the integration question is well-posed.
+- Three families of "TL-into-model" approaches worth pursuing (filed in IDEAS.md as exp60-62):
+  - **exp60 (TL-as-tool, supervised)**: train a small instruct-tuned LM to emit `<closure>graph</closure>` tokens that are intercepted, processed by TL, and the result spliced back into context. SFT on (graph, query, TL-call, answer) traces. Most likely to work; least architecturally novel.
+  - **exp61 (TL-as-layer, jointly trained)**: insert a TL-closure block between transformer layers with a learnable gate. Hidden state slice is treated as a relation tensor; closure runs; output is added (residual-style) back to the stream. Highest research novelty; highest risk of training instabilities (where Wortsman tools earn their keep).
+  - **exp62 (TL-as-teacher, distillation)**: generate (problem, TL-closure-output) pairs at scale; distill into a transformer's latent representations via a contrastive or MSE loss. Does the model internalize the closure operator without explicitly invoking it?
+- Plan: ask user which family to pursue first; default to exp60 because it's tractable and ports cleanly to OPENHUMAN_TL_MEMO's SLM+TL composition.
+
+**Methodological note:** The "always test the predicted-failure case in the same exp as the predicted-success case" discipline saved this session. exp59 (A) confirmed the memory wall, (B) confirmed the monoid-mismatch wall, and (C) caught my own test-design error before it propagated into a paper. Without (C)'s honest "this didn't work because the target is too easy," I'd have falsely claimed an exp48/50 reproduction.
+
+---
+
 ## 2026-04-26 — exp55: TL Hanoi at N=20 + landscape review (Apple "Illusion of Thinking", longcot-RLM, NVIDIA Newton/GR00T/Cosmos, TRELLIS.2, Vision Banana)
 
 **Session focus:** Triangulate three external signals against the TL thesis:

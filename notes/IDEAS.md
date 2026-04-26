@@ -10,6 +10,27 @@ Cost legend: 🟢 hours on CPU | 🟡 day on Colab T4 | 🟠 weekend on A10G | �
 
 ## High leverage / low cost (do these next)
 
+### 💡 exp60 — TL-as-tool: teach a small instruct LM to invoke TL closure
+- **Hypothesis:** A small instruction-tuned LM (Qwen 2.5 7B Instruct, Llama 3.2 3B Instruct, or Phi-3 mini) can be SFT'd to emit a structured `<tl_closure>{...}</tl_closure>` call when faced with a multi-hop reachability question, have the call intercepted and executed by the TL substrate (exp44-style 3-scalar closure), and incorporate the result into its final answer. End-to-end accuracy on synthetic kinship / call-graph / dependency-reachability questions should **strictly exceed** the same LM with no tool, especially as hop-count grows.
+- **Falsified if:** The LM-with-TL-tool's accuracy at hop ≥ 3 is not ≥ 1.5× the no-tool baseline; OR the LM cannot reliably emit syntactically valid tool-calls (>95%) after SFT on ~1k traces.
+- **Smallest test:** Generate 1k synthetic (kinship-graph, query, gold-tool-call, gold-answer) traces; SFT on a small instruct model with LoRA; eval on a held-out set of 200 multi-hop queries with hop ∈ {1, 2, 3, 4}. Compare to: (a) base instruct LM, no tool; (b) base instruct LM + plain text retrieval; (c) SFT'd LM + TL tool.
+- **Unlocks:** First end-to-end realization of OPENHUMAN_TL_MEMO's SLM+TL composition. Closes the loop "LM proposes the rule, TL executes it" on a benchmark task. Most likely-to-work member of the integration family.
+- **Cost:** 🟡 needs an instruct LM + LoRA training. ~half day on Colab T4 or via Together API.
+
+### 💡 exp61 — TL-as-layer: differentiable closure block inside a transformer
+- **Hypothesis:** Insert a TL-closure block between transformer layers L_k and L_{k+1}. Take a learnable projection of the hidden state to a relation-tensor slice `R[i, j] ∈ R^(n×n)`; iterate the closure recurrence `R ← σ(α · R @ R + β · R + γ)` for K steps (3-scalar TL); project back and add residually. Trained end-to-end on a multi-hop relational task (CLUTRR-style kinship), the TL-augmented transformer should beat a same-parameter-count vanilla baseline on deep-hop test instances.
+- **Falsified if:** TL-layer transformer matches vanilla on shallow hops (≤2) AND fails to beat it on deep hops (≥4) by ≥5pp at 3 seeds; OR training is unstable (loss diverges) even with Wortsman 2023's qk-layernorm + z-loss interventions, indicating the closure recurrence introduces gradients incompatible with transformer training dynamics.
+- **Smallest test:** 50M-param 6-layer GPT-style transformer + a single TL-closure block at layer 3. Train on synthetic kinship sentences with hop ∈ {1, 2, 3} train, evaluate on hop ∈ {1, 2, 3, 4, 5} test. Compare to vanilla 50M baseline (same 6 layers, no TL block). 3 seeds.
+- **Unlocks:** Highest research novelty in the family. Direct test of "TL as architectural primitive inside an LM" — exp32/exp37 tried adjacent versions and went null at toy scale; this is the more aggressive form (TL is in the forward pass, not an aux loss). Provides the architectural anchor for any future "TL-augmented small LM" claim.
+- **Cost:** 🟠 A10G or H100, weekend. Use Wortsman 2023's qk-layernorm + z-loss + decoupled weight decay from the start to prevent the high-LR instabilities exp37 likely hit silently.
+
+### 💡 exp62 — TL-as-teacher: distill closure into transformer latents
+- **Hypothesis:** Generate (graph, ground-truth-closure) pairs at scale (~50k); train a transformer on a *parallel* supervised target — its hidden states at a chosen layer must predict the closure tensor via a small probe head. After distillation, the transformer should internalize the closure operator and answer multi-hop questions correctly *without* invoking TL at inference time.
+- **Falsified if:** After distillation, the transformer's deep-hop accuracy on novel graphs is no better than a same-compute vanilla baseline; OR the probe-head MSE plateaus high during training, indicating the closure structure is not learnable in the transformer's representation space.
+- **Smallest test:** Same 50M transformer as exp61. Auxiliary loss = MSE(probe(hidden_layer_3), TL_closure(graph_in_input)). Train 5k steps on synthetic kinship; eval deep-hop accuracy. Compare to: (a) vanilla, (b) exp61's TL-as-layer.
+- **Unlocks:** Tests whether closure is *learnable* by gradient descent given enough supervision — a question relevant to the bigger Wortsman-style "what can transformers learn vs. what needs substrate" debate. If exp62 succeeds, closure is just a trainable circuit and the substrate is unnecessary; if it fails, the substrate's value is sharper.
+- **Cost:** 🟠 A10G, ~1-2 days.
+
 ### 💡 exp56 — River Crossing as TL constraint-graph reachability
 - **Hypothesis:** Apple's "Illusion of Thinking" reports frontier LRMs failing River Crossing at N=3 (11 moves). The puzzle is a constraint-satisfaction reachability problem: legal states form a graph, transitions are boat-trips that respect the constraints (wolf-not-with-goat, etc.), goal = is the all-on-far-side state reachable from the all-on-near-side state. TL transitive closure (`exp44`-style 3-scalar recurrence) on the legal-state graph should solve any N where Apple's LRMs collapse.
 - **Falsified if:** TL closure cannot find the goal-reachable set for any N≥3 within reasonable iterations, OR the legal-state graph is too large for direct enumeration at N≥6 and a substrate ablation (random-move drift) doesn't show the expected compounding-error collapse.
