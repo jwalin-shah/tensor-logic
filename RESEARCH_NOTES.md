@@ -8,6 +8,47 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-25 — exp43 (phase 7): TL planning fails — sharp predictions ≠ MPC-friendly
+
+**Session focus:** Test the actual research ambition: does TL's sample-efficient forward model (exp42's positive finding) translate to better downstream task performance via planning? This is the "teach navigation → easier pickup" question in its simplest form. Build a multi-task planning eval — train forward model on dynamics, then use the model with sampling-MPC to navigate to 4 different corners.
+
+**What we tried:**
+- World: 8×8, 1 object, 4 actions, no collision, no occluder, fully observable. The simplest possible planning testbed so the forward-model quality drives the result.
+- For each (model, seed, data_size): collect n random-action trajectories → train forward model → run 30 episodes per task with sampling-MPC at horizon 10, 50 random sequences per planning step, max 15 steps per episode.
+- Initial run had horizon=4 (too short to reach corners from random start) → bumped to 10. Initial planner used final-step goal-prob → switched to discounted cumulative goal-prob over the horizon (sharp predictions need credit for any horizon step that visits goal).
+
+**Key results:**
+- **TL aggregated success rate** (across 4 corner tasks, 3 seeds): 10.6% / 9.7% / 9.4% at n = 50 / 200 / 2000.
+- **MLP h=64**: 55.6% / 53.1% / 60.0%.
+- **MLP h=128**: 52.8% / 68.6% / 72.8%.
+- TL's `avg_steps_to_success` = 1.3 (only "succeeds" when the random start is adjacent to the goal, picks the right action, hits goal in 1 step). It doesn't actually plan navigation from afar.
+- MLP's `avg_steps_to_success` = 7.2-7.7 (real planning, taking near-optimal paths).
+- MLP IMPROVES with data (53% → 73% from n=50 to n=2000). TL stays flat.
+
+**What surprised us:**
+- The gap is HUGE — 45-50pp at every data size. I expected TL to at least be competitive at low data given exp42's positive sample-efficiency finding. Instead TL essentially fails at planning.
+- The likely mechanism: **sampling-based MPC under cumulative-goal-prob reward penalizes sharp predictors.** Most random 10-action sequences don't pass through the goal cell. With sharp TL predictions (mass concentrated at one cell per step), almost all sequences score 0 → argmax over zeros is essentially random → the planner doesn't exploit TL's accuracy. MLP's smoother outputs leak mass broadly → cumulative score gives hill-climbing signal even for sub-optimal sequences → planner can find good actions.
+- This is partly a *planner-fairness* issue (sampling-MPC isn't designed for sharp predictors) and partly a *real TL limitation* (sigmoid+linear composition under multi-step fuzzy rollouts may also degrade — TL's sample efficiency in 1-step prediction doesn't automatically extend to multi-step rollout quality).
+- Either way the practical conclusion stands: **TL's sample-efficiency advantage on point predictions does NOT translate into planning advantage at this scale.**
+- TL's avg_steps_to_success of 1.3 is diagnostic. It means TL "successes" are nearly all trivial (start near goal). The model isn't doing meaningful planning at all.
+
+**Takeaway / next:**
+- This deepens the falsification of "TL is the right substrate for world-model-based planning." Combined with exp40 (collision ceiling) and exp41 (limited transfer), TL's empirical case for general world-modeling is now weak. The narrowest defensible TL claim from this session: **"TL prior gives sample-efficient point prediction at small data for tasks that match its tensor-product structure (single-step prediction, object permanence)."** That's it.
+- To salvage TL on planning, you'd need a different planning interface:
+  - **(a) BFS / discrete search**: threshold predicted next-state at 0.5, treat as deterministic next-state, do BFS to goal. Doesn't use sampling, doesn't punish sharp predictions.
+  - **(b) Distance-shaped reward**: instead of "prob mass at goal," use "expected L1 distance to goal under prediction." Gives every sequence a continuous score, regardless of sharpness.
+  - **(c) Test single-step decisions**: situations where the right action is determined by the current state alone, not multi-step planning. E.g., "predict optimal action given goal" (Q-learning regime, not planning regime).
+- Honestly, after 4 nontrivial experiments today (exp40-43), the case for TL on world modeling is now well-mapped:
+  - WHERE TL HELPS: 1-step point predictions on small data for sub-tasks matching tensor-product structure (object permanence at low n).
+  - WHERE TL DOESN'T HELP: in-distribution overall accuracy under collision, multi-step planning, occluder-position transfer, anything requiring cross-cell interactions.
+- For the user's "skills that generalize to new tasks" ambition, TL doesn't deliver in this empirical setup. Two paths forward:
+  - Pivot to TL's actual sweet spot per Domingos: compositional symbolic reasoning (rule learning, finite-domain logic) where the tensor-product structure exactly matches the problem. exp1, exp2, exp36 already showed TL works there.
+  - Accept the empirical findings and build the world model with whichever architecture works best (MLP+memory) — use TL only where it specifically wins.
+
+**Methodological note:** When testing inductive priors on downstream tasks, the *interface* between the prior and the downstream task matters as much as the prior itself. Sampling-MPC and TL are mismatched: the planner needs hill-climbing signal that TL doesn't provide. A different planner (BFS, distance reward) might give a different result. This is the "horse and harness fit" problem — testing on the wrong setup falsifies a property of the system, not necessarily of the prior alone.
+
+---
+
 ## 2026-04-25 — exp42 (phase 6a): TL sample efficiency — bias wins at low data
 
 **Session focus:** Address the strongest open critique of the exp40/41 falsifications: maybe TL's prior matters MOST when data is scarce, and our 2000-trajectory training simply gave MLP enough data to overcome the prior advantage. Test by sweeping data sizes (50, 200, 500, 2000 trajectories) with FIXED compute budget (1000 gradient steps so smaller datasets just see same data more times). 4 models × 3 seeds × 4 sizes = 48 runs.
