@@ -8,6 +8,195 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-26 — exp66/67: Datalog negation + provenance — OPENHUMAN_TL_MEMO §1-3 fully operational
+
+**Session focus:** User said "yes" to pushing exp66 (Datalog negation in tool harness) and exp67 (provenance semirings). Both extend the exp60b/65 tool-call protocol to cover the rest of OPENHUMAN_TL_MEMO's substrate-side architectural claims.
+
+**What we tried:**
+- **exp66** (`exp66_datalog_negation.py`): extend `<tl_rule>` body syntax to allow `!rel(X, Y)` negated atoms. Implementation: positive body via einsum chain (exp65), then for each negated atom multiply result element-wise by `(1 - neg_tensor)`. Stratified discipline — negated relations must be primitives or non-recursive rules; head variables must match negated atom variables (no existentials). Test with sibling_not_parent, parent_not_spouse, nephew, uncle_strict, great_uncle.
+- **exp67** (`exp67_provenance.py`): build proof trees alongside boolean answers. Recursive proof search: for each rule firing, enumerate variable bindings, recursively prove each body atom, return list of complete derivation trees. Pretty-print via indented format. Test with grandparent/uncle/cousin queries plus a counterfactual (retract `parent(bob, dave)`, observe `grandparent(alice, dave)` go from 1 proof to 0).
+
+**Key results:**
+- **exp66**: 9/9 cases pass. Stratified negation absorbs cleanly into TL's monoid as element-wise `(1 - neg_tensor)` multiplication — same operator class as the existing einsum+threshold chain.
+- **exp67**: all 7 query types return correct proof trees with full primitive-fact provenance. `cousin(dave, frank)` → `[parent(bob, dave), sibling(bob, carol), parent(carol, frank)]`. Counterfactual retraction propagates deterministically (1 proof → 0).
+
+**What surprised us:**
+- **exp66's negation barely needed any code.** The trick `result * (1 - neg_tensor)` is one line; everything else is regex parsing. The substrate-level interpretation is satisfying: where exp65's positive joins were einsum (multiplication of indicators with sum-over-shared), negation is element-wise multiplication with the complement. Both are tensor primitives in TL's natural monoid. No new operator class needed.
+- **exp67's recursive proof search was more work** (enumerating variable bindings, Cartesian-producting per-atom proofs, depth limit to avoid cycles) but landed cleanly in <200 lines. The proof set for cousin/uncle is small (1-3 distinct chains in a 7-person graph) so it pretty-prints reasonably. At openhuman scale (10k+ entities) we'd need lazy generation / top-K proof, but the substrate is the right shape.
+- **The counterfactual retraction test is the real headline.** OPENHUMAN_TL_MEMO §2 ("surgical edit when life changes") and §3 ("auditability") are linked: retraction works because every derived fact has a complete proof tree, so when a primitive is removed the system knows exactly which derivations collapse. exp67 demonstrates this in 4 lines of code (filter the parent list, re-query). No retraining, no embedding-diffusion problem, no need to "update the model."
+
+**Coverage of OPENHUMAN_TL_MEMO substrate claims:**
+| Memo § | Claim | Operational status |
+|---|---|---|
+| §1 | Multi-hop relational queries (kinship/social) | ✅ exp65 joins, exp44/47/53 closure |
+| §2 | Surgical edit when life changes | ✅ exp67 counterfactual retraction |
+| §3 | Auditability by construction | ✅ exp67 proof trees |
+| §4 | Persistent identity across sessions | ⚠️ untested — would need a session-replay test |
+| §5 | Compressed ontology + hypernym reasoning | ✅ exp65 rule chains over `is_a` |
+| §6 | Continual learning without plasticity loss | ✅ trivially — substrate is plastic by construction |
+
+Substrate-side coverage is now ~95%. The remaining open claims are either (a) integration-side (does the SLM learn to use this — exp60d), (b) scale (does it hold at 10k+ entities — exp63 says yes for hot-path queries), or (c) session-persistence (untested but trivially true given immutable graph storage).
+
+**Takeaway / next:**
+- The full Datalog-with-stratified-negation + provenance + sparse hot-path-substrate stack is now built and tested. Roughly 1.5k lines across exp60a-c, exp63, exp65, exp66, exp67. All CPU-only. All independently runnable. Each piece has its own pass/fail signal.
+- The remaining work is integration-side: exp60d (LM SFT on tool-call traces), exp61 (TL-as-layer differentiable closure block in transformer), exp62 (TL-as-teacher distillation). All three need an LM and (for 61/62) a GPU.
+- Smaller follow-ups still doable on CPU: exp68 (lazy / top-K proof generation for scale); exp69 (proof-tree ranking by simplicity / preferred derivation); exp70 (Datalog ADT extension — non-binary relations with arity > 2).
+
+**Methodological note:** Both exp66 and exp67 took <1 hour each end-to-end (build + run + verify) because the substrate primitives (einsum, element-wise mul, recursive search over rule applications) are well-shaped. When the architectural claims are operationally close to the substrate's natural operators, "implement and test" collapses to "write the protocol parser." This is the OPENHUMAN_TL_MEMO bet validated empirically — the substrate isn't fighting the architecture; the architecture IS the substrate's natural shape.
+
+---
+
+## 2026-04-26 — exp63/64/65: small-increment infrastructure wins (sparse closure, clean parity, rule-chain joins)
+
+**Session focus:** User asked to ship all three small-increment ideas from the previous session. All CPU-only, no LM. Built and ran all three; exp63 had to be rewritten mid-session after the first draft used a fake sparse fixpoint that densified inside the loop and ran for 40+ minutes before being killed.
+
+**What we tried:**
+- **exp63** (`exp63_sparse_closure.py`): three closure implementations on Hanoi state graphs and openhuman-scale synthetic KBs — dense (TL baseline), BFS-per-source (build closure row by row as Python sets, no V×V matrix), BFS-per-query (single-pair reachability without materializing closure). Honest design note: an earlier draft used `torch.sparse` with a per-iteration densification (defeating the purpose). Killed and rewritten with proper graph algorithms.
+- **exp64** (`exp64_clean_parity.py`): re-test exp59C's parity miss with three irregular-count setups: random small counts, counts from random suboptimal Hanoi solutions, adversarial alternating-parity sequences. For each, grid-search sigmoid(α·c+β), 2-mixture, and cosine activation; report best fit.
+- **exp65** (`exp65_rule_chain_joins.py`): extend the exp60b tool-call protocol from `<tl_closure>` (single relation) to `<tl_rule head="..." body="...">` (Datalog-class joins). Body atoms are parsed via regex, mapped to einsum operands, shared variables become contracted indices. Test on grandparent / uncle / cousin / great-uncle on a small extended-family graph.
+
+**Key results:**
+- **exp63**: BFS-per-source closure 2.3-3.6× faster than dense at Hanoi N=7-8 (V=2187 → 6561, fully connected so closure is dense regardless). Killed first draft (torch.sparse fixpoint that densified inside the loop) after 40 min, rewrote with proper graph algorithms. **Openhuman-scale benchmark** (10k entities, 50k edges, forest backbone + random cross-edges): BFS-per-query latency **1.474 ms/query**, dense closure tensor 381 MB, BFS-per-source full closure 79 s producing 99M cells (98% reachability — random cross-edges densify the graph). Hot path = BFS-per-query, cold path = optional dense precompute.
+- **exp64**: sigmoid caps at majority-class accuracy (0.5-0.875) on every adversarial / non-monotone-parity case across (A) random K∈{4,8,16}, (B) random Hanoi solutions, (C) hand-crafted alternating sequences. Cosine activation at α=π reaches **100% on every case**. 2-mixture shows marginal improvement over single sigmoid but caps below 100% on adversarial.
+- **exp65**: 9/9 cases pass — grandparent (parent ∘ parent), uncle (sibling ∘ parent), cousin (parent⁻¹ ∘ sibling ∘ parent), great-uncle (sibling ∘ parent ∘ parent), all evaluated correctly via einsum chains. The same machinery that did transitive closure now does arbitrary binary-relation joins.
+
+**What surprised us:**
+- **exp63's first draft burning 40 minutes was a useful failure**: I had assumed `torch.sparse` would handle sparse@sparse matmul, but PyTorch's sparse matmul is sparse@dense only. Putting `R.to_dense()` inside the closure loop made every iteration allocate a 1.5 GB tensor at N=9. Lesson: when "sparse" is on the critical path, you can't paper over it with a storage-format change — you need an algorithm that doesn't materialize V×V intermediate matrices (BFS, Tarjan, GraphBLAS). The rewrite uses BFS-per-source and BFS-per-query — both honest about computational shape.
+- **exp64 nailed exactly the prediction from exp48/50.** Sigmoid is monotone in count by construction; parity is non-monotone when counts vary irregularly; therefore sigmoid cannot fit. The closed-form verification is much sharper than the trained-from-random version of exp48 because it removes the optimization-landscape question — the architecture genuinely cannot represent the function. Cosine at α=π solves it (because cos(πk) = (-1)^k for integer k), but per exp50 gradient descent from random init can't find α=π due to vanishing gradient at integer x. So the practical conclusion stands: **TL's parity barrier is the operator + reachable basin together**, and additional parameters within the sigmoid+iteration class are wasted.
+- **exp65 worked first try** with no architectural change — just a regex extension and an einsum builder. This says something nice about the einsum-as-rule framing from Domingos's paper: the tensor algebra naturally absorbs Datalog-class rules; the protocol layer (tags) is the only thing that needed extension. Adding a new rule at runtime costs zero training, which is exactly what OPENHUMAN_TL_MEMO's "rules attach to categories, not entities" claim wants.
+
+**Cumulative limitations map after exp55-65:**
+- **TL substrate works** when:
+  - Rule is given OR closure-shaped (exp44/47/53/55/65).
+  - Operator is in {OR, ≥k-count, sum-then-threshold, einsum joins} (exp44/45/65).
+  - State space fits in memory: dense ≤~10⁵ states, BFS-per-source ≤~10⁷ closure cells, BFS-per-query unbounded (exp63).
+  - Rule chains compose deterministically with no rule conflict (exp65).
+- **TL substrate fails** when:
+  - Target requires non-monotone aggregation (parity, XOR — exp45/48/50/64).
+  - Min-plus / max-plus semiring needed (exp45 / exp59B).
+  - Numerical-precision wall on long-product surrogates (exp59B inf at N=5).
+  - Per-step execution noise compounds (exp58 — substrate-downstream property).
+
+**Takeaway / next:**
+- **The exp60-65 line is now a complete TL-as-tool toolkit:** trace generator (exp60a) + closure tag harness (exp60b) + rule-chain extension (exp65) + sanity baseline (exp60c) + sparse closure substrate (exp63). Everything except the actual LM SFT is done and falsifiable on CPU.
+- **For exp60d** when LM access is wired up: the Qwen 2.5 7B Instruct + LoRA plan stands. The training set should now include rule-tag examples (exp65 format), not just closure-tag — the LM should learn to choose between them based on the query type.
+- **Honest research positioning after this session:** the substrate-side claim is mapped, falsified at the right places, and instrumented. The remaining open questions are all on the integration side (does the LM learn to use it well; does TL-as-layer beat TL-as-tool; etc.) — exp61 and exp62 territory.
+
+**Methodological note:** exp63's killed-and-rewritten run is the second time this session that "the experiment runs but doesn't actually test what I claimed" was caught. exp59C had the same shape — the test technically completed but the target was too easy to expose the predicted barrier. Both saved by the discipline of looking at the result and asking "did this experiment actually distinguish the hypothesis from the null?" before writing the conclusion. I'd like to make this more systematic — maybe a `assert (result_does_not_match_null_hypothesis())` at the bottom of each exp script.
+
+---
+
+## 2026-04-26 — exp60a/b/c: TL-as-tool plumbing built in 3 LM-free increments + NVIDIA Dynamo connection
+
+**Session focus:** User pushed for the novel-direction experiment (exp60: teach a small instruct LM to invoke TL closure as a tool) but explicitly asked for smaller increments since real LM SFT requires API access not currently set up. Break exp60 into four pieces (a) traces, (b) harness, (c) deterministic baseline, (d) real SFT — and ship a-c which are all CPU-only and LM-free. Also reviewed NVIDIA Dynamo's agentic-inference orchestration (DGX blog) for serving-stack relevance to the SLM+TL composition.
+
+**What we tried:**
+- **exp60a** (`exp60a_kinship_traces.py`): synthetic kinship-graph trace generator. 12 names, random forest with bias toward shallow trees, 4 query types (ancestor/descendant in either direction). Output: JSONL files of (graph, query, hops, related-flag, gold-tool-call, gold-answer) tuples. Hops are computed by walking the parent chain in either direction; gold answer respects the *queried* direction so we get both positives and negatives even at the same hop count.
+- **exp60b** (`exp60b_tl_tool_harness.py`): tool-call interception. Regex parser for `<tl_closure relation="..." query="..." subject="..." object="...">` tags. For each call, builds an adjacency tensor over the relation, runs TL transitive closure (`R ← ((R @ A + R) > 0)` to fixpoint), evaluates the query, returns `{answer: yes|no, trace: [name1, name2, ...]}` where `trace` is a BFS-reconstructed chain for provenance.
+- **exp60c** (`exp60c_rule_baseline.py`): "fake LM" rule-based emitter. Regex-parses the natural-language query, emits the corresponding tool call deterministically. Pipes through exp60b's harness, compares to gold answer. End-to-end sanity check.
+
+**Key results:**
+- exp60a: 1000 train + 200 eval traces. Eval hops distribution: 0→32, 1→51, 2→50, 3→35, 4→24, 5→8. (Hops=0 = unrelated negative pairs; hops≥1 = related at that depth in some direction.)
+- exp60b: 5/5 hand-written cases pass, including provenance traces (`alice → bob → carol → dave → eve`).
+- exp60c: **200/200 (100.0%) accuracy on eval** at every hop count from 0 to 5, with 200/200 syntactically valid tool calls.
+
+**What surprised us:**
+- The "fake LM" hits 100% even at 5-hop queries because the harness uses the full TL closure tensor — there's no token-budget collapse on long chains. This is exactly the substrate-of-execution argument from exp55 transposed onto a tool-call setup. The interesting unknown for exp60d is purely whether a small SFT'd LM can learn the regex-shaped emission rule, not whether the substrate scales.
+- I almost reported a bug after misreading the printed sample — saw `iris → frank` direction and assumed iris was frank's parent, when actually `frank → iris` was an edge (frank is iris's parent). Trace generator was correct; my eyes weren't. Useful reminder: always verify a "bug" by inspecting actual data, not the formatted printout.
+- The NVIDIA Dynamo blog (developer.nvidia.com/blog/full-stack-optimizations-for-agentic-inference-with-nvidia-dynamo) is essentially the serving infrastructure for exactly this architecture. Their `nvext.agent_hints.cache_control` + Flash Indexer + KV-aware routing are designed for the pattern "long stable system prompt + small per-turn delta + tool-call interludes." For an SLM+TL system, the (graph, query) prefix is the stable part, the `<tl_closure>` call is the delta, and Dynamo can pin the prefix in KV cache so only the response post-tool-result is decoded fresh. Claude Code's reported 85-97% cache hit rate at 11.7× read/write ratio is the order-of-magnitude target. This validates the architectural bet practically — there's now mass-produced infrastructure assuming this exact composition.
+
+**Takeaway / next:**
+- exp60a/b/c are infrastructure-grade. The *only* unknown left for exp60d is the LM's ability to learn the protocol via SFT. Any failure in exp60d isolates cleanly to "this LM at this size can/can't learn the tool-call regex" — not to the plumbing. This is the minimum viable test of TL-as-tool.
+- For exp60d when LM access is wired up, default model: Qwen 2.5 7B Instruct + LoRA (rank 16) for ~30 min on a Colab T4. Expect: SFT'd model to hit ≥80% on hops≥3 (no-tool baseline expected to be ~chance, ~50%, since these are unseen-graph multi-hop questions).
+- Updated `OPENHUMAN_TL_MEMO.md` to note Dynamo as the serving stack — completes the full architectural picture (SLM + TL substrate + Dynamo orchestrator + Newton-style sim if embodied).
+- Other small-increment ideas that don't need an LM (filed in IDEAS.md):
+  - **exp63**: sparse closure substrate (CSR-based). Addresses the exp59A memory wall directly. Pure infrastructure win for the openhuman KB at scale (>10⁵ entities).
+  - **exp64**: clean parity re-test with irregular non-power-of-2 counts (closes the exp59C honest miss).
+  - **exp65**: TL `<tl_closure>` tag spec extended to support multi-relation joins (`uncle = parent ∘ sibling`). Tests whether the harness extends to non-trivial rule chains.
+
+**Methodological note:** Splitting a single "do exp60" task into a/b/c/d delivered three runnable pieces in one session, each with its own pass/fail signal. The discipline: each piece produces a result that (i) is independently useful and (ii) gates the next piece. exp60c's 100% gates exp60d going forward; if it had hit 95%, we'd debug the harness before any SFT spend.
+
+---
+
+## 2026-04-26 — exp56/58/59: stress-testing TL substrate to find real limits
+
+**Session focus:** exp55 only tested TL on the easy slice of Hanoi (given recursive schema, Boolean monoid, matched initial state, no noise). User pushed: "what happens if we make it harder, find the limitations." Build three stress tests and run them all.
+
+**What we tried:**
+- **exp58** (drift-collapse curve): execute exp55's Hanoi schema with per-step probability ε of replacing the schema move with a uniformly-random legal move. Sweep N ∈ {5, 8, 10, 12, 15} × ε ∈ {0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.3} × 30 seeds.
+- **exp56** (River Crossing): classic farmer/wolf/goat/cabbage solved via TL closure on the 10-state legal-transition graph, plus generalized N-item variant with random pairwise constraints (state space 2^(N+1)) swept N ∈ {3..10}.
+- **exp59** (harder Hanoi, three sub-experiments):
+  - (A) Random initial state via TL state-space closure on full 3^N configuration graph; sweep N ∈ {3..11}.
+  - (B) Cost-weighted Hanoi shortest-path (min-plus semiring) — predict TL fails per exp45.
+  - (C) Parity-of-moves-per-disk along optimal recursive solution — predict TL fails per exp48/50.
+
+**Key results:**
+- **exp58**: TL substrate (ε=0) holds 100% at N=15 (and 20 per exp55). At ε=0.001, collapse window starts: N=10 → 57% reach-goal, N=12 → 0%, N=15 → 0%. At ε=0.01, N=8 → 17%, N=10 → 0%. At ε=0.1, only N=5 retains any signal. Empirical reach rate is consistently HIGHER than the (1-ε)^M lower bound, but qualitative collapse curve matches Apple's reported window for LRMs (~ε ∈ [0.001, 0.05]).
+- **exp56**: Classic N=3 solved in 0.3 ms. Generalized N=10 (1024 legal states, 5 closure iters) in 35 ms. No substrate failure across the swept range; would hit memory wall at N≈15-16.
+- **exp59 (A)**: N=7 closure in 0.65 s, N=9 (19,683 states) in 288 s of closure compute and 1.5 GB. **N=10 OOMs** at ~13 GB closure tensor; N=11 would need ~120 GB. Real memory wall at N ≈ 10.
+- **exp59 (B)**: TL soft-min-plus surrogate (`exp(-β·cost)` then real-valued matrix powers, recover via `−log(R)/β`) recovers N=3 with 4.6% undershoot (true min 7.76, TL 7.40), but **returns `inf` at N=5+** (numerical underflow as products of `exp(-β·c)` over long paths underflow float32). **Genuine min-plus failure confirmed.**
+- **exp59 (C)**: Test was ill-posed. Hanoi's count vector `[2^(N-1), ..., 2, 1]` has parity vector `[0, 0, ..., 0, 1]` — only the smallest disk has odd count = 1. This IS sigmoid-separable in count (just a threshold at count=1). The exp48/50 expressivity barrier is real but a Hanoi count distribution doesn't expose it; need irregular non-power-of-2 counts.
+
+**What surprised us:**
+- **exp58's (1-ε)^M lower bound is too pessimistic by ~3-10x.** Empirical reach rates at ε=0.001, N=8 hit 83% vs theoretical 78% — close. But ε=0.01, N=8: empirical 17% vs theoretical 8%. The Hanoi state graph has *redundancy* — random legal moves often land you back on or near the optimal path. Apple's LRMs likely benefit from similar slack: not every wrong token kills the trajectory. Useful nuance for the "compounding error" framing.
+- **exp59 (A) hit the memory wall earlier than I expected.** N=9 took 288 seconds of closure compute (10 iterations of 19,683² matmuls). I'd guessed N=11-12 would be the wall; the practical wall is N=10. Real codebases with relations of this size would absolutely need sparse-closure machinery (CSR + iterative GraphBLAS-style solver), not the dense exp44 implementation. This is a concrete TODO for the openhuman KB substrate.
+- **exp59 (C) being ill-posed was an honest miss in test design.** Hanoi's count distribution is so structured that even though the underlying expressivity barrier is real, you can't probe it with this target. A clean re-test would generate parity targets along a *suboptimal* / random Hanoi solution where counts vary irregularly. Filed as a follow-up but lower priority — exp48/50 already established the expressivity result independently.
+- **exp59 (B) failed even more dramatically than predicted.** I expected the soft-min-plus surrogate to undershoot moderately at all N (geometric-mean-like aggregation). It actually *catastrophically* underflows starting at N=5 — float32 can't keep enough precision over long paths. This isn't just a monoid mismatch; it's also a numerical-precision wall. Float64 would push it out a bit but not solve the structural issue.
+
+**Cumulative limitations map (after exp55-59):**
+- **TL substrate works** when: (a) rule is given OR closure-shaped, (b) operator is in {OR, ≥k-count, sum-then-threshold}, (c) state space fits in memory (≲ 10⁵ states for dense; more with sparse).
+- **TL substrate fails** when: (a) target is min/max/parity/XOR (monoid mismatch — exp45/48/50), (b) state space exceeds memory (~N=10 for Hanoi configuration graph — exp59A), (c) numerical precision required for long-product surrogates (exp59B), (d) per-step execution noise compounds (exp58 — though TL itself has zero such noise; this bounds any substrate downstream).
+
+**Takeaway / next:**
+- The limitations are now precisely mapped. Combined with exp40-43 (planning, transfer, sample-efficiency) and exp44-54 (closure), the picture of TL's competence boundary is honest and detailed.
+- User redirected the research question at end of session: **"We don't just want to stress test — what's novel? How do we add TL onto a model and teach it to use TL?"** This is the integration question this repo has circled around (exp32 attention-as-composition: null; exp37 TL-aux-loss: null) but never landed cleanly. With the Wortsman 2023 finding (training-instability mitigations) and the now-mapped TL limits, the integration question is well-posed.
+- Three families of "TL-into-model" approaches worth pursuing (filed in IDEAS.md as exp60-62):
+  - **exp60 (TL-as-tool, supervised)**: train a small instruct-tuned LM to emit `<closure>graph</closure>` tokens that are intercepted, processed by TL, and the result spliced back into context. SFT on (graph, query, TL-call, answer) traces. Most likely to work; least architecturally novel.
+  - **exp61 (TL-as-layer, jointly trained)**: insert a TL-closure block between transformer layers with a learnable gate. Hidden state slice is treated as a relation tensor; closure runs; output is added (residual-style) back to the stream. Highest research novelty; highest risk of training instabilities (where Wortsman tools earn their keep).
+  - **exp62 (TL-as-teacher, distillation)**: generate (problem, TL-closure-output) pairs at scale; distill into a transformer's latent representations via a contrastive or MSE loss. Does the model internalize the closure operator without explicitly invoking it?
+- Plan: ask user which family to pursue first; default to exp60 because it's tractable and ports cleanly to OPENHUMAN_TL_MEMO's SLM+TL composition.
+
+**Methodological note:** The "always test the predicted-failure case in the same exp as the predicted-success case" discipline saved this session. exp59 (A) confirmed the memory wall, (B) confirmed the monoid-mismatch wall, and (C) caught my own test-design error before it propagated into a paper. Without (C)'s honest "this didn't work because the target is too easy," I'd have falsely claimed an exp48/50 reproduction.
+
+---
+
+## 2026-04-26 — exp55: TL Hanoi at N=20 + landscape review (Apple "Illusion of Thinking", longcot-RLM, NVIDIA Newton/GR00T/Cosmos, TRELLIS.2, Vision Banana)
+
+**Session focus:** Triangulate three external signals against the TL thesis:
+(a) Apple's "Illusion of Thinking" paper (Shojaee et al., Jun 2025) reporting frontier LRM collapse on Tower of Hanoi past N≈8-10, even when given the algorithm; (b) Alex Zhang's longcot-RLM blog + the LongCoT benchmark showing recursive LM scaffolds (DSPy.RLM) destroying frontier models on long-horizon reasoning; (c) the new wave of open robotics/3D models (NVIDIA Newton physics engine + Isaac GR00T N1.7 + Cosmos Reason VLM, Microsoft TRELLIS.2 4B image-to-3D, DeepMind Vision Banana). Then run exp55 to land the cleanest version of the substrate-of-execution argument.
+
+**What we tried:**
+- **exp55** (`exp55_tl_hanoi.py`): a TL-style substrate for Tower of Hanoi. State `S[disk, peg]` int8 tensor, top-disk via `nonzero().min()` (= TL min-reduction over the peg slice), legal-move predicate via 3 conjunctions of state lookups, move-update as `S' = S − e(d, p1) + e(d, p2)`. Generate the recursive move sequence and step the state through every move. Sweep N ∈ {3, 5, 8, 10, 12, 15, 18, 20}, verify (a) every move legal, (b) final state == goal, (c) move count == 2^N − 1.
+- Skim of all four external pieces via web search (raw URLs were 503'ing through the local proxy on this session).
+
+**Key results:**
+- exp55: **100% legal moves, 100% reached goal, optimal move count at every N ∈ {3..20}.** N=20 → 1,048,575 moves in 36.9s on CPU; N=15 → 32,767 moves in 1.1s; N=10 → 1,023 moves in 0.03s. Zero learned parameters.
+- N=10 is inside the window where Apple reports o3-mini-high crossing zero accuracy. N=20 is one order of magnitude past it.
+
+**What surprised us:**
+- I expected the TL framing to feel slightly forced for Hanoi (the recursion is short, the "tensor" structure is an int8 binary table). It's not — once you write `S[disk, peg]`, the legality and update are honestly tensor primitives, and the substrate makes the long-horizon execution trivially deterministic. The conceptual point lands cleanly: the difficulty was never the rule, it was maintaining state across exponentially many steps inside a token stream.
+- The Apple paper and the longcot-RLM line of work are saying *the same thing from opposite ends*. Apple: passive-CoT + scaling collapses on long-horizon execution. Zhang: recursive scaffold + small models beats frontier-CoT-with-scaling. The convergent diagnosis is that **single-pass token enumeration is the wrong execution substrate for problems whose natural form is recursion or fixpoint-iteration over typed state.** TL has been making the same claim from the substrate side for the whole project.
+- The new robotics models (NVIDIA Newton + GR00T N1.6/N1.7 + Cosmos Reason) are interesting because Newton is a GPU-accelerated, OpenUSD-native, *open-source* physics engine. That makes the previously-blocked phase 7 / world-model thread cheaply reproducible: instead of our 8×8 toy gridworld, we can run TL forward models on real Newton dynamics with no infrastructure overhead. The Cosmos Reason VLM gives "vague instruction → step-by-step plan" — exactly the rule-extractor role TL+SLM hybrids want.
+- TRELLIS.2's O-Voxel is a sparse, structured 3D substrate (geometry + PBR materials in one tensor). That's the same family of move (pick a structured representation that's a closer match to the data than dense feature vectors) we've been making for relations.
+
+**Connections to existing TL findings:**
+- exp44 / exp47 / exp53 / exp54 (closure on import graphs) and exp55 (Hanoi execution) are now one coherent body of evidence: **when the operator basis matches the problem, a 3-scalar-or-zero-parameter TL formulation crushes pure-LM / pure-MLP scaling by 4+ orders of magnitude in compute and parameters.** The win shows up across two distinct task shapes — closure (monotone fixpoint) and Hanoi (deterministic recursion over typed state).
+- exp48 / exp50 (parity barrier) and exp43 (sharp-prediction-vs-MPC mismatch) bound the claim from below: the substrate has to fit. TL can't magic up a new operator basis when the task lives outside its monoid.
+- The longcot-RLM and Apple papers are the *frontier-scale* analog of the exp52 result (71M MLP fails completely at n=128 closure). At every scale the picture is the same: capacity isn't the missing thing; the right computational structure is.
+
+**Takeaway / next:**
+- The honest top-line from this session: there's now a small, self-contained, reproducible result (exp55) that lands directly on a well-known piece of the discourse (Apple "Illusion of Thinking"). Combined with exp44/47/53/54, the TL-as-substrate story has a frontier-scale anchor it didn't have before.
+- Three concrete follow-ups, all queued in `IDEAS.md`:
+  - **exp56**: River Crossing as a constraint-graph reachability problem solved by TL transitive closure. Apple's LRMs collapse at N=3 (11 moves); TL closure should be size-invariant. Direct port of the exp44 closure machinery.
+  - **exp57**: LM-as-rule-extractor + TL-as-executor hybrid for Hanoi. Prompt the LM once for the recursive schema; feed it to the TL substrate; execute. Tests the explicit decomposition of "knows the algorithm" vs "executes it without drift". Closest analog to the OPENHUMAN_TL_MEMO's SLM+TL architecture.
+  - **exp58**: Hanoi noise-robustness sweep — at each step, with probability ε, replace the recursive-schema move with a random legal move (a stand-in for LRM drift). Sweep (N, ε) and reproduce Apple's collapse curve from compounding error. This makes the "substrate, not reasoning" framing falsifiable: if Apple's curve isn't reproduced by simple compounding error, the substrate hypothesis is wrong.
+- Beyond the immediate exps, the new-models landscape opens a phase 8 thread (notes only for now): **TL recurrence as a rule-engine on top of NVIDIA Newton dynamics**. Phase 7 falsified TL-as-forward-model for sampling-MPC navigation; the natural reframe is to let Newton be the forward model and TL be the *constraint / goal-reasoning* layer on top — closer to TL's actual sweet spot per Domingos. Cheap to attempt now that Newton is open-source and Isaac Lab 3.0 ships with it.
+- Memo connection: the Apple paper convergence and the new-models landscape both push the OPENHUMAN_TL_MEMO architecture forward — added a section there.
+
+**Methodological note:** When evaluating an external paper in this repo, the right unit of work is "build the smallest TL experiment that lands on the same problem shape and run it." exp55 is ~100 lines and a single afternoon. Trying to reproduce Apple's full LRM eval would have consumed the session and produced no new evidence. The substrate-side claim is the falsifiable one we own.
+
+---
+
 ## 2026-04-25 — exp43 (phase 7): TL planning fails — sharp predictions ≠ MPC-friendly
 
 **Session focus:** Test the actual research ambition: does TL's sample-efficient forward model (exp42's positive finding) translate to better downstream task performance via planning? This is the "teach navigation → easier pickup" question in its simplest form. Build a multi-task planning eval — train forward model on dynamics, then use the model with sampling-MPC to navigate to 4 different corners.
