@@ -1,0 +1,41 @@
+device=mps  N=16  p=0.3  steps=1000  seeds=3
+Init for TL_OR4: closure operating point (alpha=5, beta=5, gamma_x=0, delta=-2.5)
+  seed=0  closure     TL_OR    F1=0.999  (α=3.98, β=6.38, γ=-3.74)
+  seed=0  closure     TL_OR4   F1=0.999  (α=4.00, β=6.41, γ_X=-0.20, δ=-3.75)
+  seed=0  closure     MLP      F1=0.816
+  seed=0  multipath2  TL_OR    F1=0.934  (α=3.63, β=4.12, γ=-3.79)
+  seed=0  multipath2  TL_OR4   F1=0.934  (α=3.70, β=4.19, γ_X=-0.43, δ=-3.80)
+  seed=0  multipath2  MLP      F1=0.717
+  seed=0  parity      TL_OR    F1=0.277  (α=1.73, β=1.87, γ=-2.39)
+  seed=0  parity      TL_OR4   F1=0.691  (α=2.31, β=5.69, γ_X=-3.63, δ=-3.00)
+  seed=0  parity      MLP      F1=0.639
+  seed=1  closure     TL_OR    F1=0.999  (α=3.99, β=6.40, γ=-3.75)
+  seed=1  closure     TL_OR4   F1=0.999  (α=4.01, β=6.42, γ_X=-0.19, δ=-3.75)
+  seed=1  closure     MLP      F1=0.808
+  seed=1  multipath2  TL_OR    F1=0.934  (α=3.62, β=4.11, γ=-3.78)
+  seed=1  multipath2  TL_OR4   F1=0.932  (α=3.70, β=4.18, γ_X=-0.43, δ=-3.79)
+  seed=1  multipath2  MLP      F1=0.720
+  seed=1  parity      TL_OR    F1=0.276  (α=1.68, β=2.02, γ=-2.39)
+  seed=1  parity      TL_OR4   F1=0.684  (α=2.33, β=5.71, γ_X=-3.66, δ=-3.00)
+  seed=1  parity      MLP      F1=0.629
+  seed=2  closure     TL_OR    F1=0.997  (α=3.97, β=6.39, γ=-3.74)
+  seed=2  closure     TL_OR4   F1=0.997  (α=3.98, β=6.41, γ_X=-0.20, δ=-3.75)
+  seed=2  closure     MLP      F1=0.808
+  seed=2  multipath2  TL_OR    F1=0.934  (α=3.61, β=4.13, γ=-3.79)
+  seed=2  multipath2  TL_OR4   F1=0.932  (α=3.68, β=4.20, γ_X=-0.43, δ=-3.80)
+  seed=2  multipath2  MLP      F1=0.705
+  seed=2  parity      TL_OR    F1=0.217  (α=1.81, β=1.75, γ=-2.41)
+  seed=2  parity      TL_OR4   F1=0.681  (α=2.29, β=5.67, γ_X=-3.61, δ=-3.00)
+  seed=2  parity      MLP      F1=0.637
+
+=== summary (mean ± std over 3 seeds) ===
+task          model     F1                    
+closure       TL_OR     0.998±0.001
+closure       TL_OR4    0.998±0.001
+closure       MLP       0.810±0.004
+multipath2    TL_OR     0.934±0.001
+multipath2    TL_OR4    0.933±0.001
+multipath2    MLP       0.714±0.008
+parity        TL_OR     0.256±0.034
+parity        TL_OR4    0.685±0.005
+parity        MLP       0.635±0.005
