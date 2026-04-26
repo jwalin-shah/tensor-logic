@@ -1,0 +1,29 @@
+device=mps  N=16  p=0.3  steps=1000  seeds=3
+
+XOR operating point lookup (per-cell, single iteration):
+  alpha=4.00 beta=4.00 gamma_X=-8.00 delta=-2.00
+  (R@A=0, R=0)  pre=-2.00  σ=0.119
+  (R@A=0, R=1)  pre=+2.00  σ=0.881
+  (R@A=1, R=0)  pre=+2.00  σ=0.881
+  (R@A=1, R=1)  pre=-2.00  σ=0.119
+→ pre-sigmoid is XOR-shaped (-2, +2, +2, -2). σ values are (0.12, 0.88, 0.88, 0.12) — already not Boolean.
+
+seed=0
+  xor_init_frozen  parity F1=0.389
+  xor_init_train   parity F1=0.684  trained=(α=2.30, β=6.36, γ_X=-4.09, δ=-3.09)
+  rand_init        parity F1=0.232  init=(α=1.38, β=1.03, γ_X=-0.32, δ=-0.96)  trained=(α=1.58, β=0.69, γ_X=-0.61, δ=-1.92)
+
+seed=1
+  xor_init_frozen  parity F1=0.377
+  xor_init_train   parity F1=0.680  trained=(α=2.35, β=6.39, γ_X=-4.17, δ=-3.09)
+  rand_init        parity F1=0.226  init=(α=0.05, β=-0.38, γ_X=1.14, δ=-0.79)  trained=(α=2.13, β=0.09, γ_X=-1.17, δ=-1.91)
+
+seed=2
+  xor_init_frozen  parity F1=0.379
+  xor_init_train   parity F1=0.677  trained=(α=2.25, β=6.38, γ_X=-4.11, δ=-3.08)
+  rand_init        parity F1=0.097  init=(α=-0.09, β=0.33, γ_X=1.63, δ=0.02)  trained=(α=0.34, β=-0.51, γ_X=1.48, δ=-1.34)
+
+=== summary (mean ± std over 3 seeds) ===
+  xor_init_frozen       parity F1 = 0.382 ± 0.006
+  xor_init_train        parity F1 = 0.680 ± 0.004
+  rand_init             parity F1 = 0.185 ± 0.076
