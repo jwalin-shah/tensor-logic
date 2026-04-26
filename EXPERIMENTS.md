@@ -74,3 +74,30 @@ When you create `expN_*.py`:
 - An absolute-position W tensor is NOT translation-equivariant: it parameterizes dynamics separately for each (x, y) source location. When the occluder zone moves to a region not seen during training, TL has no learned W for that region's hidden-object propagation — the model collapses to ~20% in-occluder recall (MLPs collapse harder, ~5%, but neither generalizes). To get spatial invariance, parameterize as `W[a, dx, dy]` (relative shift). — exp41
 - TL's sharp predictions are incompatible with sampling-based MPC under cumulative-goal-prob reward: when most random action sequences score 0 (mass not at goal cell), argmax over zeros is essentially random → the planner can't exploit a sharp model. MLP's fuzzier predictions provide hill-climbing signal under the same planner. So TL's sample-efficient point-prediction advantage (exp42) doesn't translate to multi-step planning success on navigation: TL hits ~10% success across all data sizes, MLP h=128 hits 53-73%. To use TL with planning, need a different planner (BFS over thresholded next-states, distance-shaped reward) or a task that doesn't require multi-step rollouts. — exp43
 - **Adding a Hadamard cross-term `(R@A)⊙R` to TL does NOT extend its expressive class to XOR/parity** — corrects the original exp48 mis-celebration. Frozen handcrafted XOR-init weights (α=4, β=4, γ_X=-8, δ=-2 — pre-sigmoid is XOR-shaped at iteration 1) score only F1=0.382 on parity, well below the celebrated trained F1=0.685. SGD drifts AWAY from XOR-init toward a closure-attenuated basin (γ_X: -8 → -4.1, β: 4 → 6.4). The trained F1=0.685 isn't XOR computation — it's the ceiling of "smart attenuated-OR". **The real barrier is sigmoid + iteration in real arithmetic**: σ(±2) = (0.12, 0.88) are non-Boolean and K=4 iterations smear them further. Sigmoid is not a homomorphism over GF(2). No choice of (α, β, γ_X, δ) lets real-valued sum-of-paths compose to mod-2 path-count. Adding parameters within sigmoid+iteration doesn't enlarge the expressive class — only changing the operator (cosine, complex-valued activation) or semiring (GF(2)) does. — exp48 (verified by `exp48_verify_xor.py`)
+
+---
+
+## External theory connection: parity barrier ↔ Tian's algebraic-decomposition framework
+
+The exp48–50 results (parameter sweep, cosine activation, both fail on parity) have a clean mapping onto Yuandong Tian's CoGS framework (*Composing Global Solutions to Reasoning Tasks via Algebraic Objects in Neural Nets*, arXiv:2410.01779).
+
+CoGS proves that two-layer nets with **quadratic activation** carry a *semi-ring algebraic structure* over weight space: gradient descent provably converges to solutions expressible as ring-algebraic compositions of partial solutions, and ~95% of GD runs on modular addition match the analytical construction. The result is *conditional on the activation admitting the right algebraic structure* — quadratic does, others may not.
+
+The TL parity barrier is the empirical mirror of CoGS's positive case:
+
+| | CoGS (positive) | TL exp48–50 (negative) |
+|---|---|---|
+| Substrate | 2-layer NN, quadratic activation | TL recurrence `R ← act(α·R@A + β·R + γ_X·(R@A)⊙R + δ)` |
+| Algebraic structure on weight space | Semi-ring (sum/product compose) | Real-arithmetic sigmoid; not a homomorphism over GF(2) |
+| Target task | Modular addition (decomposable in semi-ring) | Parity (requires GF(2), not decomposable in real-sigmoid algebra) |
+| GD outcome | Converges to symbolic algebraic composition (~95%) | Converges to closure-attenuated basin, fails parity (F1≤0.69) |
+
+**Restated finding under CoGS:** parity does not admit a decomposition compatible with TL's recurrence under sigmoid or cosine activations. exp48 (cross-term parameter) adds capacity within the same algebraic class without changing the class. exp50 (cosine activation) changes the activation but the period-2 structure interacts with the iterated-overwrite recurrence to destroy the path-count accumulator. Both are consistent with CoGS's prediction: the activation/substrate must admit the algebraic structure of the target task; otherwise GD has no path to a symbolic solution regardless of parameter count.
+
+**Where this points the next experiments:**
+
+1. Test TL with a **quadratic activation** (CoGS's positive case) on parity. Hypothesis: still fails — parity needs GF(2), not just *any* algebraic structure — but provides a same-recurrence control isolating activation from semiring.
+2. Implement a **GF(2)-semiring TL** (binarized R, XOR composition) and verify: parity should be expressible by construction, demonstrating that the missing structure was the semiring, not the parameter count.
+3. Map the **fragment-class / parity-class boundary** to CoGS-style algebraic conditions: which task families admit a decomposition compatible with TL's standard recurrence? This is the formal version of "TL is the limiting case where the algebraic structure is given as substrate, not discovered."
+
+This is the language a CoGS-aware reviewer expects. The standalone framing ("TL fails at parity because sigmoid is non-monotone over GF(2)") is correct but provincial; the CoGS framing connects it to an active theory program that gives the negative result citational weight.

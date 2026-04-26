@@ -194,6 +194,31 @@ This is **provenance semirings** in the Datalog/TL literature. The audit layer i
 
 ---
 
+## Why not GraphRAG?
+
+The closest mainstream architecture to what this memo proposes is **GraphRAG** (Microsoft 2024) and the broader knowledge-graph-augmented LLM stack: extract entities and relations into a graph, retrieve a relevant subgraph at query time, hand it to the LLM as in-context text, generate an answer. This is the live competitor — not vector RAG, which the memo already dismisses.
+
+The two architectures look superficially similar (both have a graph and an LM), but they differ on **where reasoning actually runs**:
+
+| Capability | GraphRAG + LLM | TL substrate + SLM |
+|---|---|---|
+| Where multi-hop inference executes | Inside the LLM, reading the subgraph as text | Inside the substrate, as deterministic closure |
+| Inference determinism | LLM-stochastic (same query → varying answers) | Closed-form (same query → identical answer) |
+| Provenance | Cited subgraph rows; the *reasoning step* is opaque | Full rule chain; every derivation step inspectable |
+| Surgical retract | Edit graph; LLM may still recall stale embedding traces | `retract` propagates deterministically through closure |
+| Cost per multi-hop query | Full LLM call with subgraph in context | Closure walk (µs) + small SLM polish |
+| Failure mode | Plausible hallucination grounded in a real graph | Empty result or partial chain — visibly incomplete |
+
+The substantive distinction: in GraphRAG, the graph is *retrieved and read*; reasoning still happens inside the LLM with all its stochasticity, latency, and audit problems — the graph is *informational*. In the TL architecture, the graph **is** the reasoning engine; the SLM only polishes surface form — the graph is *operational*.
+
+GraphRAG is the right choice when the bottleneck is finding relevant context for free-form questions over a large corpus. TL is the right choice when the bottleneck is rigorous multi-hop derivation that has to be reproducible and auditable.
+
+For openhuman specifically, the personal-assistant workload is dominated by the latter: kinship walks, ontology inheritance, surgical retraction on life events, "why did you suggest this." That is TL's natural slice. For genuinely fuzzy queries (open-ended NL understanding), the SLM still handles the language boundary; TL doesn't intrude. **TL and GraphRAG are not interchangeable — they answer different questions about where reasoning should live.**
+
+**Adjacent alternatives worth naming.** Production Datalog engines (Soufflé, RDFox, DDlog) cover the deterministic-closure side without the differentiable-rule story; they are the right tool if rule learning is never needed. Memory-augmented LLM systems (MemGPT/Letta, Mem0, LongMem) bolt persistent state onto an LLM but keep reasoning inside the LLM — same operational mode as GraphRAG, with the same audit limits. Logic Tensor Networks and DeepProbLog sit in TL's neuro-symbolic neighborhood; TL distinguishes itself by collapsing facts, rules, and provenance into a single tensor algebra rather than coupling a logic layer to a separate neural network.
+
+---
+
 ## What TL does NOT help with
 
 Be honest about this. The pitch collapses if these get oversold.
