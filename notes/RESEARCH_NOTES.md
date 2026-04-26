@@ -8,6 +8,43 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-26 — exp55: TL Hanoi at N=20 + landscape review (Apple "Illusion of Thinking", longcot-RLM, NVIDIA Newton/GR00T/Cosmos, TRELLIS.2, Vision Banana)
+
+**Session focus:** Triangulate three external signals against the TL thesis:
+(a) Apple's "Illusion of Thinking" paper (Shojaee et al., Jun 2025) reporting frontier LRM collapse on Tower of Hanoi past N≈8-10, even when given the algorithm; (b) Alex Zhang's longcot-RLM blog + the LongCoT benchmark showing recursive LM scaffolds (DSPy.RLM) destroying frontier models on long-horizon reasoning; (c) the new wave of open robotics/3D models (NVIDIA Newton physics engine + Isaac GR00T N1.7 + Cosmos Reason VLM, Microsoft TRELLIS.2 4B image-to-3D, DeepMind Vision Banana). Then run exp55 to land the cleanest version of the substrate-of-execution argument.
+
+**What we tried:**
+- **exp55** (`exp55_tl_hanoi.py`): a TL-style substrate for Tower of Hanoi. State `S[disk, peg]` int8 tensor, top-disk via `nonzero().min()` (= TL min-reduction over the peg slice), legal-move predicate via 3 conjunctions of state lookups, move-update as `S' = S − e(d, p1) + e(d, p2)`. Generate the recursive move sequence and step the state through every move. Sweep N ∈ {3, 5, 8, 10, 12, 15, 18, 20}, verify (a) every move legal, (b) final state == goal, (c) move count == 2^N − 1.
+- Skim of all four external pieces via web search (raw URLs were 503'ing through the local proxy on this session).
+
+**Key results:**
+- exp55: **100% legal moves, 100% reached goal, optimal move count at every N ∈ {3..20}.** N=20 → 1,048,575 moves in 36.9s on CPU; N=15 → 32,767 moves in 1.1s; N=10 → 1,023 moves in 0.03s. Zero learned parameters.
+- N=10 is inside the window where Apple reports o3-mini-high crossing zero accuracy. N=20 is one order of magnitude past it.
+
+**What surprised us:**
+- I expected the TL framing to feel slightly forced for Hanoi (the recursion is short, the "tensor" structure is an int8 binary table). It's not — once you write `S[disk, peg]`, the legality and update are honestly tensor primitives, and the substrate makes the long-horizon execution trivially deterministic. The conceptual point lands cleanly: the difficulty was never the rule, it was maintaining state across exponentially many steps inside a token stream.
+- The Apple paper and the longcot-RLM line of work are saying *the same thing from opposite ends*. Apple: passive-CoT + scaling collapses on long-horizon execution. Zhang: recursive scaffold + small models beats frontier-CoT-with-scaling. The convergent diagnosis is that **single-pass token enumeration is the wrong execution substrate for problems whose natural form is recursion or fixpoint-iteration over typed state.** TL has been making the same claim from the substrate side for the whole project.
+- The new robotics models (NVIDIA Newton + GR00T N1.6/N1.7 + Cosmos Reason) are interesting because Newton is a GPU-accelerated, OpenUSD-native, *open-source* physics engine. That makes the previously-blocked phase 7 / world-model thread cheaply reproducible: instead of our 8×8 toy gridworld, we can run TL forward models on real Newton dynamics with no infrastructure overhead. The Cosmos Reason VLM gives "vague instruction → step-by-step plan" — exactly the rule-extractor role TL+SLM hybrids want.
+- TRELLIS.2's O-Voxel is a sparse, structured 3D substrate (geometry + PBR materials in one tensor). That's the same family of move (pick a structured representation that's a closer match to the data than dense feature vectors) we've been making for relations.
+
+**Connections to existing TL findings:**
+- exp44 / exp47 / exp53 / exp54 (closure on import graphs) and exp55 (Hanoi execution) are now one coherent body of evidence: **when the operator basis matches the problem, a 3-scalar-or-zero-parameter TL formulation crushes pure-LM / pure-MLP scaling by 4+ orders of magnitude in compute and parameters.** The win shows up across two distinct task shapes — closure (monotone fixpoint) and Hanoi (deterministic recursion over typed state).
+- exp48 / exp50 (parity barrier) and exp43 (sharp-prediction-vs-MPC mismatch) bound the claim from below: the substrate has to fit. TL can't magic up a new operator basis when the task lives outside its monoid.
+- The longcot-RLM and Apple papers are the *frontier-scale* analog of the exp52 result (71M MLP fails completely at n=128 closure). At every scale the picture is the same: capacity isn't the missing thing; the right computational structure is.
+
+**Takeaway / next:**
+- The honest top-line from this session: there's now a small, self-contained, reproducible result (exp55) that lands directly on a well-known piece of the discourse (Apple "Illusion of Thinking"). Combined with exp44/47/53/54, the TL-as-substrate story has a frontier-scale anchor it didn't have before.
+- Three concrete follow-ups, all queued in `IDEAS.md`:
+  - **exp56**: River Crossing as a constraint-graph reachability problem solved by TL transitive closure. Apple's LRMs collapse at N=3 (11 moves); TL closure should be size-invariant. Direct port of the exp44 closure machinery.
+  - **exp57**: LM-as-rule-extractor + TL-as-executor hybrid for Hanoi. Prompt the LM once for the recursive schema; feed it to the TL substrate; execute. Tests the explicit decomposition of "knows the algorithm" vs "executes it without drift". Closest analog to the OPENHUMAN_TL_MEMO's SLM+TL architecture.
+  - **exp58**: Hanoi noise-robustness sweep — at each step, with probability ε, replace the recursive-schema move with a random legal move (a stand-in for LRM drift). Sweep (N, ε) and reproduce Apple's collapse curve from compounding error. This makes the "substrate, not reasoning" framing falsifiable: if Apple's curve isn't reproduced by simple compounding error, the substrate hypothesis is wrong.
+- Beyond the immediate exps, the new-models landscape opens a phase 8 thread (notes only for now): **TL recurrence as a rule-engine on top of NVIDIA Newton dynamics**. Phase 7 falsified TL-as-forward-model for sampling-MPC navigation; the natural reframe is to let Newton be the forward model and TL be the *constraint / goal-reasoning* layer on top — closer to TL's actual sweet spot per Domingos. Cheap to attempt now that Newton is open-source and Isaac Lab 3.0 ships with it.
+- Memo connection: the Apple paper convergence and the new-models landscape both push the OPENHUMAN_TL_MEMO architecture forward — added a section there.
+
+**Methodological note:** When evaluating an external paper in this repo, the right unit of work is "build the smallest TL experiment that lands on the same problem shape and run it." exp55 is ~100 lines and a single afternoon. Trying to reproduce Apple's full LRM eval would have consumed the session and produced no new evidence. The substrate-side claim is the falsifiable one we own.
+
+---
+
 ## 2026-04-25 — exp43 (phase 7): TL planning fails — sharp predictions ≠ MPC-friendly
 
 **Session focus:** Test the actual research ambition: does TL's sample-efficient forward model (exp42's positive finding) translate to better downstream task performance via planning? This is the "teach navigation → easier pickup" question in its simplest form. Build a multi-task planning eval — train forward model on dynamics, then use the model with sampling-MPC to navigate to 4 different corners.
