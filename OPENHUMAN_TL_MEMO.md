@@ -136,6 +136,38 @@ This is **inductive logic programming**. As openhuman's KB grows, periodic rule 
 
 **Where this lives in openhuman:** alongside the kinship/social KB, a parallel `concept` ontology stores categories and their `is_a` chains. Every fact about a person/event/place links to one or more concepts. Rules attach to concepts, not entities. The user's ontology grows over time, gets compressed periodically by induction, and queries traverse it transparently via closure. None of this is on the SLM hot path — it's all in the structured substrate, fully deterministic, fully auditable.
 
+### 6. Continual learning without plasticity loss
+
+A personal-assistant agent operates in a non-stationary world by definition. The user's life evolves; new people, jobs, schedules, preferences arrive constantly.
+
+For pure-LLM systems, this exposes **loss of plasticity** (Joudaki et al. 2026, "Barriers for Learning in an Evolving World"): in non-stationary settings, gradient dynamics become entrapped in invariant submanifolds of parameter space — activation saturation freezes units, representational redundancy clones units onto identical manifolds. The paradoxical finding: the same low-rank compression that aids generalization on static tasks is what drags the net into these traps. The result is a net that *appears* to keep training but cannot actually learn new things.
+
+TL has no plasticity problem on the fragment-class slice — not because it solves LoP, but because there are no gradient dynamics to trap. New facts go into relation tables. New rules are added or retracted at the substrate level. The substrate is constitutionally plastic.
+
+| Property | LLM-only | TL substrate |
+|----------|---------|--------------|
+| Adapt to new facts | Retrain / RAG with stale embeddings, subject to LoP | `assert_fact` |
+| Surgical retract | Diffuse across embeddings, unreliable | `retract` |
+| Continual learning over years | LoP-prone | Substrate-level |
+
+For an assistant meant to grow with the user over years, this is arguably the strongest argument: a substrate that quietly stops being able to learn is the worst possible failure mode, and it is exactly what LoP predicts for naive continual training of monolithic LMs.
+
+---
+
+## Related work: convergent critiques of pure scaling
+
+Three independent research lines converge on the diagnosis that scaling a single dense net is *one* strategy, not *the* strategy. TL stakes the substrate-level position complementary to all three.
+
+**Learning mechanics.** Simon et al. (2026, "There Will Be a Scientific Theory of Deep Learning") argues for falsifiable laws over training dynamics, hidden representations, and generalization, in place of empirical scale-up. Tian's body of work makes this concrete: CoGS (2410.01779) proves that two-layer nets with quadratic activation discover *symbolic algebraic compositions* via gradient descent (semi-ring structure on weight space, ~95% match between GD solutions and analytical constructions). The Li₂ grokking framework (2509.21519) gives provable scaling laws for feature emergence across three learning stages. Tuci et al. (2026, "Generalization at the Edge of Stability") show generalization depends on training-geometry quantities — sharpness dimension, fractal attractors — invisible to raw param count. **TL is the limiting case of CoGS:** the algebraic structure is given as substrate, not discovered through training. The fragment-class / parity-class boundary in TL likely maps onto algebraic-decomposability conditions in Tian's framework.
+
+**Smarter inference compute.** ∇-Reasoner (ICLR 2026) replaces discrete test-time search with first-order optimization on token logits in latent space, dual to KL-regularized RL alignment. Same diagnosis as Simon: bottleneck is not size, it's the inference procedure. TL is orthogonal — on the fragment-class slice, inference is closed-form fixed-point closure; no test-time optimization needed.
+
+**Architectural compression.** Hyperloop Transformers (2026) achieve equal or better LM quality with ~50% fewer parameters by reusing a middle block across depth with matrix-valued hyper-connections. The **Lottery Ticket Hypothesis** (Frankle & Carbin) goes further: a randomly-initialized dense net contains a sparse subnetwork (~10–20% of weights) which, trained in isolation from the same init, matches the full net. **Mechanistic interpretability circuits** (Anthropic) localize learned computation to small attention-head + MLP subgraphs inside large transformers. All three say the same thing: the actual computation is a small structured object hiding inside a large, mostly-dead net. TL skips the hiding step — the structure is the model.
+
+**Interpretability: retrofit vs substrate.** Shahnovsky & Dror (2026) make LLM web agents auditable by mapping their trajectories onto classical planning paradigms (BFS / best-first / DFS) post-hoc. TL inverts this: the substrate *is* the planning structure (forward-chaining closure over a relation graph). Interpretability is constitutive, not diagnostic.
+
+**Shared implication for openhuman.** Whether you go through learning-mechanics laws, sparse-circuit extraction, or post-hoc planning maps, the field is reaching for the same thing: *the small, structured object that's actually doing the work.* TL is what you get when you write that object down directly, on the slice of the problem where it can be written down. The rest belongs to the SLM.
+
 ---
 
 ## Cleanest property: TL as both data layer AND audit layer
