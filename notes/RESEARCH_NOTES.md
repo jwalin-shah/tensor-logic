@@ -8,6 +8,38 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-26 — exp60a/b/c: TL-as-tool plumbing built in 3 LM-free increments + NVIDIA Dynamo connection
+
+**Session focus:** User pushed for the novel-direction experiment (exp60: teach a small instruct LM to invoke TL closure as a tool) but explicitly asked for smaller increments since real LM SFT requires API access not currently set up. Break exp60 into four pieces (a) traces, (b) harness, (c) deterministic baseline, (d) real SFT — and ship a-c which are all CPU-only and LM-free. Also reviewed NVIDIA Dynamo's agentic-inference orchestration (DGX blog) for serving-stack relevance to the SLM+TL composition.
+
+**What we tried:**
+- **exp60a** (`exp60a_kinship_traces.py`): synthetic kinship-graph trace generator. 12 names, random forest with bias toward shallow trees, 4 query types (ancestor/descendant in either direction). Output: JSONL files of (graph, query, hops, related-flag, gold-tool-call, gold-answer) tuples. Hops are computed by walking the parent chain in either direction; gold answer respects the *queried* direction so we get both positives and negatives even at the same hop count.
+- **exp60b** (`exp60b_tl_tool_harness.py`): tool-call interception. Regex parser for `<tl_closure relation="..." query="..." subject="..." object="...">` tags. For each call, builds an adjacency tensor over the relation, runs TL transitive closure (`R ← ((R @ A + R) > 0)` to fixpoint), evaluates the query, returns `{answer: yes|no, trace: [name1, name2, ...]}` where `trace` is a BFS-reconstructed chain for provenance.
+- **exp60c** (`exp60c_rule_baseline.py`): "fake LM" rule-based emitter. Regex-parses the natural-language query, emits the corresponding tool call deterministically. Pipes through exp60b's harness, compares to gold answer. End-to-end sanity check.
+
+**Key results:**
+- exp60a: 1000 train + 200 eval traces. Eval hops distribution: 0→32, 1→51, 2→50, 3→35, 4→24, 5→8. (Hops=0 = unrelated negative pairs; hops≥1 = related at that depth in some direction.)
+- exp60b: 5/5 hand-written cases pass, including provenance traces (`alice → bob → carol → dave → eve`).
+- exp60c: **200/200 (100.0%) accuracy on eval** at every hop count from 0 to 5, with 200/200 syntactically valid tool calls.
+
+**What surprised us:**
+- The "fake LM" hits 100% even at 5-hop queries because the harness uses the full TL closure tensor — there's no token-budget collapse on long chains. This is exactly the substrate-of-execution argument from exp55 transposed onto a tool-call setup. The interesting unknown for exp60d is purely whether a small SFT'd LM can learn the regex-shaped emission rule, not whether the substrate scales.
+- I almost reported a bug after misreading the printed sample — saw `iris → frank` direction and assumed iris was frank's parent, when actually `frank → iris` was an edge (frank is iris's parent). Trace generator was correct; my eyes weren't. Useful reminder: always verify a "bug" by inspecting actual data, not the formatted printout.
+- The NVIDIA Dynamo blog (developer.nvidia.com/blog/full-stack-optimizations-for-agentic-inference-with-nvidia-dynamo) is essentially the serving infrastructure for exactly this architecture. Their `nvext.agent_hints.cache_control` + Flash Indexer + KV-aware routing are designed for the pattern "long stable system prompt + small per-turn delta + tool-call interludes." For an SLM+TL system, the (graph, query) prefix is the stable part, the `<tl_closure>` call is the delta, and Dynamo can pin the prefix in KV cache so only the response post-tool-result is decoded fresh. Claude Code's reported 85-97% cache hit rate at 11.7× read/write ratio is the order-of-magnitude target. This validates the architectural bet practically — there's now mass-produced infrastructure assuming this exact composition.
+
+**Takeaway / next:**
+- exp60a/b/c are infrastructure-grade. The *only* unknown left for exp60d is the LM's ability to learn the protocol via SFT. Any failure in exp60d isolates cleanly to "this LM at this size can/can't learn the tool-call regex" — not to the plumbing. This is the minimum viable test of TL-as-tool.
+- For exp60d when LM access is wired up, default model: Qwen 2.5 7B Instruct + LoRA (rank 16) for ~30 min on a Colab T4. Expect: SFT'd model to hit ≥80% on hops≥3 (no-tool baseline expected to be ~chance, ~50%, since these are unseen-graph multi-hop questions).
+- Updated `OPENHUMAN_TL_MEMO.md` to note Dynamo as the serving stack — completes the full architectural picture (SLM + TL substrate + Dynamo orchestrator + Newton-style sim if embodied).
+- Other small-increment ideas that don't need an LM (filed in IDEAS.md):
+  - **exp63**: sparse closure substrate (CSR-based). Addresses the exp59A memory wall directly. Pure infrastructure win for the openhuman KB at scale (>10⁵ entities).
+  - **exp64**: clean parity re-test with irregular non-power-of-2 counts (closes the exp59C honest miss).
+  - **exp65**: TL `<tl_closure>` tag spec extended to support multi-relation joins (`uncle = parent ∘ sibling`). Tests whether the harness extends to non-trivial rule chains.
+
+**Methodological note:** Splitting a single "do exp60" task into a/b/c/d delivered three runnable pieces in one session, each with its own pass/fail signal. The discipline: each piece produces a result that (i) is independently useful and (ii) gates the next piece. exp60c's 100% gates exp60d going forward; if it had hit 95%, we'd debug the harness before any SFT spend.
+
+---
+
 ## 2026-04-26 — exp56/58/59: stress-testing TL substrate to find real limits
 
 **Session focus:** exp55 only tested TL on the easy slice of Hanoi (given recursive schema, Boolean monoid, matched initial state, no noise). User pushed: "what happens if we make it harder, find the limitations." Build three stress tests and run them all.
