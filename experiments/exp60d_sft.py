@@ -209,10 +209,15 @@ def parse_freeform_yesno(text: str) -> str:
 
 
 def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, system: str):
+    try:
+        from tqdm import tqdm
+        bar = tqdm(eval_traces, desc=name, leave=False)
+    except ImportError:
+        bar = eval_traces
     correct = 0
     well_formed = 0
     by_hop = defaultdict(lambda: [0, 0])
-    for trace in eval_traces:
+    for trace in bar:
         user = render_user_msg(trace)
         resp = generate(model, tok, device, system, user)
         if use_tool:
