@@ -131,7 +131,6 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
         report_to=[],
         bf16=(device == "cuda"),
         fp16=False,
-        use_mps_device=(device == "mps"),
     )
     trainer = Trainer(
         model=model, args=args, train_dataset=ds,
