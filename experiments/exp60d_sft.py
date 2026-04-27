@@ -164,6 +164,8 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
     )
     model = get_peft_model(model, lora)
     model.print_trainable_parameters()
+    if grad_ckpt:
+        model.enable_input_require_grads()
 
     args = TrainingArguments(
         output_dir=str(out_dir),
