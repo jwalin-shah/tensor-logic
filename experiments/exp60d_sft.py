@@ -115,7 +115,8 @@ def load_traces(path: Path):
 
 # ---------- Training ----------
 
-def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: float):
+def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: float,
+               batch_size: int = 12, grad_ckpt: bool = True):
     import torch
     from transformers import (
         AutoModelForCausalLM, AutoTokenizer,
@@ -167,7 +168,7 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
         num_train_epochs=epochs,
         # T4 (16GB) sits comfortably at bs=12 for 0.5B + LoRA r=8 with
         # dynamic padding to ~256. Bump down if OOM on a smaller GPU.
-        per_device_train_batch_size=12,
+        per_device_train_batch_size=batch_size,
         gradient_accumulation_steps=1,
         learning_rate=lr,
         logging_steps=10,
@@ -175,7 +176,7 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
         report_to=[],
         bf16=(device == "cuda"),
         fp16=False,
-        gradient_checkpointing=True,
+        gradient_checkpointing=grad_ckpt,
     )
     # mlm=False + this collator pads to longest in batch (dynamic padding).
     trainer = Trainer(
@@ -332,6 +333,10 @@ def main():
     ap.add_argument("--data-dir", default=str(DATA),
                     help="Directory containing train/eval JSONL files. "
                          "Use experiments/exp76_data/ for the rule-chain SFT.")
+    ap.add_argument("--batch-size", type=int, default=12,
+                    help="Per-device train batch size. Bump up on bigger GPUs.")
+    ap.add_argument("--no-grad-ckpt", action="store_true",
+                    help="Disable gradient checkpointing (faster if VRAM allows).")
     args = ap.parse_args()
 
     data_dir = Path(args.data_dir)
@@ -342,7 +347,8 @@ def main():
     out_dir = Path(args.out)
     if not (args.skip_train or args.eval_only):
         print("\n[1/2] LoRA SFT...")
-        train_lora(args.model, train, out_dir, args.epochs, args.lr)
+        train_lora(args.model, train, out_dir, args.epochs, args.lr,
+                   batch_size=args.batch_size, grad_ckpt=not args.no_grad_ckpt)
 
     print("\n[2/2] Evaluation...")
 
