@@ -311,6 +311,37 @@ class TensorLogicCoreTest(unittest.TestCase):
         result = out.getvalue()
         self.assertIn("knows(alice, bob)", result)
 
+    def test_include_directive(self):
+        import tempfile, os
+        from tensor_logic.file_format import load_tl
+        with tempfile.TemporaryDirectory() as tmpdir:
+            included_path = os.path.join(tmpdir, "nodes.tl")
+            base_path = os.path.join(tmpdir, "base.tl")
+            with open(included_path, "w") as f:
+                f.write('domain Node { alice, bob }\n')
+                f.write('relation knows(Node, Node)\n')
+                f.write('fact knows(alice, bob)\n')
+            with open(base_path, "w") as f:
+                f.write('include "nodes.tl"\n')
+                f.write('query knows(alice, bob)\n')
+            loaded = load_tl(base_path)
+            self.assertIn("knows", loaded.program.relations)
+            self.assertEqual(len(loaded.commands), 1)
+            self.assertEqual(loaded.commands[0].kind, "query")
+
+    def test_include_cycle_raises(self):
+        import tempfile, os
+        from tensor_logic.file_format import load_tl
+        with tempfile.TemporaryDirectory() as tmpdir:
+            a_path = os.path.join(tmpdir, "a.tl")
+            b_path = os.path.join(tmpdir, "b.tl")
+            with open(a_path, "w") as f:
+                f.write('include "b.tl"\n')
+            with open(b_path, "w") as f:
+                f.write('include "a.tl"\n')
+            with self.assertRaises(ValueError):
+                load_tl(a_path)
+
     def test_proof_json_roundtrip(self):
         from tensor_logic.proofs import Proof
         from tensor_logic.__main__ import _proof_to_json
