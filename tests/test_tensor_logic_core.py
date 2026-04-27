@@ -17,6 +17,7 @@ from tensor_logic import (
     load_tl,
     prove,
     prove_negative,
+    fmt_negative_proof_tree,
 )
 
 
@@ -182,6 +183,15 @@ class TensorLogicCoreTest(unittest.TestCase):
         neg_proof = prove_negative(program, "uncle", "alice", "bob")
         self.assertIsNotNone(neg_proof)
         self.assertEqual(neg_proof.reason, "no_rules")
+
+    def test_format_negative_proof_tree(self):
+        loaded = load_tl("examples/code_dependencies.tl")
+        neg_proof = prove_negative(loaded.program, "depends_on", "models", "worker")
+        self.assertIsNotNone(neg_proof)
+
+        formatted = fmt_negative_proof_tree(neg_proof)
+        self.assertIn("depends_on(models, worker)", formatted)
+        self.assertIsInstance(formatted, str)
 
 
 if __name__ == "__main__":
