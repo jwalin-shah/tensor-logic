@@ -18,6 +18,7 @@ from tensor_logic import (
     prove,
     prove_negative,
     fmt_negative_proof_tree,
+    fmt_proof_tree,
 )
 from tensor_logic.semirings import gf2_matmul
 
@@ -193,6 +194,127 @@ class TensorLogicCoreTest(unittest.TestCase):
         formatted = fmt_negative_proof_tree(neg_proof)
         self.assertIn("depends_on(models, worker)", formatted)
         self.assertIsInstance(formatted, str)
+
+
+    def test_validation_errors(self):
+        program = Program()
+        program.domain("X", ["a", "b"])
+        program.relation("edge", "X", "X")
+        program.fact("edge", "a", "b")
+
+        with self.assertRaises(ValueError, msg="unknown relation"):
+            program.fact("nonexistent", "a", "b")
+        with self.assertRaises(ValueError, msg="unknown symbol"):
+            program.fact("edge", "a", "z")
+        with self.assertRaises(ValueError, msg="unknown domain"):
+            program.relation("foo", "Y", "X")
+        with self.assertRaises(ValueError, msg="prove unknown relation"):
+            prove(program, "nonexistent", "a", "b")
+        with self.assertRaises(ValueError, msg="prove unknown symbol"):
+            prove(program, "edge", "a", "z")
+
+    def test_confidence_propagates(self):
+        program = Program()
+        program.domain("X", ["a", "b", "c"])
+        program.relation("edge", "X", "X")
+        program.relation("path", "X", "X")
+        program.fact("edge", "a", "b", value=0.9)
+        program.fact("edge", "b", "c", value=0.8)
+        program.rule("path(x,z) := (edge(x,y) * edge(y,z)).step()")
+
+        proof = prove(program, "path", "a", "c")
+        self.assertIsNotNone(proof)
+        self.assertAlmostEqual(proof.confidence, 0.72, places=5)
+        self.assertAlmostEqual(proof.body[0].confidence, 0.9, places=5)
+        self.assertAlmostEqual(proof.body[1].confidence, 0.8, places=5)
+        # Confidence tag appears in formatted output
+        formatted = fmt_proof_tree(proof)
+        self.assertIn("(0.72)", formatted)
+
+    def test_source_backed_facts(self):
+        loaded = load_tl("examples/personal_memory.tl")
+        proof = prove(loaded.program, "should_follow_up", "ryan", "tensor_demo")
+        self.assertIsNotNone(proof)
+        # Leaf nodes should have source locations from the .tl file
+        leaf = proof.body[0]
+        self.assertIsNotNone(leaf.source)
+        self.assertIn("personal_memory.tl", leaf.source.file)
+        self.assertGreater(leaf.source.lineno, 0)
+        # Formatted tree should include file:line annotations
+        formatted = fmt_proof_tree(proof)
+        self.assertIn("personal_memory.tl:", formatted)
+
+    def test_prove_with_multiple_rules(self):
+        # connected(x,y) if there is a direct link OR a via_hub path
+        program = Program()
+        program.domain("Node", ["a", "b", "c", "d"])
+        program.relation("direct", "Node", "Node")
+        program.relation("via_hub", "Node", "Node")
+        program.relation("connected", "Node", "Node")
+        program.fact("direct", "a", "b")
+        program.fact("via_hub", "c", "d")
+        program.rule("connected(x,y) := direct(x,y).step()")
+        program.rule("connected(x,y) := via_hub(x,y).step()")
+
+        self.assertEqual(len(program.rules["connected"]), 2)
+
+        # Provable via rule 1
+        proof1 = prove(program, "connected", "a", "b")
+        self.assertIsNotNone(proof1)
+
+        # Provable via rule 2
+        proof2 = prove(program, "connected", "c", "d")
+        self.assertIsNotNone(proof2)
+
+    def test_prove_negative_all_rules_failed(self):
+        program = Program()
+        program.domain("Node", ["a", "b", "c", "d"])
+        program.relation("direct", "Node", "Node")
+        program.relation("via_hub", "Node", "Node")
+        program.relation("connected", "Node", "Node")
+        program.fact("direct", "a", "b")
+        program.fact("via_hub", "c", "d")
+        program.rule("connected(x,y) := direct(x,y).step()")
+        program.rule("connected(x,y) := via_hub(x,y).step()")
+
+        # a→d: neither rule can prove this
+        neg = prove_negative(program, "connected", "a", "d")
+        self.assertIsNotNone(neg)
+        self.assertEqual(neg.head, ("connected", "a", "d"))
+        self.assertEqual(neg.reason, "all_rules_failed")
+        self.assertEqual(len(neg.body), 2)
+
+
+    def test_proof_json_roundtrip(self):
+        from tensor_logic.proofs import Proof
+        from tensor_logic.__main__ import _proof_to_json
+        original = Proof(
+            head=("path", "a", "c"),
+            body=(
+                Proof(head=("edge", "a", "b"), confidence=0.9),
+                Proof(head=("edge", "b", "c"), confidence=0.8),
+            ),
+            confidence=0.72,
+        )
+        d = _proof_to_json(original)
+        restored = Proof.from_json(d)
+        self.assertEqual(restored.head, original.head)
+        self.assertAlmostEqual(restored.confidence, original.confidence, places=6)
+        self.assertEqual(len(restored.body), 2)
+        self.assertEqual(restored.body[0].head, ("edge", "a", "b"))
+        self.assertAlmostEqual(restored.body[0].confidence, 0.9, places=6)
+
+    def test_negative_proof_json_roundtrip(self):
+        from tensor_logic.proofs import NegativeProof
+        from tensor_logic.__main__ import _negative_proof_to_json
+        original = NegativeProof(
+            head=("edge", "a", "z"),
+            reason="no_rules",
+        )
+        d = _negative_proof_to_json(original)
+        restored = NegativeProof.from_json(d)
+        self.assertEqual(restored.head, original.head)
+        self.assertEqual(restored.reason, original.reason)
 
 
 if __name__ == "__main__":

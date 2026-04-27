@@ -50,6 +50,7 @@ def _proof_to_json(proof: Proof) -> dict:
     rel, src, dst = proof.head
     return {
         "head": [rel, src, dst],
+        "confidence": proof.confidence,
         "body": [_proof_to_json(child) for child in proof.body],
     }
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from dataclasses import dataclass
 from collections import deque
 
@@ -10,6 +12,14 @@ from .program import Program, Atom, Rule
 class Proof:
     head: tuple[str, str, str]
     body: tuple["Proof", ...] = ()
+    source: object = None
+    confidence: float = 1.0
+
+    @classmethod
+    def from_json(cls, d: dict) -> "Proof":
+        head = tuple(d["head"])
+        body = tuple(cls.from_json(child) for child in d.get("body", []))
+        return cls(head=head, body=body, confidence=d.get("confidence", 1.0))
 
 @dataclass(frozen=True)
 class NegativeProof:
@@ -17,41 +27,64 @@ class NegativeProof:
     body: tuple["NegativeProof", ...] = ()
     reason: str = ""
 
+    @classmethod
+    def from_json(cls, d: dict) -> "NegativeProof":
+        explanation = d.get("explanation", d)
+        head = tuple(explanation["head"])
+        reason = explanation.get("reason", "")
+        body = tuple(
+            cls.from_json({"explanation": child["explanation"]} if "explanation" in child else child)
+            for child in explanation.get("body", [])
+        )
+        return cls(head=head, body=body, reason=reason)
+
 
 def prove(program: Program, relation_name: str, src: str, dst: str, recursive: bool = False) -> Proof | None:
+    if relation_name not in program.relations:
+        raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
-    if relation.data[relation.domains[0].id(src), relation.domains[1].id(dst)].item() > 0:
-        return Proof((relation_name, src, dst))
+    _check_symbols(relation, relation_name, src, dst)
+    val = relation.data[relation.domains[0].id(src), relation.domains[1].id(dst)].item()
+    if val > 0:
+        source = program.sources.get((relation_name, src, dst))
+        return Proof((relation_name, src, dst), source=source, confidence=val)
     if relation_name in program.rules:
-        proof = _prove_from_rule(program, relation_name, src, dst)
-        if proof is not None:
-            return proof
+        for rule in program.rules[relation_name]:
+            proof = _prove_from_rule(program, relation_name, rule, src, dst)
+            if proof is not None:
+                return proof
     if recursive:
         return _prove_recursive_chain(program, relation_name, src, dst)
     return None
 
 def prove_negative(program: Program, relation_name: str, src: str, dst: str, recursive: bool = False) -> NegativeProof | None:
+    if relation_name not in program.relations:
+        raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
+    _check_symbols(relation, relation_name, src, dst)
     is_fact = relation.data[relation.domains[0].id(src), relation.domains[1].id(dst)].item() > 0
-    
+
     if is_fact:
         return None
-    
+
     if relation_name not in program.rules:
         return NegativeProof((relation_name, src, dst), reason="no_rules")
-    
-    rule = program.rules[relation_name]
-    rule_failure = _prove_negative_from_rule(program, relation_name, rule, src, dst)
-    
-    if rule_failure is not None:
-        return rule_failure
-    
-    if recursive:
-        neg_recursive = _prove_negative_recursive_chain(program, relation_name, src, dst)
-        if neg_recursive is not None:
-            return neg_recursive
-    
-    return None
+
+    rule_failures = []
+    for rule in program.rules[relation_name]:
+        failure = _prove_negative_from_rule(program, relation_name, rule, src, dst)
+        if failure is None:
+            return None
+        rule_failures.append(failure)
+
+    if len(rule_failures) == 1:
+        return rule_failures[0]
+
+    return NegativeProof(
+        (relation_name, src, dst),
+        body=tuple(rule_failures),
+        reason="all_rules_failed"
+    )
 
 
 def _prove_negative_from_rule(program: Program, relation_name: str, rule: Rule, src: str, dst: str) -> NegativeProof | None:
@@ -152,15 +185,22 @@ def _prove_negative_recursive_chain(program: Program, relation_name: str, src: s
     return NegativeProof((relation_name, src, dst), reason="no_recursive_path")
 
 
-def _prove_from_rule(program: Program, relation_name: str, src: str, dst: str) -> Proof | None:
-    rule = program.rules[relation_name]
+def _prove_from_rule(program: Program, relation_name: str, rule: Rule, src: str, dst: str) -> Proof | None:
     bindings = _bind_variables(rule.head, src, dst)
     if bindings is None:
         return None
     body_proofs = _prove_body_atoms(program, rule.body, bindings)
     if body_proofs is None:
         return None
-    return Proof((relation_name, src, dst), tuple(body_proofs))
+    confidence = math.prod(p.confidence for p in body_proofs)
+    return Proof((relation_name, src, dst), tuple(body_proofs), confidence=confidence)
+
+def _check_symbols(relation, relation_name: str, src: str, dst: str) -> None:
+    if len(relation.domains) < 2:
+        return
+    for i, (domain, symbol) in enumerate(zip(relation.domains, (src, dst))):
+        if symbol not in domain.index:
+            raise ValueError(f"symbol '{symbol}' not in domain for arg {i} of '{relation_name}' (known: {', '.join(domain.symbols)})")
 
 
 def _bind_variables(head_atom: Atom, src: str, dst: str) -> dict[str, str] | None:
@@ -219,7 +259,9 @@ def _try_prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: d
 def fmt_proof_tree(proof: Proof, indent: int = 0) -> str:
     pad = "  " * indent
     rel, src, dst = proof.head
-    lines = [f"{pad}{rel}({src}, {dst})"]
+    conf_tag = f" ({proof.confidence:.2f})" if proof.confidence != 1.0 else ""
+    source_tag = f"  [{proof.source.file}:{proof.source.lineno}]" if proof.source else ""
+    lines = [f"{pad}{rel}({src}, {dst}){conf_tag}{source_tag}"]
     for child in proof.body:
         lines.append(fmt_proof_tree(child, indent + 1))
     return "\n".join(lines)
