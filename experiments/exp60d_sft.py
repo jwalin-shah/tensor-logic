@@ -45,6 +45,47 @@ _spec = importlib.util.spec_from_file_location(
 harness = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(harness)
 
+# Optional: exp65's rule-chain evaluator, for routing <tl_rule> tags from
+# exp76 (multi-relation rule SFT). Imported lazily so exp60d still works
+# in isolation.
+_RULE_SPEC = importlib.util.spec_from_file_location(
+    "exp65_rules", HERE / "exp65_rule_chain_joins.py"
+)
+rule_harness = importlib.util.module_from_spec(_RULE_SPEC)
+_RULE_SPEC.loader.exec_module(rule_harness)
+
+# Strict superset of exp65's RULE_RE — adds optional subject/object attrs
+# so the LM can emit a self-contained tag (rule + concrete query).
+RULE_RE_FULL = re.compile(
+    r'<tl_rule\s+head="(?P<head>[^"]+)"\s+body="(?P<body>[^"]+)"'
+    r'\s+subject="(?P<subj>[^"]+)"\s+object="(?P<obj>[^"]+)"\s*></tl_rule>'
+)
+
+
+def route_response(graph: dict, resp: str):
+    """Try <tl_closure> first (exp60d shape), then <tl_rule> (exp76 shape).
+
+    Returns: (answer "yes"/"no"/None, valid: bool).
+    valid=True iff at least one well-formed tag was parsed.
+    """
+    closure = harness.evaluate_string(graph, resp)
+    if closure:
+        return closure[0]["result"]["answer"], True
+    m = RULE_RE_FULL.search(resp)
+    if m:
+        head_atom = rule_harness.ATOM_RE.search(m.group("head"))
+        body_atoms = list(rule_harness.ATOM_RE.finditer(m.group("body")))
+        if head_atom and body_atoms:
+            head = (head_atom.group("rel"), head_atom.group("a"), head_atom.group("b"))
+            body = [(a.group("rel"), a.group("a"), a.group("b")) for a in body_atoms]
+            head_result, err = rule_harness.evaluate_rule(graph, (head, body))
+            if head_result is not None:
+                related = rule_harness.query_relation(
+                    head_result, m.group("subj"), m.group("obj"),
+                )
+                return ("yes" if related else "no"), True
+    return None, False
+
 
 SYSTEM_PROMPT = (
     "You answer kinship questions. When the user asks a reachability "
@@ -245,10 +286,10 @@ def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, s
         resps = generate_batch(model, tok, device, system, users)
         for trace, resp in zip(batch, resps):
             if use_tool:
-                results = harness.evaluate_string(trace["graph"], resp)
-                if results:
+                ans, valid = route_response(trace["graph"], resp)
+                if valid:
                     well_formed += 1
-                    pred = results[0]["result"]["answer"]
+                    pred = ans
                 else:
                     pred = parse_freeform_yesno(resp)
             else:
@@ -285,12 +326,17 @@ def main():
                          "and run only (B) + (C). For tight eval-iteration loops.")
     ap.add_argument("--n-eval", type=int, default=200)
     ap.add_argument("--eval-file", default="eval.jsonl",
-                    help="Filename within exp60_data/ for the eval set "
-                         "(e.g. eval_hard.jsonl).")
+                    help="Filename for the eval set within --data-dir.")
+    ap.add_argument("--train-file", default="train.jsonl",
+                    help="Filename for the train set within --data-dir.")
+    ap.add_argument("--data-dir", default=str(DATA),
+                    help="Directory containing train/eval JSONL files. "
+                         "Use experiments/exp76_data/ for the rule-chain SFT.")
     args = ap.parse_args()
 
-    train = load_traces(DATA / "train.jsonl")
-    evald = load_traces(DATA / args.eval_file)[: args.n_eval]
+    data_dir = Path(args.data_dir)
+    train = load_traces(data_dir / args.train_file)
+    evald = load_traces(data_dir / args.eval_file)[: args.n_eval]
     print(f"exp60d: SFT + tool-routed eval ({len(train)} train, {len(evald)} eval)")
 
     out_dir = Path(args.out)
