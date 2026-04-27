@@ -199,6 +199,24 @@ Result: 0.5B LoRA-SFT'd Qwen2.5-Instruct hits **100% (C:sft+tool)** on easy eval
 
 ---
 
+## Evaluation methodology note — CRUX / open-world evaluations (2026-04-27)
+
+Source: Kapoor, Kirgis, Narayanan et al. "Open-world evaluations for measuring frontier AI capabilities" (Princeton/CRUX, Apr 2026). See RESEARCH_NOTES.md for full summary.
+
+**The problem with exp60d's current eval design:**
+The 1.5× hop-≥-3 falsification criterion is a benchmark-style aggregate metric. CRUX argues this is the wrong question for a new capability claim: tasks specified precisely enough to auto-grade are also specified precisely enough to optimize for without acquiring the underlying capability.
+
+### 💡 Open-world probe for TL-as-tool (no experiment number yet)
+
+- **Hypothesis:** The LM+TL-harness integration claim is best tested by a single, real, open-ended task that requires the model to decide *when* to invoke TL, *what* to query, and *how* to interpret the result — not by accuracy on a held-out multi-hop classification set.
+- **Falsified if:** The model either (a) never invokes TL on a task where TL is the right tool, (b) invokes TL but constructs wrong queries, or (c) invokes TL correctly but fails to synthesize the answer from the proof. Any of these falsify the "tool use is working" claim even if exp60d's aggregate accuracy looks good.
+- **Smallest test:** Give the LM+harness a natural-language personal KB (30–50 contacts + relationships, calendar events, a few rules like "should_follow_up if talked_to within 7 days and topic is open"). Ask a multi-hop question ("who should I follow up with about the tensor demo?"). Qualitatively check: did it emit `<tl_closure>`, was the query correct, was the proof tree used in the answer?
+- **What it unlocks:** Credible capability claim. If it works, that's the headline — not the aggregate accuracy number. If it fails, we know *where* it fails (query construction vs. invocation decision vs. answer synthesis), which benchmark accuracy can't tell us.
+- **Cost:** 🟢 ~1 hour to set up; evaluation is qualitative (read the logs).
+- **Key design choice from CRUX:** Permit human intervention for incidental obstacles (wrong tool syntax, auth issues), but log it explicitly. The claim is about reasoning capability, not robustness to tooling friction.
+
+---
+
 ## Phase 8: Leveraging the new-models landscape (Apr 2026)
 
 Several recent open releases change which experiments are now cheaply reachable. Listed by leverage, with the TL angle.

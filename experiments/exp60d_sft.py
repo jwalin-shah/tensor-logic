@@ -276,7 +276,7 @@ def parse_freeform_yesno(text: str) -> str:
 
 
 def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, system: str,
-                   batch_size: int = 16):
+                   batch_size: int = 16, dump_failures_path: Path | None = None):
     try:
         from tqdm import tqdm
     except ImportError:
@@ -290,6 +290,7 @@ def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, s
     batches = [eval_traces[i:i + batch_size] for i in range(0, n, batch_size)]
     bar = tqdm(batches, desc=name, leave=False)
 
+    fail_fp = open(dump_failures_path, "w") if dump_failures_path else None
     for batch in bar:
         users = [render_user_msg(t) for t in batch]
         resps = generate_batch(model, tok, device, system, users)
@@ -301,6 +302,15 @@ def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, s
                     pred = ans
                 else:
                     pred = parse_freeform_yesno(resp)
+                    if fail_fp is not None:
+                        fail_fp.write(json.dumps({
+                            "query": trace["query"],
+                            "gold_tool_call": trace.get("gold_tool_call"),
+                            "gold_answer": trace["gold_answer"],
+                            "fallback_pred": pred,
+                            "hops": trace.get("hops", trace.get("rule_type")),
+                            "response": resp,
+                        }) + "\n")
             else:
                 pred = parse_freeform_yesno(resp)
             ok = (pred == trace["gold_answer"])
@@ -308,6 +318,8 @@ def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, s
             h = trace.get("hops", trace.get("rule_type", "all"))
             by_hop[h][0] += ok
             by_hop[h][1] += 1
+    if fail_fp is not None:
+        fail_fp.close()
     n = len(eval_traces)
     print(f"\n  [{name}] accuracy: {correct}/{n} = {100*correct/n:.1f}%")
     if use_tool:
@@ -345,6 +357,9 @@ def main():
                     help="Per-device train batch size. Bump up on bigger GPUs.")
     ap.add_argument("--no-grad-ckpt", action="store_true",
                     help="Disable gradient checkpointing (faster if VRAM allows).")
+    ap.add_argument("--dump-failures", default=None,
+                    help="Path to JSONL; if set, condition (C) writes one line per "
+                         "malformed tool-call response for offline inspection.")
     args = ap.parse_args()
 
     data_dir = Path(args.data_dir)
@@ -381,7 +396,8 @@ def main():
 
     print("\n--- (C) SFT'd LM + TL tool harness ---")
     C = eval_condition("C:sft+tool", sft_model, tok, device, evald,
-                       use_tool=True, system=SYSTEM_PROMPT)
+                       use_tool=True, system=SYSTEM_PROMPT,
+                       dump_failures_path=Path(args.dump_failures) if args.dump_failures else None)
 
     print("\n=== Summary ===")
     if A is not None:

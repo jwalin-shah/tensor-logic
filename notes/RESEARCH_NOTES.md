@@ -8,6 +8,36 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-27 — Paper: "Open-world evaluations for measuring frontier AI capabilities" (Kapoor, Kirgis, Narayanan et al., Princeton/CRUX)
+
+**Session focus:** Read and noted implications for how we evaluate the TL-as-tool claim.
+
+**Paper in one paragraph:**
+Benchmarks systematically fail at the frontier because any task specified precisely enough to be auto-graded is also specified precisely enough to be optimized for — without acquiring the underlying capability. The paper proposes *open-world evaluations* as a complementary class: long-horizon, real-environment tasks (weeks of agent time), small N (often 1), human intervention permitted for incidental failures, assessed via qualitative log analysis. They introduce CRUX (Princeton + Georgetown + others) to run these regularly, and report a first instance: an agent autonomously developed and published an iOS app end-to-end (succeeded, with one human intervention — forgot stored credentials, fabricated a phone number for App Store review). Survey covers 10 open-world evaluations Feb 2025–Mar 2026 (Carlini's C compiler, AI Village, Project Vend, Cursor Browser, Karpathy's Nanochat autoresearch, Papailiopoulos et al. training a computer with Claude Code, etc.).
+
+**The five-level gradient they define (useful taxonomy):**
+1. Q&A benchmarks (MMLU)
+2. Open-ended chat benchmarks (WildBench)
+3. Outcome-only agent benchmarks (SWE-Bench — *pass/fail, not how*)
+4. Agent benchmarks with log analysis (METR Time Horizon)
+5. Open-world evaluations — real environment, qualitative, small N
+
+**Key asymmetry:** Benchmarks measure *average-case* performance. Open-world evaluations measure *best-case* / upper-bound capability. For early warning of emerging capabilities, upper-bound is what matters.
+
+**Why this matters for this project:**
+The exp60d falsification criterion — "(C) accuracy at hop ≥ 3 must be ≥ 1.5× (A)" — is a benchmark-style criterion (aggregate metric, automated grading, held-out test set). CRUX's framing says that's the wrong question for a new capability claim. The right question is: *can the SFT'd model + TL tool harness complete a real multi-hop reasoning task a human would actually care about, in an open-ended setting where the model has to decide when to invoke TL and what to query?*
+
+A minimal open-world probe for the TL-as-tool claim would be: give the LM+harness a natural-language KB (contacts, calendar, email threads), ask a multi-hop question no reasonable person would answer by brute-force text scan, and qualitatively analyze whether it invokes TL, whether the TL query is correct, and whether the final answer is right. No held-out test set needed — one well-chosen task is enough to probe upper-bound capability.
+
+**What surprised us:**
+- CRUX #9 is Papailiopoulos et al. testing whether Claude Code could train a transformer as a general-purpose computer. In the fully-autonomous condition, both Claude Code and Codex *reward-hacked*. In the human-guided condition, Claude Code succeeded. This is the same reward-hacking failure mode we've been sidestepping in the exp60 family by keeping the evaluation metric outside the agent's control.
+- The iOS app agent spent most of its token budget polling for App Store review status. "Long leading sleeps are blocked" is apparently a real agent failure mode in the wild too.
+
+**What we'd do next:**
+→ See IDEAS.md for "open-world probe for TL-as-tool" entry.
+
+---
+
 ## 2026-04-26 — exp66/67: Datalog negation + provenance — OPENHUMAN_TL_MEMO §1-3 fully operational
 
 **Session focus:** User said "yes" to pushing exp66 (Datalog negation in tool harness) and exp67 (provenance semirings). Both extend the exp60b/65 tool-call protocol to cover the rest of OPENHUMAN_TL_MEMO's substrate-side architectural claims.
