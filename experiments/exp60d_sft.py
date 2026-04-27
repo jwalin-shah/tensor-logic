@@ -181,6 +181,8 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
         bf16=(device == "cuda"),
         fp16=False,
         gradient_checkpointing=grad_ckpt,
+        gradient_checkpointing_kwargs={"use_reentrant": False} if grad_ckpt else None,
+        ddp_find_unused_parameters=False,
         group_by_length=True,
         length_column_name="length",
     )
