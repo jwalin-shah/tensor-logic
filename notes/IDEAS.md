@@ -72,6 +72,10 @@ Result: 9/9 cases pass — grandparent, uncle, cousin, great-uncle all evaluate 
 - **Unlocks:** OPENHUMAN_TL_MEMO §1 claim ("multi-hop relational queries" beyond ancestor) becomes operational, not theoretical.
 - **Cost:** 🟢 ~120 lines, ~1 hour wall.
 
+### 🚧 exp60 — TL-as-tool: teach a small instruct LM to invoke TL closure (scaffolded)
+
+Status: a (traces), b (harness), c (rule-based 100% sanity) all done. d (`exp60d_sft.py`) scaffolded — LoRA SFT on Qwen2.5-0.5B-Instruct + 3-way eval (base / SFT-no-tool / SFT+tool). Run: `pip install torch transformers peft datasets accelerate && python3 experiments/exp60d_sft.py`. Falsification gates (≥1.5× deep-hop ratio at hops 3–5, ≥95% tool-call validity) hardcoded into the summary block.
+
 ### 💡 exp60 — TL-as-tool: teach a small instruct LM to invoke TL closure
 - **Hypothesis:** A small instruction-tuned LM (Qwen 2.5 7B Instruct, Llama 3.2 3B Instruct, or Phi-3 mini) can be SFT'd to emit a structured `<tl_closure>{...}</tl_closure>` call when faced with a multi-hop reachability question, have the call intercepted and executed by the TL substrate (exp44-style 3-scalar closure), and incorporate the result into its final answer. End-to-end accuracy on synthetic kinship / call-graph / dependency-reachability questions should **strictly exceed** the same LM with no tool, especially as hop-count grows.
 - **Falsified if:** The LM-with-TL-tool's accuracy at hop ≥ 3 is not ≥ 1.5× the no-tool baseline; OR the LM cannot reliably emit syntactically valid tool-calls (>95%) after SFT on ~1k traces.
