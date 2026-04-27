@@ -144,7 +144,9 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
     # data collator. Most kinship traces are <256 tokens; padding to 512
     # was wasting ~50% of forward/backward compute.
     def tokenize(batch):
-        return tok(batch["text"], truncation=True, max_length=384)
+        out = tok(batch["text"], truncation=True, max_length=256)
+        out["length"] = [len(ids) for ids in out["input_ids"]]
+        return out
 
     ds = ds.map(tokenize, batched=True, remove_columns=["text"])
 
@@ -177,6 +179,8 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
         bf16=(device == "cuda"),
         fp16=False,
         gradient_checkpointing=grad_ckpt,
+        group_by_length=True,
+        length_column_name="length",
     )
     # mlm=False + this collator pads to longest in batch (dynamic padding).
     trainer = Trainer(
