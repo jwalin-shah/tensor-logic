@@ -57,6 +57,9 @@ See `experiments/exp53_real_imports.py` (small/mid packages table), `experiments
 | File | What it shows |
 |---|---|
 | `demos/transitive_closure.py` | Tensor logic in 80 lines. One einsum, three semantics: deductive (step), analogical (sigmoid), embedding-space retrieval. |
+| `demos/tensor_language.py` | First language-layer demo: named-index relations and equations like `grandparent[x,z] = parent[x,y] * parent[y,z]`. |
+| `demos/program_rules.py` | Small `Program` API demo: domains, relations, facts, string rules, recursive queries. |
+| `demos/provenance_kb.py` | Reusable `tensor_logic` package demo: Datalog-style KB rules with ranked proof trees for auditability. |
 | `demos/train_kg.py` | Knowledge graph completion via gradient descent through einsum-rules. Learns object embeddings such that applying `Parent ∘ Parent` produces the correct grandparent matrix. |
 | `demos/joint_lm_kg.py` | Joint LM + KG training in one autograd graph. Tiny einsum-form transformer + tensor-logic rule head, sharing token/object embeddings. T-annealing from 1.0 to 0.05. |
 | `demos/throwing.py` | Embodied learner: agent learns "force → distance" from 100 random throws, then plans inverse to hit unseen targets. Probes the network and finds an emergent "force magnitude" neuron. |
@@ -64,6 +67,8 @@ See `experiments/exp53_real_imports.py` (small/mid packages table), `experiments
 | `notes/SESSION_TRANSCRIPT.md` | Full transcript of the conversation that produced this repo. ~25 questions walking from "what is tensor logic" to "how do you build a continual learner that knows over time." |
 
 Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` and `phase_training/train_phase*.py` — a longer experimental arc probing the limits of tensor-logic operators (parity, code-closure, scaling, capacity). See `notes/EXPERIMENTS.md` for the running log.
+
+`tensor_logic/` is the first reusable extraction from the experiment arc: a small named-index language layer, dense/sparse closure, binary Datalog-style rule joins, stratified negation, provenance proof trees, and a few semiring helpers. New experiments should import from this package rather than copying logic out of older `exp*.py` files.
 
 ## Memos & writing
 
@@ -79,6 +84,9 @@ Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` a
 
 ```bash
 uv run --with torch python demos/transitive_closure.py
+uv run --with torch python demos/tensor_language.py
+uv run --with torch python demos/program_rules.py
+uv run --with torch python demos/provenance_kb.py
 uv run --with torch python demos/train_kg.py
 uv run --with torch python demos/joint_lm_kg.py
 uv run --with torch python demos/throwing.py

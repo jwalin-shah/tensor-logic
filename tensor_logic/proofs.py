@@ -71,89 +71,104 @@ def prove(program: Program, relation_name: str, src: str, dst: str,
         result = _prove_recursive_chain(program, relation_name, src, dst)
     return result
 
-def prove_negative(program: Program, relation_name: str, src: str, dst: str, recursive: bool = False) -> NegativeProof | None:
+def prove_negative(program: Program, relation_name: str, src: str, dst: str,
+                   recursive: bool = False,
+                   _table: dict | None = None,
+                   _neg_table: dict | None = None) -> NegativeProof | None:
     if relation_name not in program.relations:
         raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
     _check_symbols(relation, relation_name, src, dst)
     is_fact = relation.data[relation.domains[0].id(src), relation.domains[1].id(dst)].item() > 0
-
     if is_fact:
         return None
-
     if relation_name not in program.rules:
         return NegativeProof((relation_name, src, dst), reason="no_rules")
-
+    if _table is None:
+        _table = {}
+    if _neg_table is None:
+        _neg_table = {}
+    key = (relation_name, src, dst)
+    if key in _neg_table:
+        entry = _neg_table[key]
+        return None if entry is _PENDING else entry
+    _neg_table[key] = _PENDING
     rule_failures = []
     for rule in program.rules[relation_name]:
-        failure = _prove_negative_from_rule(program, relation_name, rule, src, dst)
+        failure = _prove_negative_from_rule(program, relation_name, rule, src, dst,
+                                            _table=_table, _neg_table=_neg_table)
         if failure is None:
+            _neg_table[key] = None
             return None
         rule_failures.append(failure)
-
     if len(rule_failures) == 1:
-        return rule_failures[0]
+        result = rule_failures[0]
+    else:
+        result = NegativeProof(
+            (relation_name, src, dst),
+            body=tuple(rule_failures),
+            reason="all_rules_failed"
+        )
+    _neg_table[key] = result
+    return result
 
-    return NegativeProof(
-        (relation_name, src, dst),
-        body=tuple(rule_failures),
-        reason="all_rules_failed"
-    )
 
-
-def _prove_negative_from_rule(program: Program, relation_name: str, rule: Rule, src: str, dst: str) -> NegativeProof | None:
+def _prove_negative_from_rule(program: Program, relation_name: str, rule: Rule,
+                               src: str, dst: str,
+                               _table: dict | None = None,
+                               _neg_table: dict | None = None) -> NegativeProof | None:
     bindings = _bind_variables(rule.head, src, dst)
     if bindings is None:
         return NegativeProof((relation_name, src, dst), reason="rule_head_mismatch")
-    
-    body_proof = _prove_negative_body_atoms(program, rule.body, bindings)
+    body_proof = _prove_negative_body_atoms(program, rule.body, bindings,
+                                            _table=_table, _neg_table=_neg_table)
     if body_proof is not None:
         return NegativeProof((relation_name, src, dst), body=(body_proof,), reason="rule_body_failed")
-    
     return None
 
 
-def _prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str]) -> NegativeProof | None:
+def _prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...],
+                                bindings: dict[str, str],
+                                _table: dict | None = None,
+                                _neg_table: dict | None = None) -> NegativeProof | None:
     unbound_vars = _find_unbound_vars(atoms, bindings)
-    
     if not unbound_vars:
-        return _try_prove_negative_body_atoms(program, atoms, bindings)
-    
+        return _try_prove_negative_body_atoms(program, atoms, bindings,
+                                              _table=_table, _neg_table=_neg_table)
     var = unbound_vars.pop()
     witnesses = _get_witness_domain(program, atoms, bindings, var)
     failed_witnesses = []
-    
     for symbol in witnesses:
         extended_bindings = {**bindings, var: symbol}
-        neg_proof = _try_prove_negative_body_atoms(program, atoms, extended_bindings)
+        neg_proof = _try_prove_negative_body_atoms(program, atoms, extended_bindings,
+                                                   _table=_table, _neg_table=_neg_table)
         if neg_proof is None:
             return None
         failed_witnesses.append(neg_proof)
-    
     if failed_witnesses:
         return NegativeProof(
-            ("∃" + var, "", ""),
+            ("\u2203" + var, "", ""),
             body=tuple(failed_witnesses),
             reason="no_witness"
         )
-    
     return None
 
 
-def _try_prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str]) -> NegativeProof | None:
+def _try_prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...],
+                                    bindings: dict[str, str],
+                                    _table: dict | None = None,
+                                    _neg_table: dict | None = None) -> NegativeProof | None:
     neg_proofs = []
     for atom in atoms:
         if len(atom.args) != 2:
-            return NegativeProof(
-                (atom.relation, "", ""),
-                reason="invalid_arity"
-            )
+            return NegativeProof((atom.relation, "", ""), reason="invalid_arity")
         bound_src = bindings.get(atom.args[0], atom.args[0])
         bound_dst = bindings.get(atom.args[1], atom.args[1])
-        
-        atom_proof = prove(program, atom.relation, bound_src, bound_dst, recursive=False)
+        atom_proof = prove(program, atom.relation, bound_src, bound_dst,
+                           recursive=False, _table=_table)
         if atom_proof is None:
-            atom_neg_proof = prove_negative(program, atom.relation, bound_src, bound_dst, recursive=False)
+            atom_neg_proof = prove_negative(program, atom.relation, bound_src, bound_dst,
+                                            recursive=False, _table=_table, _neg_table=_neg_table)
             if atom_neg_proof is not None:
                 neg_proofs.append(atom_neg_proof)
             else:
@@ -166,7 +181,6 @@ def _try_prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...], bi
                 body=tuple(neg_proofs),
                 reason="atom_failed"
             )
-    
     return None
 
 

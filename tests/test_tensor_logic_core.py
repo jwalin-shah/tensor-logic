@@ -459,5 +459,40 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(restored.reason, original.reason)
 
 
+    def test_disjunctive_rule_splits_into_two_rules(self):
+        # rule with '+' body should register as 2 separate Rules, not 1 merged Rule
+        program = Program()
+        program.domain("Node", ["a", "b", "c"])
+        program.relation("edge", "Node", "Node")
+        program.relation("reach", "Node", "Node")
+        program.fact("edge", "a", "b")
+        program.rule("reach(x,y) := (edge(x,y) + reach(x,z) * edge(z,y)).step()")
+        self.assertEqual(len(program.rules["reach"]), 2)
+
+    def test_disjunctive_rule_prover_uses_first_disjunct(self):
+        # prove(reach, a, b) should succeed via rule 1 (edge only), not fall back to BFS
+        program = Program()
+        program.domain("Node", ["a", "b", "c"])
+        program.relation("edge", "Node", "Node")
+        program.relation("reach", "Node", "Node")
+        program.fact("edge", "a", "b")
+        program.fact("edge", "b", "c")
+        program.rule("reach(x,y) := (edge(x,y) + reach(x,z) * edge(z,y)).step()")
+        proof = prove(program, "reach", "a", "b")
+        self.assertIsNotNone(proof)
+        # body must reference 'edge', not the BFS chain format
+        self.assertEqual(len(proof.body), 1)
+        self.assertEqual(proof.body[0].head[0], "edge")
+
+    def test_disjunctive_rule_in_tl_file_uses_rule_structure(self):
+        # code_dependencies.tl uses (imports + depends_on*imports).step() — 2 rules
+        loaded = load_tl("examples/code_dependencies.tl")
+        self.assertEqual(len(loaded.program.rules["depends_on"]), 2)
+        # direct import — should prove via rule 1 (just imports), not BFS
+        proof = prove(loaded.program, "depends_on", "worker", "api")
+        self.assertIsNotNone(proof)
+        self.assertEqual(proof.body[0].head[0], "imports")
+
+
 if __name__ == "__main__":
     unittest.main()

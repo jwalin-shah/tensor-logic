@@ -2,7 +2,7 @@
 
 from .closure import bfs_query, bfs_per_source_closure, dense_closure
 from .language import Domain, Relation, evaluate_expr, facts
-from .program import Program
+from .program import Program, FactSource
 from .file_format import load_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
 from .provenance import evaluate_with_provenance, fmt_proof, proof_score
@@ -20,6 +20,7 @@ __all__ = [
     "Relation",
     "Rule",
     "Program",
+    "FactSource",
     "Proof",
     "NegativeProof",
     "bfs_query",
