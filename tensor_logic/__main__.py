@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 
 from .file_format import Command, load_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
@@ -28,7 +29,14 @@ def main(argv: list[str] | None = None) -> int:
     prove_p.add_argument("--format", choices=["tree", "json"], default="tree")
     prove_p.add_argument("--why-not", action="store_true", help="Show explanation of why query is false (if false)")
 
+    sub.add_parser("repl")
+
     args = parser.parse_args(argv)
+
+    if args.cmd == "repl":
+        _run_repl()
+        return 0
+
     loaded = load_tl(args.file)
 
     if args.cmd == "run":
@@ -66,12 +74,14 @@ def _negative_proof_to_json(neg_proof: NegativeProof) -> dict:
     }
 
 
-def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False) -> None:
+def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
+    if out is None:
+        out = sys.stdout
     if len(command.args) != 2:
         raise ValueError("CLI proof/query currently supports binary relations")
     if command.kind == "query":
         value = program.query(command.relation, *command.args, recursive=command.recursive)
-        print(f"{command.relation}({', '.join(command.args)}) = {bool(value)}")
+        print(f"{command.relation}({', '.join(command.args)}) = {bool(value)}", file=out)
         return
     proof = prove(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
     if proof is None:
@@ -79,21 +89,56 @@ def _execute_command(program, command: Command, format_type: str = "tree", why_n
             neg_proof = prove_negative(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
             if neg_proof is not None:
                 if format_type == "json":
-                    print(json.dumps(_negative_proof_to_json(neg_proof)))
+                    print(json.dumps(_negative_proof_to_json(neg_proof)), file=out)
                 else:
-                    print(fmt_negative_proof_tree(neg_proof))
+                    print(fmt_negative_proof_tree(neg_proof), file=out)
             else:
-                print(f"{command.relation}({', '.join(command.args)}) = True")
+                print(f"{command.relation}({', '.join(command.args)}) = True", file=out)
         else:
             if format_type == "json":
-                print(json.dumps({"answer": False, "proof": None}))
+                print(json.dumps({"answer": False, "proof": None}), file=out)
             else:
-                print(f"{command.relation}({', '.join(command.args)}) = False")
+                print(f"{command.relation}({', '.join(command.args)}) = False", file=out)
     else:
         if format_type == "json":
-            print(json.dumps({"answer": True, "proof": _proof_to_json(proof)}))
+            print(json.dumps({"answer": True, "proof": _proof_to_json(proof)}), file=out)
         else:
-            print(fmt_proof_tree(proof))
+            print(fmt_proof_tree(proof), file=out)
+
+
+def _repl_eval(program, line: str, out=None) -> None:
+    if out is None:
+        out = sys.stdout
+    line = line.strip()
+    if not line or line.startswith("#"):
+        return
+    from .file_format import _parse_line
+    try:
+        command = _parse_line(program, line)
+    except ValueError as exc:
+        print(f"Error: {exc}", file=out)
+        return
+    if command is not None:
+        _execute_command(program, command, "tree", out=out)
+
+
+def _run_repl() -> None:
+    from .program import Program
+    program = Program()
+    print("tensor-logic REPL. Type 'exit' or Ctrl-D to quit.")
+    try:
+        import readline  # noqa: F401
+    except ImportError:
+        pass
+    while True:
+        try:
+            line = input("tl> ")
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+        if line.strip() in ("exit", "quit"):
+            break
+        _repl_eval(program, line)
 
 
 if __name__ == "__main__":

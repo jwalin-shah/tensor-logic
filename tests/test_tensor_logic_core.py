@@ -285,6 +285,32 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(len(neg.body), 2)
 
 
+    def test_repl_parse_and_execute(self):
+        from tensor_logic.__main__ import _repl_eval
+        from tensor_logic.program import Program
+        import io
+        program = Program()
+        out = io.StringIO()
+        _repl_eval(program, "domain Node { a, b, c }", out)
+        _repl_eval(program, "relation edge(Node, Node)", out)
+        _repl_eval(program, "fact edge(a, b)", out)
+        _repl_eval(program, "query edge(a, b)", out)
+        result = out.getvalue()
+        self.assertIn("True", result)
+
+    def test_repl_prove_command(self):
+        from tensor_logic.__main__ import _repl_eval
+        from tensor_logic.program import Program
+        import io
+        program = Program()
+        out = io.StringIO()
+        _repl_eval(program, "domain P { alice, bob }", out)
+        _repl_eval(program, "relation knows(P, P)", out)
+        _repl_eval(program, "fact knows(alice, bob)", out)
+        _repl_eval(program, "prove knows(alice, bob)", out)
+        result = out.getvalue()
+        self.assertIn("knows(alice, bob)", result)
+
     def test_proof_json_roundtrip(self):
         from tensor_logic.proofs import Proof
         from tensor_logic.__main__ import _proof_to_json
