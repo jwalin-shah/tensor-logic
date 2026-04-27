@@ -98,10 +98,11 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
 
     ds = Dataset.from_list([to_chat(t) for t in train_traces])
 
+    # Dynamic padding: tokenize without padding here, pad-to-longest in the
+    # data collator. Most kinship traces are <256 tokens; padding to 512
+    # was wasting ~50% of forward/backward compute.
     def tokenize(batch):
-        out = tok(batch["text"], truncation=True, max_length=512, padding="max_length")
-        out["labels"] = out["input_ids"].copy()
-        return out
+        return tok(batch["text"], truncation=True, max_length=384)
 
     ds = ds.map(tokenize, batched=True, remove_columns=["text"])
 
@@ -123,15 +124,19 @@ def train_lora(model_name: str, train_traces, out_dir: Path, epochs: int, lr: fl
     args = TrainingArguments(
         output_dir=str(out_dir),
         num_train_epochs=epochs,
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=2,
+        # T4 (16GB) sits comfortably at bs=12 for 0.5B + LoRA r=8 with
+        # dynamic padding to ~256. Bump down if OOM on a smaller GPU.
+        per_device_train_batch_size=12,
+        gradient_accumulation_steps=1,
         learning_rate=lr,
-        logging_steps=25,
+        logging_steps=10,
         save_strategy="no",
         report_to=[],
         bf16=(device == "cuda"),
         fp16=False,
+        gradient_checkpointing=True,
     )
+    # mlm=False + this collator pads to longest in batch (dynamic padding).
     trainer = Trainer(
         model=model, args=args, train_dataset=ds,
         data_collator=DataCollatorForLanguageModeling(tok, mlm=False),
