@@ -425,6 +425,40 @@ def main():
     print(f"  tool-call validity    : "
           f"{'PASS ≥95%' if C['well_formed'] >= 0.95 else 'FAIL — falsified'}")
 
+    # Per RUN_PROTOCOL.md: write manifest alongside the adapter so every
+    # adapter dir is self-describing (config + metrics + git sha).
+    try:
+        import subprocess, datetime
+        sha = subprocess.check_output(
+            ["git", "-C", str(HERE.parent), "rev-parse", "--short", "HEAD"],
+            stderr=subprocess.DEVNULL,
+        ).decode().strip()
+    except Exception:
+        sha = "unknown"
+    manifest = {
+        "experiment": "exp60d",
+        "git_sha": sha,
+        "model": args.model,
+        "data_dir": str(data_dir),
+        "train_file": args.train_file,
+        "eval_file": args.eval_file,
+        "epochs": args.epochs,
+        "batch_size": args.batch_size,
+        "lr": args.lr,
+        "n_eval": args.n_eval,
+        "metrics": {
+            "A_base_acc": A["acc"] if A else None,
+            "B_sft_no_tool_acc": B["acc"],
+            "C_sft_tool_acc": C["acc"],
+            "tool_validity": C["well_formed"],
+            "by_hop_C": {str(h): v for h, v in C["by_hop"].items()},
+        },
+        "finished_at": datetime.datetime.utcnow().isoformat() + "Z",
+    }
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    print(f"\n  manifest written: {out_dir / 'manifest.json'}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,149 @@
+{
+  "seen_schema": {
+    "grandparent": {
+      "induced": [
+        "parent",
+        "parent"
+      ],
+      "gold": [
+        "parent",
+        "parent"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 84,
+      "search_time_s": 0.014,
+      "rule_found": true
+    },
+    "uncle": {
+      "induced": [
+        "sibling",
+        "parent"
+      ],
+      "gold": [
+        "sibling",
+        "parent"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 84,
+      "search_time_s": 0.013,
+      "rule_found": true
+    }
+  },
+  "heldout_schema": {
+    "skip_manager": {
+      "induced": [
+        "manages",
+        "manages"
+      ],
+      "gold": [
+        "manages",
+        "manages"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 84,
+      "search_time_s": 0.013,
+      "rule_found": true
+    },
+    "skip_peer": {
+      "induced": [
+        "peer_of",
+        "manages"
+      ],
+      "gold": [
+        "peer_of",
+        "manages"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 84,
+      "search_time_s": 0.013,
+      "rule_found": true
+    }
+  },
+  "heldout_compose": {
+    "great_uncle": {
+      "induced": [
+        "sibling",
+        "parent",
+        "parent"
+      ],
+      "gold": [
+        "sibling",
+        "parent",
+        "parent"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 84,
+      "search_time_s": 0.013,
+      "rule_found": true
+    },
+    "skip_skip_manager": {
+      "induced": [
+        "manages",
+        "manages",
+        "manages"
+      ],
+      "gold": [
+        "manages",
+        "manages",
+        "manages"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 84,
+      "search_time_s": 0.013,
+      "rule_found": true
+    }
+  },
+  "distractor": {
+    "grandparent": {
+      "induced": [
+        "parent",
+        "parent"
+      ],
+      "gold": [
+        "parent",
+        "parent"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 2954,
+      "search_time_s": 0.462,
+      "rule_found": true
+    },
+    "uncle": {
+      "induced": [
+        "sibling",
+        "parent"
+      ],
+      "gold": [
+        "sibling",
+        "parent"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 2954,
+      "search_time_s": 0.521,
+      "rule_found": true
+    },
+    "skip_manager": {
+      "induced": [
+        "manages",
+        "manages"
+      ],
+      "gold": [
+        "manages",
+        "manages"
+      ],
+      "f1": 1.0,
+      "semantic_equiv": 1.0,
+      "search_cost": 2954,
+      "search_time_s": 0.465,
+      "rule_found": true
+    }
+  }
+}
