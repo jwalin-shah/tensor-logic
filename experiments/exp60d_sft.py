@@ -296,7 +296,7 @@ def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, s
                 pred = parse_freeform_yesno(resp)
             ok = (pred == trace["gold_answer"])
             correct += ok
-            h = trace["hops"]
+            h = trace.get("hops", trace.get("rule_type", "all"))
             by_hop[h][0] += ok
             by_hop[h][1] += 1
     n = len(eval_traces)
