@@ -285,6 +285,91 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(len(neg.body), 2)
 
 
+    def _make_ancestor_program(self):
+        from tensor_logic.program import Program
+        program = Program()
+        program.domain("Person", ["alice", "bob", "carol", "dave"])
+        program.relation("parent", "Person", "Person")
+        program.relation("ancestor", "Person", "Person")
+        program.fact("parent", "alice", "bob")
+        program.fact("parent", "bob", "carol")
+        program.fact("parent", "carol", "dave")
+        program.rule("ancestor(x,y) := parent(x,y).step()")
+        program.rule("ancestor(x,y) := parent(x,z) * ancestor(z,y).step()")
+        return program
+
+    def test_tabled_recursive_proof_direct(self):
+        from tensor_logic.proofs import prove
+        program = self._make_ancestor_program()
+        proof = prove(program, "ancestor", "alice", "bob")
+        self.assertIsNotNone(proof)
+        self.assertEqual(proof.head, ("ancestor", "alice", "bob"))
+
+    def test_tabled_recursive_proof_deep(self):
+        from tensor_logic.proofs import prove
+        program = self._make_ancestor_program()
+        proof = prove(program, "ancestor", "alice", "dave")
+        self.assertIsNotNone(proof)
+        self.assertEqual(proof.head, ("ancestor", "alice", "dave"))
+
+    def test_tabled_recursive_proof_negative(self):
+        from tensor_logic.proofs import prove
+        program = self._make_ancestor_program()
+        proof = prove(program, "ancestor", "dave", "alice")
+        self.assertIsNone(proof)
+
+    def test_tabled_proof_shows_rule_structure(self):
+        from tensor_logic.proofs import prove, fmt_proof_tree
+        from tensor_logic.program import Program
+        program = Program()
+        program.domain("Person", ["alice", "bob", "carol"])
+        program.relation("parent", "Person", "Person")
+        program.relation("ancestor", "Person", "Person")
+        program.fact("parent", "alice", "bob")
+        program.fact("parent", "bob", "carol")
+        program.rule("ancestor(x,y) := parent(x,y).step()")
+        program.rule("ancestor(x,y) := parent(x,z) * ancestor(z,y).step()")
+        proof = prove(program, "ancestor", "alice", "carol")
+        self.assertIsNotNone(proof)
+        tree = fmt_proof_tree(proof)
+        self.assertIn("parent(alice", tree)
+        self.assertIn("ancestor", tree)
+
+    def test_tabled_proof_handles_cycle_in_data(self):
+        # Without tabling, cyclic data (a→b→a) causes infinite recursion.
+        from tensor_logic.proofs import prove
+        from tensor_logic.program import Program
+        program = Program()
+        program.domain("Node", ["a", "b", "c"])
+        program.relation("edge", "Node", "Node")
+        program.relation("reachable", "Node", "Node")
+        program.fact("edge", "a", "b")
+        program.fact("edge", "b", "a")  # cycle: a→b→a
+        program.fact("edge", "b", "c")
+        program.rule("reachable(x,y) := edge(x,y).step()")
+        program.rule("reachable(x,y) := edge(x,z) * reachable(z,y).step()")
+        # Should find proof and not hang
+        proof = prove(program, "reachable", "a", "c")
+        self.assertIsNotNone(proof)
+        self.assertEqual(proof.head, ("reachable", "a", "c"))
+
+    def test_tabled_proof_false_through_cycle_terminates(self):
+        # Without tabling: prove("reachable", "a", "c") where c is unreachable
+        # but there's a cycle a→b→a would loop forever.
+        from tensor_logic.proofs import prove
+        from tensor_logic.program import Program
+        program = Program()
+        program.domain("Node", ["a", "b", "c"])
+        program.relation("edge", "Node", "Node")
+        program.relation("reachable", "Node", "Node")
+        program.fact("edge", "a", "b")
+        program.fact("edge", "b", "a")  # cycle only — c is unreachable
+        program.rule("reachable(x,y) := edge(x,y).step()")
+        program.rule("reachable(x,y) := edge(x,z) * reachable(z,y).step()")
+        # c is unreachable — should return None without infinite loop
+        proof = prove(program, "reachable", "a", "c")
+        self.assertIsNone(proof)
+
     def test_repl_parse_and_execute(self):
         from tensor_logic.__main__ import _repl_eval
         from tensor_logic.program import Program

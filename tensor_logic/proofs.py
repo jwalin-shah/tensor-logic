@@ -7,6 +7,8 @@ from collections import deque
 
 from .program import Program, Atom, Rule
 
+_PENDING = object()  # sentinel: goal is currently being proved (cycle guard)
+
 
 @dataclass(frozen=True)
 class Proof:
@@ -39,7 +41,8 @@ class NegativeProof:
         return cls(head=head, body=body, reason=reason)
 
 
-def prove(program: Program, relation_name: str, src: str, dst: str, recursive: bool = False) -> Proof | None:
+def prove(program: Program, relation_name: str, src: str, dst: str,
+          recursive: bool = False, _table: dict | None = None) -> Proof | None:
     if relation_name not in program.relations:
         raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
@@ -48,14 +51,25 @@ def prove(program: Program, relation_name: str, src: str, dst: str, recursive: b
     if val > 0:
         source = program.sources.get((relation_name, src, dst))
         return Proof((relation_name, src, dst), source=source, confidence=val)
-    if relation_name in program.rules:
-        for rule in program.rules[relation_name]:
-            proof = _prove_from_rule(program, relation_name, rule, src, dst)
-            if proof is not None:
-                return proof
-    if recursive:
-        return _prove_recursive_chain(program, relation_name, src, dst)
-    return None
+    if relation_name not in program.rules:
+        return None
+    if _table is None:
+        _table = {}
+    key = (relation_name, src, dst)
+    if key in _table:
+        entry = _table[key]
+        return None if entry is _PENDING else entry
+    _table[key] = _PENDING
+    result = None
+    for rule in program.rules[relation_name]:
+        proof = _prove_from_rule(program, relation_name, rule, src, dst, _table=_table)
+        if proof is not None:
+            result = proof
+            break
+    _table[key] = result
+    if result is None and recursive:
+        result = _prove_recursive_chain(program, relation_name, src, dst)
+    return result
 
 def prove_negative(program: Program, relation_name: str, src: str, dst: str, recursive: bool = False) -> NegativeProof | None:
     if relation_name not in program.relations:
@@ -185,11 +199,12 @@ def _prove_negative_recursive_chain(program: Program, relation_name: str, src: s
     return NegativeProof((relation_name, src, dst), reason="no_recursive_path")
 
 
-def _prove_from_rule(program: Program, relation_name: str, rule: Rule, src: str, dst: str) -> Proof | None:
+def _prove_from_rule(program: Program, relation_name: str, rule: Rule, src: str, dst: str,
+                     _table: dict | None = None) -> Proof | None:
     bindings = _bind_variables(rule.head, src, dst)
     if bindings is None:
         return None
-    body_proofs = _prove_body_atoms(program, rule.body, bindings)
+    body_proofs = _prove_body_atoms(program, rule.body, bindings, _table=_table)
     if body_proofs is None:
         return None
     confidence = math.prod(p.confidence for p in body_proofs)
@@ -210,14 +225,15 @@ def _bind_variables(head_atom: Atom, src: str, dst: str) -> dict[str, str] | Non
     return bindings
 
 
-def _prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str]) -> list[Proof] | None:
+def _prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str],
+                      _table: dict | None = None) -> list[Proof] | None:
     unbound_vars = _find_unbound_vars(atoms, bindings)
     if not unbound_vars:
-        return _try_prove_body_atoms(program, atoms, bindings)
+        return _try_prove_body_atoms(program, atoms, bindings, _table=_table)
     var = unbound_vars.pop()
     for symbol in _get_witness_domain(program, atoms, bindings, var):
         extended_bindings = {**bindings, var: symbol}
-        proofs = _try_prove_body_atoms(program, atoms, extended_bindings)
+        proofs = _try_prove_body_atoms(program, atoms, extended_bindings, _table=_table)
         if proofs is not None:
             return proofs
     return None
@@ -242,14 +258,15 @@ def _get_witness_domain(program: Program, atoms: tuple[Atom, ...], bindings: dic
     return []
 
 
-def _try_prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str]) -> list[Proof] | None:
+def _try_prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str],
+                          _table: dict | None = None) -> list[Proof] | None:
     proofs = []
     for atom in atoms:
         if len(atom.args) != 2:
             return None
         bound_src = bindings.get(atom.args[0], atom.args[0])
         bound_dst = bindings.get(atom.args[1], atom.args[1])
-        atom_proof = prove(program, atom.relation, bound_src, bound_dst, recursive=False)
+        atom_proof = prove(program, atom.relation, bound_src, bound_dst, _table=_table)
         if atom_proof is None:
             return None
         proofs.append(atom_proof)
