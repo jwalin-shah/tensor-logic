@@ -382,19 +382,22 @@ def main():
     print(f"  (C) SFT + tool          : {100*C['acc']:.1f}%")
     print(f"  tool-call validity (C)  : {100*C['well_formed']:.1f}%")
 
-    # Falsification check (per IDEAS.md). Skips ratio gate without (A).
-    deep_C = sum(C["by_hop"].get(h, [0, 0])[0] for h in [3, 4, 5])
-    deep_C_n = sum(C["by_hop"].get(h, [0, 0])[1] for h in [3, 4, 5]) or 1
-    c_acc = deep_C / deep_C_n
-    print(f"\n  deep-hop (3-5) tool   : {100*c_acc:.1f}%")
-    if A is not None:
-        deep_A = sum(A["by_hop"].get(h, [0, 0])[0] for h in [3, 4, 5])
-        deep_A_n = sum(A["by_hop"].get(h, [0, 0])[1] for h in [3, 4, 5]) or 1
-        a_acc = deep_A / deep_A_n
-        ratio = c_acc / max(a_acc, 1e-6)
-        print(f"  deep-hop (3-5) base   : {100*a_acc:.1f}%")
-        print(f"  ratio C/A             : {ratio:.2f}× "
-              f"({'PASS ≥1.5×' if ratio >= 1.5 else 'FAIL — falsified'})")
+    # Falsification check (per IDEAS.md). Only meaningful for hop-graded
+    # buckets (exp60); silently skipped when by_hop is keyed on rule names.
+    has_hop_buckets = any(isinstance(h, int) for h in C["by_hop"])
+    if has_hop_buckets:
+        deep_C = sum(C["by_hop"].get(h, [0, 0])[0] for h in [3, 4, 5])
+        deep_C_n = sum(C["by_hop"].get(h, [0, 0])[1] for h in [3, 4, 5]) or 1
+        c_acc = deep_C / deep_C_n
+        print(f"\n  deep-hop (3-5) tool   : {100*c_acc:.1f}%")
+        if A is not None:
+            deep_A = sum(A["by_hop"].get(h, [0, 0])[0] for h in [3, 4, 5])
+            deep_A_n = sum(A["by_hop"].get(h, [0, 0])[1] for h in [3, 4, 5]) or 1
+            a_acc = deep_A / deep_A_n
+            ratio = c_acc / max(a_acc, 1e-6)
+            print(f"  deep-hop (3-5) base   : {100*a_acc:.1f}%")
+            print(f"  ratio C/A             : {ratio:.2f}× "
+                  f"({'PASS ≥1.5×' if ratio >= 1.5 else 'FAIL — falsified'})")
     print(f"  tool-call validity    : "
           f"{'PASS ≥95%' if C['well_formed'] >= 0.95 else 'FAIL — falsified'}")
 
