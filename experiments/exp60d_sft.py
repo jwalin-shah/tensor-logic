@@ -170,27 +170,44 @@ def load_for_inference(model_name: str, adapter_dir: Path | None):
 
 
 def generate(model, tok, device, system: str, user: str, max_new_tokens: int = 96) -> str:
+    """Single-example generate, kept for compatibility / debugging."""
+    return generate_batch(model, tok, device, system, [user], max_new_tokens)[0]
+
+
+def generate_batch(model, tok, device, system: str, users: list[str],
+                   max_new_tokens: int = 80) -> list[str]:
+    """Batched generation with left-padding.
+
+    Causal LMs need LEFT padding so the last real token is at position -1
+    of the input — otherwise generation continues from a pad token and
+    produces garbage. This is the #1 footgun of batched LM eval.
+    """
     import torch
-    msgs = [{"role": "system", "content": system},
-            {"role": "user", "content": user}]
-    # Newer transformers returns a BatchEncoding (dict-like) from
-    # apply_chat_template; older versions returned a raw tensor. Force the
-    # dict path and pull input_ids ourselves so we work on both.
-    enc = tok.apply_chat_template(
-        msgs, return_tensors="pt", return_dict=True,
-        add_generation_prompt=True,
-    )
+    # Render each example through the chat template, get plain text
+    texts = []
+    for u in users:
+        msgs = [{"role": "system", "content": system},
+                {"role": "user", "content": u}]
+        texts.append(tok.apply_chat_template(msgs, tokenize=False,
+                                             add_generation_prompt=True))
+    # Left-pad as a single batch
+    old_side = tok.padding_side
+    tok.padding_side = "left"
+    enc = tok(texts, return_tensors="pt", padding=True, truncation=True,
+              max_length=512)
+    tok.padding_side = old_side
     input_ids = enc["input_ids"].to(device)
-    attn = enc.get("attention_mask")
-    if attn is not None:
-        attn = attn.to(device)
+    attn = enc["attention_mask"].to(device)
     with torch.no_grad():
         out = model.generate(
             input_ids, attention_mask=attn,
             max_new_tokens=max_new_tokens, do_sample=False,
             pad_token_id=tok.pad_token_id,
         )
-    return tok.decode(out[0, input_ids.shape[1]:], skip_special_tokens=True)
+    # Slice off the prompt portion per-row and decode
+    prompt_len = input_ids.shape[1]
+    return [tok.decode(out[i, prompt_len:], skip_special_tokens=True)
+            for i in range(out.shape[0])]
 
 
 # ---------- Eval modes ----------
@@ -208,32 +225,39 @@ def parse_freeform_yesno(text: str) -> str:
     return "no"
 
 
-def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, system: str):
+def eval_condition(name: str, model, tok, device, eval_traces, use_tool: bool, system: str,
+                   batch_size: int = 16):
     try:
         from tqdm import tqdm
-        bar = tqdm(eval_traces, desc=name, leave=False)
     except ImportError:
-        bar = eval_traces
+        def tqdm(it, **_): return it
     correct = 0
     well_formed = 0
     by_hop = defaultdict(lambda: [0, 0])
-    for trace in bar:
-        user = render_user_msg(trace)
-        resp = generate(model, tok, device, system, user)
-        if use_tool:
-            results = harness.evaluate_string(trace["graph"], resp)
-            if results:
-                well_formed += 1
-                pred = results[0]["result"]["answer"]
+
+    # Group traces into batches; generate in parallel.
+    n = len(eval_traces)
+    batches = [eval_traces[i:i + batch_size] for i in range(0, n, batch_size)]
+    bar = tqdm(batches, desc=name, leave=False)
+
+    for batch in bar:
+        users = [render_user_msg(t) for t in batch]
+        resps = generate_batch(model, tok, device, system, users)
+        for trace, resp in zip(batch, resps):
+            if use_tool:
+                results = harness.evaluate_string(trace["graph"], resp)
+                if results:
+                    well_formed += 1
+                    pred = results[0]["result"]["answer"]
+                else:
+                    pred = parse_freeform_yesno(resp)
             else:
                 pred = parse_freeform_yesno(resp)
-        else:
-            pred = parse_freeform_yesno(resp)
-        ok = (pred == trace["gold_answer"])
-        correct += ok
-        h = trace["hops"]
-        by_hop[h][0] += ok
-        by_hop[h][1] += 1
+            ok = (pred == trace["gold_answer"])
+            correct += ok
+            h = trace["hops"]
+            by_hop[h][0] += ok
+            by_hop[h][1] += 1
     n = len(eval_traces)
     print(f"\n  [{name}] accuracy: {correct}/{n} = {100*correct/n:.1f}%")
     if use_tool:
