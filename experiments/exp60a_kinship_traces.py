@@ -42,16 +42,53 @@ NAMES = [
     "grace", "henry", "iris", "jack", "kate", "leo",
 ]
 
+# Larger pool for the --hard eval set: 40 names, supports 30+-person graphs
+# and hop chains of length 6-10.
+NAMES_HARD = NAMES + [
+    "mia", "noah", "olive", "pete", "quinn", "ruth", "sam", "tess",
+    "umar", "vera", "wade", "xena", "yusuf", "zara", "amy", "ben",
+    "cleo", "dan", "ella", "finn", "gus", "hana", "ivy", "jonah",
+    "luna", "milo", "nina", "owen",
+]
 
-def gen_random_family(rng, n_people=None, max_children=3):
+
+def add_distractors(graph: dict, people, rng) -> dict:
+    """Add married_to / friend_of relations to the graph as distractors.
+
+    These relations have NOTHING to do with the ancestor/descendant query —
+    a correctly SFT'd model should always emit `relation="parent"` and
+    ignore these. If accuracy drops on --hard, it's diagnostic: the model
+    is confusing relations.
+    """
+    n = len(people)
+    n_marriages = max(1, n // 5)
+    n_friendships = max(2, n // 3)
+    married = []
+    for _ in range(n_marriages):
+        a, b = rng.sample(people, 2)
+        married.append([a, b])
+    friends = []
+    for _ in range(n_friendships):
+        a, b = rng.sample(people, 2)
+        friends.append([a, b])
+    graph["married_to"] = married
+    graph["friend_of"] = friends
+    return graph
+
+
+def gen_random_family(rng, n_people=None, max_children=3, name_pool=None, chain_bias=False):
     """Generate a small random family tree as a parent relation.
 
     Returns: dict {"parent": [[parent, child], ...]}.
-    Tree is a random forest over a subset of NAMES, max 4 generations deep.
+    Tree is a random forest over a subset of `name_pool` (default: NAMES).
+
+    chain_bias=True biases parent selection toward the most-recent person,
+    producing long linear chains needed for hops 6-10 in the --hard set.
     """
+    pool = name_pool or NAMES
     if n_people is None:
-        n_people = rng.randint(6, len(NAMES))
-    people = rng.sample(NAMES, n_people)
+        n_people = rng.randint(6, len(pool))
+    people = rng.sample(pool, n_people)
     rng.shuffle(people)
     parents = []
     # Random tree: assign each person (except first 1-2 roots) a parent
@@ -59,10 +96,14 @@ def gen_random_family(rng, n_people=None, max_children=3):
     n_roots = rng.randint(1, 2)
     for i in range(n_roots, len(people)):
         possible_parents = people[:i]
-        # Bias toward shallow trees to make multi-hop queries non-trivial
-        weights = [max_children - min(max_children - 1, sum(1 for p, c in parents if p == pp)) for pp in possible_parents]
-        if sum(weights) <= 0:
-            weights = [1] * len(possible_parents)
+        if chain_bias:
+            # Heavily prefer the most-recent ancestor → long linear chains
+            weights = [(j + 1) ** 3 for j in range(len(possible_parents))]
+        else:
+            # Bias toward shallow trees to make multi-hop queries non-trivial
+            weights = [max_children - min(max_children - 1, sum(1 for p, c in parents if p == pp)) for pp in possible_parents]
+            if sum(weights) <= 0:
+                weights = [1] * len(possible_parents)
         parent = rng.choices(possible_parents, weights=weights, k=1)[0]
         parents.append([parent, people[i]])
     return {"parent": parents}, people
@@ -125,14 +166,26 @@ def hops_between(a, b, parents):
     return None
 
 
-def make_trace(rng, target_hops=None):
+def make_trace(rng, target_hops=None, hard=False):
     """Generate one (graph, query, gold) trace.
 
     Query types:
       - ancestor: "is X an ancestor of Y?"
       - descendant: "is X a descendant of Y?"
+
+    hard=True uses NAMES_HARD (40 names), 25-35 person graphs with linear
+    chains (chain_bias=True), and adds married_to / friend_of distractor
+    relations the model must ignore.
     """
-    graph, people = gen_random_family(rng)
+    if hard:
+        n_people = rng.randint(25, 35)
+        graph, people = gen_random_family(
+            rng, n_people=n_people, max_children=2,
+            name_pool=NAMES_HARD, chain_bias=True,
+        )
+        graph = add_distractors(graph, people, rng)
+    else:
+        graph, people = gen_random_family(rng)
     parents = graph["parent"]
 
     # Try to get a query at a target hop count if requested
@@ -185,9 +238,38 @@ def make_trace(rng, target_hops=None):
 
 
 def main():
-    rng = random.Random(42)
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--hard", action="store_true",
+                    help="Generate harder eval set: 25-35 person graphs, "
+                         "hops 6-10, distractor relations.")
+    ap.add_argument("--out", default=None,
+                    help="Output filename (default: train+eval for normal, "
+                         "eval_hard.jsonl for --hard).")
+    ap.add_argument("--n", type=int, default=200,
+                    help="Number of traces (only used with --hard).")
+    args = ap.parse_args()
+
+    rng = random.Random(42 if not args.hard else 1337)
     out_dir = Path(__file__).parent / "exp60_data"
     out_dir.mkdir(exist_ok=True)
+
+    if args.hard:
+        out_path = out_dir / (args.out or "eval_hard.jsonl")
+        hop_targets = [6, 7, 8, 9, 10]
+        with out_path.open("w") as f:
+            for i in range(args.n):
+                target = hop_targets[i % len(hop_targets)]
+                trace = make_trace(rng, target_hops=target, hard=True)
+                f.write(json.dumps(trace) + "\n")
+        hops_counter = {}
+        with out_path.open() as f:
+            for line in f:
+                d = json.loads(line)
+                hops_counter[d["hops"]] = hops_counter.get(d["hops"], 0) + 1
+        print(f"  {out_path.name}: {args.n} HARD traces, hops = {sorted(hops_counter.items())}")
+        print(f"  graphs: 25-35 people, distractor relations: married_to, friend_of")
+        return
 
     splits = [
         ("train", 1000, [1, 2, 3]),
@@ -200,7 +282,6 @@ def main():
                 target = hop_targets[i % len(hop_targets)]
                 trace = make_trace(rng, target_hops=target)
                 f.write(json.dumps(trace) + "\n")
-        # Hop distribution
         hops_counter = {}
         with path.open() as f:
             for line in f:
@@ -210,10 +291,6 @@ def main():
 
     print()
     print(f"Wrote training + eval JSONL files to {out_dir}/")
-    print("Sample trace:")
-    with (out_dir / "train.jsonl").open() as f:
-        sample = json.loads(f.readline())
-    print(json.dumps(sample, indent=2))
 
 
 if __name__ == "__main__":

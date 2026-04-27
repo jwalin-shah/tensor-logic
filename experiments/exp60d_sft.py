@@ -260,10 +260,13 @@ def main():
                     help="Skip training AND skip (A); load saved adapter from --out "
                          "and run only (B) + (C). For tight eval-iteration loops.")
     ap.add_argument("--n-eval", type=int, default=200)
+    ap.add_argument("--eval-file", default="eval.jsonl",
+                    help="Filename within exp60_data/ for the eval set "
+                         "(e.g. eval_hard.jsonl).")
     args = ap.parse_args()
 
     train = load_traces(DATA / "train.jsonl")
-    evald = load_traces(DATA / "eval.jsonl")[: args.n_eval]
+    evald = load_traces(DATA / args.eval_file)[: args.n_eval]
     print(f"exp60d: SFT + tool-routed eval ({len(train)} train, {len(evald)} eval)")
 
     out_dir = Path(args.out)
