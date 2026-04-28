@@ -10,7 +10,8 @@ def test_index_json_is_gitignored():
     assert "tools/index.json" in gitignore
 
 
-from code_index import _extract_module, build_index
+import os
+from code_index import _extract_module, build_index, is_stale, ensure_fresh
 
 def test_extract_class_init_args(tmp_path):
     src = tmp_path / "mymod.py"
@@ -55,3 +56,55 @@ def test_build_index_covers_tensor_logic():
 def test_build_index_excludes_private_modules():
     index = build_index()
     assert not any(k.endswith(".__init__") or k.endswith(".__main__") for k in index)
+
+
+def test_is_stale_when_index_missing(tmp_path):
+    index_path = tmp_path / "index.json"
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    (source_dir / "mod.py").write_text("def foo(): pass")
+    assert is_stale(source_dir=source_dir, index_path=index_path) is True
+
+def test_is_stale_when_source_newer(tmp_path):
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    src_file = source_dir / "mod.py"
+    src_file.write_text("def foo(): pass")
+    index_path = tmp_path / "index.json"
+    index_path.write_text("{}")
+    old_time = src_file.stat().st_mtime - 10
+    os.utime(index_path, (old_time, old_time))
+    assert is_stale(source_dir=source_dir, index_path=index_path) is True
+
+def test_is_not_stale_when_index_fresh(tmp_path):
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    src_file = source_dir / "mod.py"
+    src_file.write_text("def foo(): pass")
+    index_path = tmp_path / "index.json"
+    index_path.write_text("{}")
+    new_time = src_file.stat().st_mtime + 10
+    os.utime(index_path, (new_time, new_time))
+    assert is_stale(source_dir=source_dir, index_path=index_path) is False
+
+def test_ensure_fresh_creates_index(tmp_path):
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    (source_dir / "mymod.py").write_text("def hello(x: int) -> str: pass")
+    index_path = tmp_path / "index.json"
+    result = ensure_fresh(source_dir=source_dir, index_path=index_path)
+    assert index_path.exists()
+    assert "tensor_logic.mymod" in result
+    assert "hello" in result["tensor_logic.mymod"]
+
+def test_ensure_fresh_does_not_rebuild_when_current(tmp_path):
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    src = source_dir / "mymod.py"
+    src.write_text("def hello(): pass")
+    index_path = tmp_path / "index.json"
+    index_path.write_text('{"_meta": {"built_at": "old", "note": ""}, "tensor_logic.mymod": {}}')
+    new_time = src.stat().st_mtime + 10
+    os.utime(index_path, (new_time, new_time))
+    result = ensure_fresh(source_dir=source_dir, index_path=index_path)
+    assert result["tensor_logic.mymod"] == {}

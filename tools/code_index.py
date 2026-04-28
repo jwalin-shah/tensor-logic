@@ -77,3 +77,26 @@ def build_index(source_dir: Path = _SOURCE_DIR) -> dict:
             continue
         index.update(_extract_module(path))
     return index
+
+
+def is_stale(source_dir: Path = _SOURCE_DIR, index_path: Path = _INDEX_PATH) -> bool:
+    """Return True if index.json is missing or older than any source file."""
+    if not index_path.exists():
+        return True
+    index_mtime = index_path.stat().st_mtime
+    source_files = list(source_dir.glob("*.py"))
+    if not source_files:
+        return False
+    return max(p.stat().st_mtime for p in source_files) > index_mtime
+
+
+def ensure_fresh(
+    source_dir: Path = _SOURCE_DIR,
+    index_path: Path = _INDEX_PATH,
+) -> dict:
+    """Return current index, rebuilding from source_dir if stale."""
+    if is_stale(source_dir=source_dir, index_path=index_path):
+        index = build_index(source_dir=source_dir)
+        index_path.write_text(json.dumps(index, indent=2))
+        return index
+    return json.loads(index_path.read_text())
