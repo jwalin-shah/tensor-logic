@@ -6,6 +6,7 @@ from .program import Program, FactSource
 from .file_format import load_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
 from .provenance import evaluate_with_provenance, fmt_proof, proof_score
+from .proof_tree_viewer import ProofTreeNode, build_proof_tree_view, render_proof_tree
 from .rules import (
     Atom,
     Rule,
@@ -38,5 +39,8 @@ __all__ = [
     "fmt_proof",
     "parse_rule",
     "proof_score",
+    "ProofTreeNode",
+    "build_proof_tree_view",
+    "render_proof_tree",
     "query_relation",
 ]
