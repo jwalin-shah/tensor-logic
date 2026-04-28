@@ -6,7 +6,7 @@ from .program import Program, FactSource
 from .file_format import load_tl
 from .http_api import ingest_python_source, prove_source, query_source, run_source, serve
 from .ingest import PythonImportGraph, ingest_python, render_python_imports_tl
-from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
+from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, prove_with_do, Proof, NegativeProof
 from .proof_tree_viewer import ProofTreeNode, build_proof_tree_view, render_proof_tree
 from .provenance import evaluate_with_provenance, fmt_proof, proof_score
 from .repo_graph_view import RepoGraphData, dependency_report, load_repo_graph
@@ -53,6 +53,7 @@ __all__ = [
     "dependency_report",
     "prove",
     "prove_negative",
+    "prove_with_do",
     "fmt_proof",
     "parse_rule",
     "proof_score",

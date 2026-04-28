@@ -42,11 +42,15 @@ class NegativeProof:
 
 
 def prove(program: Program, relation_name: str, src: str, dst: str,
-          recursive: bool = False, _table: dict | None = None) -> Proof | None:
+          recursive: bool = False, _table: dict | None = None,
+          _do: dict | None = None) -> Proof | None:
     if relation_name not in program.relations:
         raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
     _check_symbols(relation, relation_name, src, dst)
+    if _do is not None and (relation_name, src, dst) in _do:
+        val = _do[(relation_name, src, dst)]
+        return Proof((relation_name, src, dst), confidence=float(val)) if val > 0 else None
     val = relation.data[relation.domains[0].id(src), relation.domains[1].id(dst)].item()
     if val > 0:
         source = program.sources.get((relation_name, src, dst))
@@ -62,7 +66,7 @@ def prove(program: Program, relation_name: str, src: str, dst: str,
     _table[key] = _PENDING
     result = None
     for rule in program.rules[relation_name]:
-        proof = _prove_from_rule(program, relation_name, rule, src, dst, _table=_table)
+        proof = _prove_from_rule(program, relation_name, rule, src, dst, _table=_table, _do=_do)
         if proof is not None:
             result = proof
             break
@@ -214,11 +218,11 @@ def _prove_negative_recursive_chain(program: Program, relation_name: str, src: s
 
 
 def _prove_from_rule(program: Program, relation_name: str, rule: Rule, src: str, dst: str,
-                     _table: dict | None = None) -> Proof | None:
+                     _table: dict | None = None, _do: dict | None = None) -> Proof | None:
     bindings = _bind_variables(rule.head, src, dst)
     if bindings is None:
         return None
-    body_proofs = _prove_body_atoms(program, rule.body, bindings, _table=_table)
+    body_proofs = _prove_body_atoms(program, rule.body, bindings, _table=_table, _do=_do)
     if body_proofs is None:
         return None
     confidence = math.prod(p.confidence for p in body_proofs)
@@ -240,14 +244,14 @@ def _bind_variables(head_atom: Atom, src: str, dst: str) -> dict[str, str] | Non
 
 
 def _prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str],
-                      _table: dict | None = None) -> list[Proof] | None:
+                      _table: dict | None = None, _do: dict | None = None) -> list[Proof] | None:
     unbound_vars = _find_unbound_vars(atoms, bindings)
     if not unbound_vars:
-        return _try_prove_body_atoms(program, atoms, bindings, _table=_table)
+        return _try_prove_body_atoms(program, atoms, bindings, _table=_table, _do=_do)
     var = unbound_vars.pop()
     for symbol in _get_witness_domain(program, atoms, bindings, var):
         extended_bindings = {**bindings, var: symbol}
-        proofs = _try_prove_body_atoms(program, atoms, extended_bindings, _table=_table)
+        proofs = _try_prove_body_atoms(program, atoms, extended_bindings, _table=_table, _do=_do)
         if proofs is not None:
             return proofs
     return None
@@ -273,18 +277,30 @@ def _get_witness_domain(program: Program, atoms: tuple[Atom, ...], bindings: dic
 
 
 def _try_prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[str, str],
-                          _table: dict | None = None) -> list[Proof] | None:
+                          _table: dict | None = None, _do: dict | None = None) -> list[Proof] | None:
     proofs = []
     for atom in atoms:
         if len(atom.args) != 2:
             return None
         bound_src = bindings.get(atom.args[0], atom.args[0])
         bound_dst = bindings.get(atom.args[1], atom.args[1])
-        atom_proof = prove(program, atom.relation, bound_src, bound_dst, _table=_table)
+        atom_proof = prove(program, atom.relation, bound_src, bound_dst, _table=_table, _do=_do)
         if atom_proof is None:
             return None
         proofs.append(atom_proof)
     return proofs
+
+
+def prove_with_do(program: Program, relation_name: str, src: str, dst: str,
+                  do: dict[tuple[str, str, str], float],
+                  recursive: bool = False) -> Proof | None:
+    """prove() under Pearl do()-interventions.
+
+    do: {(relation_name, src, dst): value} — each entry asserts the fact at
+    the given value and severs all rule derivations that would re-derive it.
+    do(fact, 0) makes the fact unprovable regardless of rules in the program.
+    """
+    return prove(program, relation_name, src, dst, recursive=recursive, _do=do)
 
 
 def fmt_proof_tree(proof: Proof, indent: int = 0) -> str:
