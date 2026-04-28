@@ -95,6 +95,8 @@ python tools/code_index.py --dump
 python tools/code_index.py --status
 ```
 
+If the symbol is not found, `--lookup` prints `symbol not found: <name>` to stderr and exits 1.
+
 Output of `--lookup Schema`:
 ```
 tensor_logic.rules.Schema [class]
@@ -159,4 +161,4 @@ No graph traversal needed. Two CLI calls in a plan-writing session is acceptable
 1. `python tools/code_index.py --lookup Schema` returns current `__init__` args in <1s
 2. Editing `tensor_logic/rules.py` and immediately running `--lookup` returns updated signature (lazy rebuild fires)
 3. Fresh clone with no `index.json` works on first lookup without manual setup
-4. CLAUDE.md instruction causes planner to run a lookup before drafting steps that touch `tensor_logic/`
+4. `CLAUDE.md` exists at project root with the lookup instruction
