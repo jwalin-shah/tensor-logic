@@ -5,6 +5,7 @@ from .language import Domain, Relation, evaluate_expr, facts
 from .program import Program, FactSource
 from .file_format import load_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
+from .http_api import ingest_python, run_source, query_source, prove_source, serve
 from .provenance import evaluate_with_provenance, fmt_proof, proof_score
 from .rules import (
     Atom,
@@ -37,6 +38,11 @@ __all__ = [
     "prove_negative",
     "fmt_proof",
     "parse_rule",
+    "ingest_python",
+    "run_source",
+    "query_source",
+    "prove_source",
+    "serve",
     "proof_score",
     "query_relation",
 ]
