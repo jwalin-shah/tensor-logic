@@ -1,0 +1,28 @@
+{
+  "answer": true,
+  "proof": {
+    "head": ["depends_on", "worker", "models"],
+    "confidence": 0.81,
+    "source": {"file": "examples/code_dependencies.tl", "lineno": 14},
+    "body": [
+      {
+        "head": ["imports", "worker", "api"],
+        "confidence": 0.9,
+        "source": {"file": "examples/code_dependencies.tl", "lineno": 11},
+        "body": []
+      },
+      {
+        "head": ["depends_on", "api", "models"],
+        "confidence": 0.9,
+        "body": [
+          {
+            "head": ["imports", "api", "models"],
+            "confidence": 0.9,
+            "source": {"file": "examples/code_dependencies.tl", "lineno": 12},
+            "body": []
+          }
+        ]
+      }
+    ]
+  }
+}
