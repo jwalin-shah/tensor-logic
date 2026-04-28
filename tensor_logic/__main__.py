@@ -6,6 +6,7 @@ import sys
 
 from .file_format import Command, load_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
+from .http_api import serve
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -31,10 +32,17 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("repl")
 
+    serve_p = sub.add_parser("serve")
+    serve_p.add_argument("--host", default="127.0.0.1")
+    serve_p.add_argument("--port", type=int, default=8000)
+
     args = parser.parse_args(argv)
 
     if args.cmd == "repl":
         _run_repl()
+        return 0
+    if args.cmd == "serve":
+        serve(args.host, args.port)
         return 0
 
     loaded = load_tl(args.file)

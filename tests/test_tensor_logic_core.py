@@ -1,5 +1,11 @@
 import unittest
 
+import json
+import tempfile
+import threading
+from pathlib import Path
+from urllib.request import Request, urlopen
+
 import torch
 
 from tensor_logic import (
@@ -21,6 +27,8 @@ from tensor_logic import (
     fmt_proof_tree,
 )
 from tensor_logic.semirings import gf2_matmul
+from tensor_logic.http_api import TensorLogicHandler
+from http.server import ThreadingHTTPServer
 
 
 GRAPH = {
@@ -492,6 +500,102 @@ class TensorLogicCoreTest(unittest.TestCase):
         proof = prove(loaded.program, "depends_on", "worker", "api")
         self.assertIsNotNone(proof)
         self.assertEqual(proof.body[0].head[0], "imports")
+
+
+class TensorLogicHttpApiTest(unittest.TestCase):
+    def _post_json(self, base_url: str, path: str, payload: dict):
+        req = Request(
+            url=f"{base_url}{path}",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urlopen(req) as resp:
+            return resp.status, json.loads(resp.read().decode("utf-8"))
+
+    def test_source_api_helpers_on_code_dependencies_example(self):
+        from tensor_logic.http_api import run_source, query_source, prove_source
+
+        source = Path("examples/code_dependencies.tl").read_text(encoding="utf-8")
+
+        run_result = run_source(source)
+        self.assertEqual(len(run_result["outputs"]), 2)
+        self.assertIn("depends_on(worker, models) = True", run_result["outputs"][0])
+
+        query_result = query_source(source, relation="depends_on", args=["worker", "models"], recursive=True)
+        self.assertTrue(query_result["answer"])
+        self.assertEqual(query_result["value"], 1.0)
+
+        prove_result = prove_source(
+            source,
+            relation="depends_on",
+            args=["models", "worker"],
+            recursive=True,
+            why_not=True,
+            format_type="json",
+        )
+        self.assertFalse(prove_result["answer"])
+        self.assertIn("explanation", prove_result)
+
+    def test_ingest_python_builds_tl(self):
+        from tensor_logic.http_api import ingest_python
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            py_path = Path(tmpdir) / "worker.py"
+            py_path.write_text("import api\nfrom db import models\n", encoding="utf-8")
+            tl_source = ingest_python(str(py_path))
+
+        self.assertIn("domain Module", tl_source)
+        self.assertIn("fact imports(worker, api)", tl_source)
+        self.assertIn("fact imports(worker, db)", tl_source)
+        self.assertIn("rule depends_on", tl_source)
+
+    def test_http_endpoints(self):
+        source = Path("examples/code_dependencies.tl").read_text(encoding="utf-8")
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), TensorLogicHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+
+        try:
+            host, port = server.server_address
+            base_url = f"http://{host}:{port}"
+
+            status, run_payload = self._post_json(base_url, "/run", {"source": source})
+            self.assertEqual(status, 200)
+            self.assertEqual(len(run_payload["outputs"]), 2)
+
+            status, query_payload = self._post_json(
+                base_url,
+                "/query",
+                {
+                    "source": source,
+                    "relation": "depends_on",
+                    "args": ["worker", "models"],
+                    "recursive": True,
+                },
+            )
+            self.assertEqual(status, 200)
+            self.assertTrue(query_payload["answer"])
+
+            status, prove_payload = self._post_json(
+                base_url,
+                "/prove",
+                {
+                    "source": source,
+                    "relation": "depends_on",
+                    "args": ["worker", "models"],
+                    "recursive": True,
+                    "format": "json",
+                },
+            )
+            self.assertEqual(status, 200)
+            self.assertTrue(prove_payload["answer"])
+            self.assertIn("proof", prove_payload)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
 
 
 if __name__ == "__main__":
