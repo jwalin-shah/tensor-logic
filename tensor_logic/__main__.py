@@ -6,6 +6,7 @@ import sys
 
 from .file_format import Command, load_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
+from .repo_graph_view import dependency_report, repo_graph_repl
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -31,10 +32,26 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("repl")
 
+    graph_p = sub.add_parser("repo-graph", help="Dependency graph view for Module/imports/depends_on facts")
+    graph_p.add_argument("file", nargs="?", default="/tmp/repo.tl")
+    graph_p.add_argument("--module", help="Show direct imports for one module")
+    graph_p.add_argument("--src", help="Source module for depends_on query")
+    graph_p.add_argument("--dst", help="Destination module for depends_on query")
+    graph_p.add_argument("--interactive", action="store_true", help="Open interactive dependency graph view")
+
     args = parser.parse_args(argv)
 
     if args.cmd == "repl":
         _run_repl()
+        return 0
+
+    if args.cmd == "repo-graph":
+        if args.interactive:
+            repo_graph_repl(args.file)
+            return 0
+        if (args.src is None) != (args.dst is None):
+            parser.error("--src and --dst must be provided together")
+        print(dependency_report(args.file, module=args.module, src=args.src, dst=args.dst))
         return 0
 
     loaded = load_tl(args.file)
