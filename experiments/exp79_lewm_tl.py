@@ -125,8 +125,7 @@ class Encoder(nn.Module):
         )
 
     def forward(self, x):
-        z = self.net(x)
-        return F.normalize(z, dim=-1)  # unit sphere: stable scale for stop-grad JEPA
+        return self.net(x)
 
 
 class Predictor(nn.Module):
@@ -150,16 +149,13 @@ def jepa_loss(encoder, predictor, frames_batch, device):
 
     z_t = z_all[:, :-1].reshape(-1, z_all.shape[-1])           # (B*(T-1), D)
     z_tp1 = z_all[:, 1:].reshape(-1, z_all.shape[-1]).detach() # stop-gradient
-    l_pred = F.mse_loss(predictor(z_t), z_tp1)
-
-    # encoder outputs are L2-normalized (unit sphere) → no collapse risk, no reg needed
-    return l_pred
+    return F.mse_loss(predictor(z_t), z_tp1)
 
 
 # ── 3. JEPA Training ──────────────────────────────────────────────────────
 
 def train_jepa(device, n_seq=9000, n_epochs=20, batch_size=128, lr=1e-3):
-    """Train JEPA, save encoder.pt. Returns trained Encoder."""
+    """Train JEPA with EMA target encoder. Returns online Encoder."""
     os.makedirs(DATA_DIR, exist_ok=True)
     print("  Generating JEPA sequences...")
     rng = np.random.default_rng(42)
@@ -167,10 +163,14 @@ def train_jepa(device, n_seq=9000, n_epochs=20, batch_size=128, lr=1e-3):
     data = torch.stack(seqs)  # (N, T, 3, H, W)
 
     encoder = Encoder().to(device)
+    target = Encoder().to(device)
+    target.load_state_dict(encoder.state_dict())
+    for p in target.parameters():
+        p.requires_grad_(False)
+
     predictor = Predictor().to(device)
-    opt = torch.optim.Adam(
-        list(encoder.parameters()) + list(predictor.parameters()), lr=lr
-    )
+    params = list(encoder.parameters()) + list(predictor.parameters())
+    opt = torch.optim.Adam(params, lr=lr)
 
     n_batches = (n_seq + batch_size - 1) // batch_size
     for epoch in range(n_epochs):
@@ -178,13 +178,27 @@ def train_jepa(device, n_seq=9000, n_epochs=20, batch_size=128, lr=1e-3):
         total = 0.0
         for b in range(n_batches):
             batch = data[idx[b * batch_size:(b + 1) * batch_size]].to(device)
+            B, T, C, H, W = batch.shape
+            flat = batch.view(B * T, C, H, W)
+
+            z_online = encoder(flat).view(B, T, -1)
+            z_t = z_online[:, :-1].reshape(-1, LATENT_DIM)
+
+            with torch.no_grad():
+                z_ema = target(flat).view(B, T, -1)
+                z_tp1 = z_ema[:, 1:].reshape(-1, LATENT_DIM)
+
+            loss = F.mse_loss(predictor(z_t), z_tp1)
             opt.zero_grad()
-            loss = jepa_loss(encoder, predictor, batch, device)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(
-                list(encoder.parameters()) + list(predictor.parameters()), 1.0
-            )
+            torch.nn.utils.clip_grad_norm_(params, 1.0)
             opt.step()
+
+            # EMA update: target = 0.996 * target + 0.004 * online
+            with torch.no_grad():
+                for t_p, o_p in zip(target.parameters(), encoder.parameters()):
+                    t_p.data.mul_(0.996).add_(o_p.data, alpha=0.004)
+
             total += loss.item()
         print(f"  epoch {epoch + 1}/{n_epochs}  loss={total / n_batches:.4f}")
 
@@ -198,15 +212,25 @@ def train_jepa(device, n_seq=9000, n_epochs=20, batch_size=128, lr=1e-3):
 class RelationProbe(nn.Module):
     def __init__(self):
         super().__init__()
+        # 24 separate heads: one per (pair, relation). A shared head with pair_onehot
+        # can't work because contradictory weights are needed (e.g., above(R,G) wants
+        # W_Gy>0 but above(G,B) wants W_Gy<0 from the same shared weight vector).
         self.heads = nn.ModuleDict({
-            rel: nn.Linear(LATENT_DIM + N_PAIRS, 1) for rel in RELATIONS
+            f"{rel}__{a}_{b}": nn.Linear(LATENT_DIM, 1)
+            for rel in RELATIONS for a, b in PAIRS
         })
 
     def forward(self, z, pair_idx):
         """z: (B, D), pair_idx: (B,) long. Returns {rel: (B,) logit}."""
-        pair_oh = F.one_hot(pair_idx, num_classes=N_PAIRS).float()
-        x = torch.cat([z, pair_oh], dim=-1)
-        return {rel: self.heads[rel](x).squeeze(-1) for rel in RELATIONS}
+        out = {rel: torch.empty(z.shape[0], device=z.device) for rel in RELATIONS}
+        for pi, (a, b) in enumerate(PAIRS):
+            mask = pair_idx == pi
+            if not mask.any():
+                continue
+            z_pi = z[mask]
+            for rel in RELATIONS:
+                out[rel][mask] = self.heads[f"{rel}__{a}_{b}"](z_pi).squeeze(-1)
+        return out
 
 
 def make_probe_dataset(labeled_frames, encoder, device):
@@ -241,33 +265,60 @@ def eval_probe(probe, labeled_frames, encoder, device):
     return acc
 
 
-def train_probe(encoder, labeled_frames, device, n_epochs=50, lr=1e-2):
-    """Train probe on first 400 frames, eval on last 100. Returns (probe, val_acc)."""
+def train_probe(encoder, labeled_frames, device, n_epochs=100, lr=1e-3, batch_size=32):
+    """Train probe + encoder jointly on first 400 frames. Returns (probe, val_acc).
+
+    Joint training because JEPA collapses on high-temporal-correlation synthetic data
+    (consecutive frames barely differ). This directly tests "can a CNN encode
+    binary object relations?" without the unsupervised pretext getting in the way.
+    """
     train_frames, val_frames = labeled_frames[:400], labeled_frames[400:]
-    z_tr, pi_tr, lab_tr = make_probe_dataset(train_frames, encoder, device)
-    z_val, pi_val, lab_val = make_probe_dataset(val_frames, encoder, device)
+
+    # Precompute: (400, 3, H, W) frames, (400, 6, 4) labels, (400, 6) pair_idx
+    frames_t = torch.stack([f for f, _ in train_frames])             # (400, 3, H, W)
+    pair_idx_t = torch.arange(N_PAIRS).unsqueeze(0).expand(len(train_frames), -1)  # (400, 6)
+    labels_t = torch.tensor(
+        [[[float(compute_relations(pos)[(r, a, b)]) for r in RELATIONS]
+          for a, b in PAIRS]
+         for _, pos in train_frames],
+        dtype=torch.float32,
+    )  # (400, 6, 4)
 
     probe = RelationProbe().to(device)
-    opt = torch.optim.Adam(probe.parameters(), lr=lr)
+    encoder.train()
+    params = list(encoder.parameters()) + list(probe.parameters())
+    opt = torch.optim.Adam(params, lr=lr)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=n_epochs)
 
-    for _ in range(n_epochs):
-        probe.train()
-        opt.zero_grad()
-        logits = probe(z_tr.to(device), pi_tr.to(device))
-        loss = sum(
-            F.binary_cross_entropy_with_logits(logits[rel], lab_tr[:, i].to(device))
-            for i, rel in enumerate(RELATIONS)
-        )
-        loss.backward()
-        opt.step()
+    N = len(train_frames)
+    for epoch in range(n_epochs):
+        perm = torch.randperm(N)
+        for i in range(0, N, batch_size):
+            idx = perm[i:i + batch_size]
+            B = idx.shape[0]
+            frames_b = frames_t[idx].to(device)          # (B, 3, H, W)
+            lab_b = labels_t[idx].to(device)             # (B, 6, 4)
+            pi_b = pair_idx_t[idx].to(device)            # (B, 6)
 
+            z = encoder(frames_b)                        # (B, D)
+            z_exp = z.unsqueeze(1).expand(-1, N_PAIRS, -1).reshape(B * N_PAIRS, LATENT_DIM)
+            pi_flat = pi_b.reshape(-1)                   # (B*6,)
+            lab_flat = lab_b.reshape(-1, 4)              # (B*6, 4)
+
+            logits = probe(z_exp, pi_flat)
+            loss = sum(
+                F.binary_cross_entropy_with_logits(logits[rel], lab_flat[:, ri])
+                for ri, rel in enumerate(RELATIONS)
+            )
+            opt.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(params, 1.0)
+            opt.step()
+        sched.step()
+
+    encoder.eval()
     probe.eval()
-    with torch.no_grad():
-        logits = probe(z_val.to(device), pi_val.to(device))
-    val_acc = {}
-    for i, rel in enumerate(RELATIONS):
-        preds = (logits[rel].cpu() > 0).float()
-        val_acc[rel] = (preds == lab_val[:, i]).float().mean().item()
+    val_acc = eval_probe(probe, val_frames, encoder, device)
 
     torch.save(probe.state_dict(), os.path.join(DATA_DIR, "probe.pt"))
     return probe, val_acc
@@ -290,8 +341,9 @@ def build_tl_state(fact_dict):
     touch_t   = rel_objs["touching"].eval()
     occl_t    = rel_objs["occluded"].eval()
 
-    # blocked_path[X,Z] = ∃Y: touching(X,Y) ∧ above(Y,Z)
+    # blocked_path[X,Z] = ∃Y≠X,Z: touching(X,Y) ∧ above(Y,Z)
     blocked_path = (touch_t @ above_t).clamp(0, 1)
+    blocked_path.fill_diagonal_(0)  # X cannot block path to itself
     # same_side[X,Z] = ∃Y: left_of(X,Y) ∧ left_of(Y,Z)
     same_side = (left_of_t @ left_of_t).clamp(0, 1)
     # clear_above[X] = ¬∃Y: above(Y,X)  (1-ary)
@@ -362,8 +414,8 @@ def _probe_facts_for_frame(frame, pos, probe, encoder, device):
     with torch.no_grad():
         z = encoder(frame.unsqueeze(0).to(device)).squeeze(0).cpu()
         logits = probe(
-            z.unsqueeze(0).expand(N_PAIRS, -1),
-            torch.arange(N_PAIRS, dtype=torch.long),
+            z.unsqueeze(0).expand(N_PAIRS, -1).to(device),
+            torch.arange(N_PAIRS, dtype=torch.long).to(device),
         )
     fact_dict = {}
     for pair_i, (a, b) in enumerate(PAIRS):
