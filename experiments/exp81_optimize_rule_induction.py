@@ -18,6 +18,7 @@ import torch
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent))  # project root for tensor_logic
 
 
 # ---------- Artifact helpers ----------
@@ -66,6 +67,7 @@ def explain_miss(body: list[str], base: dict, src: int, dst: int) -> str:
 # ---------- Proposer ----------
 
 def make_proposer(schema, target_rel: str, positive: list, negative: list,
+                  n_entities: int = 8,
                   model_name: str = "Qwen/Qwen2.5-0.5B-Instruct"):
     """
     Returns a propose(feedback: str) -> artifact: str closure.
@@ -86,10 +88,11 @@ def make_proposer(schema, target_rel: str, positive: list, negative: list,
             target_rel=annotated_target,
             positive=positive,
             negative=negative,
+            n_entities=n_entities,
             model_name=model_name,
         )
         artifact = json.dumps({
-            "relevant_relations": result.get("relevant_relations", schema.primitives),
+            "relevant_relations": result.get("relevant_relations", schema.rel_names()),
             "max_len": result.get("max_len", 3),
         })
         return artifact
@@ -177,70 +180,59 @@ def make_evaluator(base: dict, target: torch.Tensor, positive: list, negative: l
 
 @dataclass
 class Exp81Config:
-    schema_name: str      # "transitive_closure" | "grandparent" | "sibling"
-    mode: str             # "easy" | "medium" | "hard"
+    # target must be a key in exp78's GOLD_RULES: grandparent, uncle, skip_manager, etc.
+    target: str = "grandparent"
+    mode: str = "easy"            # "easy" | "medium" (distractors) | "hard" (noise+distractors)
     n_pos: int = 10
     n_neg: int = 10
     seed: int = 42
     max_steps: int = 50
-    frontier_size: int = 5   # 15 for hard mode
+    frontier_size: int = 5        # 15 for hard mode
     stagnation_k: int = 5
     model: str = "Qwen/Qwen2.5-0.5B-Instruct"
-    n_entities: int = 6
+    n_entities: int = 8
 
 
 def run_exp81(cfg: Exp81Config) -> dict:
     """
-    Run the optimize loop for one schema/mode combination.
-    Returns dict with: steps_to_f1_1, brute_force_template_count, frontier, accepted.
+    Run the optimize loop for one target/mode combination.
+    Returns dict with: steps_to_f1_1, brute_force_template_count, accepted_f1, frontier_size.
     """
     import random
     from exp78_rule_induction import (
-        Schema, gen_world, derive_target, sample_examples, enumerate_rules,
+        GOLD_RULES, gen_world, apply_body, sample_examples, enumerate_rules,
+        schema_with_distractors,
     )
     from tensor_logic.optimize import optimize, EvalResult
 
     random.seed(cfg.seed)
 
-    schemas = {
-        "transitive_closure": Schema(
-            target="tc", primitives=["edge"], gold_body=["edge"],
-        ),
-        "grandparent": Schema(
-            target="grandparent", primitives=["parent", "sibling"],
-            gold_body=["parent", "parent"],
-        ),
-        "sibling": Schema(
-            target="sibling", primitives=["parent"],
-            gold_body=["parent"],
-        ),
-    }
-    schema = schemas[cfg.schema_name]
+    schema, gold_body = GOLD_RULES[cfg.target]
 
     if cfg.mode in ("medium", "hard"):
-        from exp78_rule_induction import schema_with_distractors
         schema = schema_with_distractors(schema)
 
     base = gen_world(schema, n_entities=cfg.n_entities, seed=cfg.seed)
-    target = derive_target(base, schema.gold_body)
+    target_tensor = apply_body(gold_body, base)
 
     if cfg.mode == "hard":
         from exp79_self_play_loop import corrupt_examples
-        positive, negative = sample_examples(target, n_pos=3, n_neg=3, seed=cfg.seed)
+        positive, negative = sample_examples(target_tensor, n_pos=3, n_neg=3, seed=cfg.seed)
         positive, negative = corrupt_examples(positive, negative, noise=0.2, seed=cfg.seed)
         frontier_size = 15
     else:
-        positive, negative = sample_examples(target, n_pos=cfg.n_pos, n_neg=cfg.n_neg, seed=cfg.seed)
+        positive, negative = sample_examples(target_tensor, n_pos=cfg.n_pos, n_neg=cfg.n_neg,
+                                             seed=cfg.seed)
         frontier_size = cfg.frontier_size
 
     brute_force_count = sum(1 for _ in enumerate_rules(schema.rel_names(), max_len=3))
 
-    propose = make_proposer(schema=schema, target_rel=schema.target,
+    propose = make_proposer(schema=schema, target_rel=cfg.target,
                             positive=positive, negative=negative,
-                            model_name=cfg.model)
-    evaluate = make_evaluator(base=base, target=target, positive=positive,
+                            n_entities=cfg.n_entities, model_name=cfg.model)
+    evaluate = make_evaluator(base=base, target=target_tensor, positive=positive,
                               negative=negative, n_entities=cfg.n_entities,
-                              target_rel=schema.target)
+                              target_rel=cfg.target)
 
     steps_to_success = None
     step_counter = [0]
@@ -263,7 +255,7 @@ def run_exp81(cfg: Exp81Config) -> dict:
 
     accepted_f1 = frontier[0].score if frontier else 0.0
     return {
-        "schema": cfg.schema_name,
+        "target": cfg.target,
         "mode": cfg.mode,
         "steps_to_f1_1": steps_to_success,
         "brute_force_template_count": brute_force_count,
@@ -275,22 +267,23 @@ def run_exp81(cfg: Exp81Config) -> dict:
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="exp81: LLM-guided rule induction")
-    parser.add_argument("--schema", default="transitive_closure",
-                        choices=["transitive_closure", "grandparent", "sibling"])
+    parser.add_argument("--target", default="grandparent",
+                        choices=["grandparent", "uncle", "skip_manager", "skip_peer",
+                                 "great_uncle", "skip_skip_manager"])
     parser.add_argument("--mode", default="easy", choices=["easy", "medium", "hard"])
     parser.add_argument("--max-steps", type=int, default=50)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
     cfg = Exp81Config(
-        schema_name=args.schema,
+        target=args.target,
         mode=args.mode,
         max_steps=args.max_steps,
         seed=args.seed,
     )
     result = run_exp81(cfg)
     print(f"\n=== exp81 result ===")
-    print(f"Schema: {result['schema']}  Mode: {result['mode']}")
+    print(f"Target: {result['target']}  Mode: {result['mode']}")
     print(f"Steps to F1=1.0: {result['steps_to_f1_1']} / {cfg.max_steps}")
     print(f"Brute-force template count: {result['brute_force_template_count']}")
     print(f"Accepted F1: {result['accepted_f1']:.3f}")
