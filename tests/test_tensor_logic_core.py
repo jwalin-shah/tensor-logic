@@ -494,5 +494,45 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(proof.body[0].head[0], "imports")
 
 
+    def test_repo_graph_helpers_and_report(self):
+        from tensor_logic.repo_graph_view import load_repo_graph, build_adjacency, filter_modules, imports_path, dependency_report
+
+        graph = load_repo_graph("examples/code_dependencies.tl")
+        self.assertIn("worker", graph.modules)
+        self.assertIn(("worker", "api"), graph.imports)
+
+        adjacency = build_adjacency(graph.modules, graph.imports)
+        self.assertEqual(adjacency["worker"], ["api"])
+        self.assertEqual(filter_modules(graph.modules, "mo"), ["models"])
+        self.assertEqual(imports_path(graph.modules, graph.imports, "worker", "models"), ["worker", "api", "db", "models"])
+
+        report = dependency_report("examples/code_dependencies.tl", module="worker", src="worker", dst="models")
+        self.assertIn("direct imports(worker): api", report)
+        self.assertIn("depends_on(worker, models) = True", report)
+        self.assertIn("path: worker -> api -> db -> models", report)
+
+    def test_repo_graph_cli_subcommand(self):
+        from tensor_logic.__main__ import main
+        import io
+        from contextlib import redirect_stdout
+
+        out = io.StringIO()
+        with redirect_stdout(out):
+            rc = main([
+                "repo-graph",
+                "examples/code_dependencies.tl",
+                "--module",
+                "worker",
+                "--src",
+                "worker",
+                "--dst",
+                "models",
+            ])
+        self.assertEqual(rc, 0)
+        result = out.getvalue()
+        self.assertIn("Repo dependency graph report", result)
+        self.assertIn("depends_on(worker, models) = True", result)
+
+
 if __name__ == "__main__":
     unittest.main()
