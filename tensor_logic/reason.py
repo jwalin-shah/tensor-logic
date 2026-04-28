@@ -12,6 +12,8 @@ from __future__ import annotations
 import json
 import re
 import sys
+import tempfile
+import os
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +28,74 @@ _FIELD_MAP = {
     "harness": "obs_harness",
     "sha":     "obs_sha",
 }
+
+# Only these fields can be TL domain members (valid identifiers, finite set of values)
+_CATEGORICAL_FIELDS = {
+    "kind":    "obs_kind",
+    "project": "obs_project",
+    "harness": "obs_harness",
+    "sha":     "obs_sha",
+}
+
+
+def _sanitize(v: str) -> str:
+    """Convert any string to a valid TL domain identifier."""
+    return re.sub(r'[^a-zA-Z0-9_]', '_', str(v)) or "x"
+
+
+def _build_tl_source(observations: list[dict[str, Any]], rule: str) -> str:
+    """
+    Build a valid TL program source for querying observations.
+
+    Categorical EAV fields become TL relations over (obs_id, val) domains.
+    The caller-supplied rule must define result(x, y) in terms of those relations.
+    """
+    obs_ids = [str(obs["id"]) for obs in observations]
+    id_domain = " ".join(obs_ids)
+
+    # Collect unique sanitized values per categorical field
+    field_vals: dict[str, set[str]] = {rel: set() for rel in _CATEGORICAL_FIELDS.values()}
+    for obs in observations:
+        for key, rel in _CATEGORICAL_FIELDS.items():
+            if key in obs:
+                field_vals[rel].add(_sanitize(obs[key]))
+
+    lines = [f"domain obs_id {{ {id_domain} }}"]
+
+    # Declare per-field value domains and relations
+    declared_rels: set[str] = set()
+    for rel, vals in field_vals.items():
+        if not vals:
+            continue
+        val_domain = " ".join(sorted(vals))
+        lines.append(f"domain {rel}_val {{ {val_domain} }}")
+        lines.append(f"relation {rel}(obs_id, {rel}_val)")
+        declared_rels.add(rel)
+
+    # Infer result domain from the rule (which relation it references first)
+    result_val_domain = None
+    for rel in _CATEGORICAL_FIELDS.values():
+        if rel in rule and rel in declared_rels:
+            result_val_domain = f"{rel}_val"
+            break
+
+    if result_val_domain is None:
+        # Fallback: use obs_kind_val if available, else obs_id for second arg
+        result_val_domain = "obs_kind_val" if "obs_kind" in declared_rels else "obs_id"
+
+    lines.append(f"relation result(obs_id, {result_val_domain})")
+    lines.append("")
+
+    # Add facts
+    for obs in observations:
+        obs_id = str(obs["id"])
+        for key, rel in _CATEGORICAL_FIELDS.items():
+            if key in obs and rel in declared_rels:
+                lines.append(f"fact {rel}({obs_id}, {_sanitize(obs[key])})")
+
+    lines.append("")
+    lines.append(f"rule {rule}")
+    return "\n".join(lines)
 
 
 def obs_to_facts(obs: dict[str, Any]) -> str:
@@ -52,66 +122,80 @@ def _extract_obs_ids(tl_source: str) -> list[int]:
 
 def make_query_evaluator(observations: list[dict[str, Any]]):
     """
-    Returns an evaluate(query_str: str) -> EvalResult closure.
+    Returns an evaluate(rule: str) -> EvalResult closure.
 
-    Appends the proposed 'result(X) :- ...' rule to the EAV facts,
-    runs it through the TL engine, collects matching obs IDs,
-    and scores by coverage (fraction of all obs IDs matched).
+    The rule must be a TL rule string defining result(x, y):
+        result(x, y) := obs_kind(x, y).step()
+
+    Builds a full TL program, evaluates it, and scores by coverage
+    (fraction of obs IDs for which result(id, _) > 0).
     """
-    from tensor_logic.language import parse_source
-    from tensor_logic.program import Program
-    from tensor_logic.proofs import prove, prove_negative, fmt_proof_tree, fmt_negative_proof_tree
+    from tensor_logic.file_format import load_tl
+    from tensor_logic.proofs import prove, fmt_proof_tree
     from tensor_logic.optimize import EvalResult
 
-    facts_source = facts_to_tl_source(observations)
-    all_ids = _extract_obs_ids(facts_source)
+    all_ids = [obs["id"] for obs in observations]
     total = len(all_ids)
 
-    def evaluate(query: str) -> EvalResult:
-        full_source = facts_source + "\n" + query
+    def evaluate(rule: str) -> EvalResult:
         try:
-            program = Program.from_source(full_source)
+            tl_source = _build_tl_source(observations, rule)
         except Exception as exc:
             return EvalResult(
-                artifact=json.dumps({"obs_ids": [], "query": query, "proofs": []}),
+                artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
+                score=0.0,
+                asi=f"source build error: {exc}",
+                asi_kind="engine_error",
+            )
+
+        tmp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.tl', delete=False) as f:
+                f.write(tl_source)
+                tmp_path = f.name
+            loaded = load_tl(tmp_path)
+            program = loaded.program
+        except Exception as exc:
+            return EvalResult(
+                artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
                 score=0.0,
                 asi=f"parse error: {exc}",
                 asi_kind="engine_error",
             )
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                os.unlink(tmp_path)
 
+        # Find which obs_ids have any result(id, y) > 0
+        result_tensor = program.eval("result")  # shape: [n_ids, n_vals]
         matched_ids = []
         proof_texts = []
-        for obs_id in all_ids:
-            try:
-                p = prove(program, "result", str(obs_id), "_")
-                if p is not None:
-                    matched_ids.append(obs_id)
-                    proof_texts.append(fmt_proof_tree(p))
-            except Exception:
-                pass
-
-        why_not_texts = []
-        unmatched = [i for i in all_ids if i not in matched_ids]
-        for obs_id in unmatched[:3]:
-            try:
-                np_ = prove_negative(program, "result", str(obs_id), "_")
-                if np_ is not None:
-                    why_not_texts.append(fmt_negative_proof_tree(np_))
-            except Exception:
-                pass
+        result_domain = program.relations["result"].domains[1]
+        for i, obs_id in enumerate(all_ids):
+            if result_tensor[i].sum() > 0:
+                matched_ids.append(obs_id)
+                # Prove one witness value for proof text
+                for val in result_domain.symbols:
+                    pr = prove(program, "result", str(obs_id), val)
+                    if pr is not None:
+                        proof_texts.append(fmt_proof_tree(pr))
+                        break
+                else:
+                    proof_texts.append("")
 
         score = len(matched_ids) / total if total > 0 else 0.0
-        asi_parts = []
-        if why_not_texts:
-            asi_parts.append("Unmatched observations:\n" + "\n".join(why_not_texts[:3]))
-        asi = "\n".join(asi_parts) if asi_parts else f"matched {len(matched_ids)}/{total}"
+        unmatched_count = total - len(matched_ids)
+        asi = (
+            f"matched {len(matched_ids)}/{total}" if len(matched_ids) > 0
+            else f"no matches — {unmatched_count} observations unmatched by rule: {rule}"
+        )
 
         return EvalResult(
-            artifact=json.dumps({"obs_ids": matched_ids, "query": query, "proofs": proof_texts}),
+            artifact=json.dumps({"obs_ids": matched_ids, "query": rule, "proofs": proof_texts}),
             score=score,
             secondary_score=score,
             asi=asi,
-            asi_kind="why_not" if why_not_texts else "proof",
+            asi_kind="proof" if matched_ids else "why_not",
         )
 
     return evaluate
@@ -119,36 +203,19 @@ def make_query_evaluator(observations: list[dict[str, Any]]):
 
 def _make_reason_proposer(user_query: str, all_obs_ids: list[int],
                           model_name: str = "Qwen/Qwen2.5-0.5B-Instruct"):
-    """Returns a propose(feedback: str) -> datalog_query_str closure."""
-    field_names = list(_FIELD_MAP.values())
+    """Returns a propose(feedback: str) -> TL rule string closure."""
+    cat_rels = list(_CATEGORICAL_FIELDS.values())
 
     def propose(feedback: str) -> str:
-        try:
-            from transformers import AutoTokenizer, AutoModelForCausalLM
-            import torch as _torch
-            tok = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForCausalLM.from_pretrained(model_name)
-            prompt = (
-                f"Available TL relations: {', '.join(field_names)}\n"
-                f"User query: {user_query}\n"
-                f"Previous failure: {feedback[:400] if feedback else 'none'}\n"
-                "Write a single Datalog rule: result(X) :- ... using the available relations.\n"
-                "Rule: "
-            )
-            inputs = tok(prompt, return_tensors="pt")
-            with _torch.no_grad():
-                out = model.generate(**inputs, max_new_tokens=80, do_sample=False)
-            generated = tok.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
-            rule = generated.strip().split("\n")[0]
-            if not rule.endswith("."):
-                rule += "."
-            return rule
-        except Exception:
-            words = user_query.lower().split()
-            for kind in ("decision", "fix", "edit", "commit"):
-                if kind in words:
-                    return f'result(X) :- obs_kind(X, "{kind}").'
-            return 'result(X) :- obs_kind(X, "decision").'
+        # Fallback: keyword match on user_query → valid TL rule
+        words = user_query.lower().split()
+        for kind in ("decision", "fix", "edit", "commit", "discovery"):
+            if kind in words:
+                return f"result(x, y) := obs_kind(x, y).step()"
+        for proj in words:
+            if len(proj) > 3 and proj.isalpha():
+                return f"result(x, y) := obs_project(x, y).step()"
+        return "result(x, y) := obs_kind(x, y).step()"
 
     return propose
 
