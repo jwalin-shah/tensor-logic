@@ -270,6 +270,20 @@ Several recent open releases change which experiments are now cheaply reachable.
 - **exp62 candidate:** Vision Banana baseline on a small object-permanence / violation-of-expectation video benchmark (Spelke-style). Compare to a Vision Banana → TL hybrid where Banana extracts (object, position, time) tuples and TL maintains a relation graph through occlusion. Replicates exp7 / exp17 at real-data scale.
 - **Cost:** 🔴 multi-day; needs Vision Banana access + a small video benchmark.
 
+### 🌍 LeWorldModel (LeWM) + TL relational layer — Mac-runnable world model grounding
+- **What:** LeWorldModel (Maes, Le Lidec, Scieur, LeCun, Balestriero; arXiv 2603.19312) is a Joint Embedding Predictive Architecture that learns a world model from raw pixels with 2 loss terms (next-embedding prediction + Gaussian latent regularizer). 15M params, trains on a single GPU in hours, plans 48× faster than foundation-model world models. Critically: **no pre-trained encoders, no EMA, no auxiliary supervision** — just the raw pixel stream and a clean objective.
+- **Why it matters for TL:** LeWM is the perception/dynamics layer that's been missing from the "world model with the loop closed" idea. The natural split: LeWM handles continuous pixel → latent dynamics; TL sits on top as the discrete constraint and goal-reasoning layer. You don't need TL to understand physics — you need TL to reason about what the physics means (object A is above B, X is occluding Y, is the goal state reachable?). LeWM gives you a stable, compact latent space that encodes physical structure. A thin linear probe over that latent can extract discrete relational facts. TL then does fixpoint reasoning over those facts — with proofs and counterfactuals that LeWM can't produce.
+- **Mac-runnable design:** Use synthetic scenes instead of real video — 2-3 colored squares on a 64×64 grid, moving with simple physics (constant velocity + bounce). LeWM trains on this in ~20-30 min on MPS. No large dataset needed. Steps:
+  1. Generate 10k synthetic frame sequences (random object positions, velocities, colors) — pure Python/numpy, ~5 min.
+  2. Train LeWM on these sequences (MPS, ~20 min). Latent dim 64, sequence length 8 frames.
+  3. Freeze LeWM encoder. Train a linear probe on top of the latent to extract binary relations: `above(A, B)`, `left_of(A, B)`, `touching(A, B)`, `occluded(A, B)`. 200 labeled frames, 5 min.
+  4. Wire extracted relations as TL facts. Run TL fixpoint to derive higher-order relations: `blocked_path(A, B)` = `touching(A, X) ∧ above(X, B)`.
+  5. Counterfactual test: remove one object from the fact set, re-run fixpoint, check which derived facts retract.
+- **Falsification:** Linear probe for `above` and `touching` achieves ≥90% accuracy on held-out frames. TL counterfactual retraction matches ground-truth (manually verified on 10 test cases).
+- **Why this is the right entry point vs TRELLIS.2 / Vision Banana:** Both require large GPU and real data. LeWM at 15M params on synthetic 64×64 scenes is a T1/T2 experiment. The claim being tested ("perception latent → discrete TL facts → symbolic reasoning") doesn't need real images to be meaningful — it needs the pipeline to work end-to-end.
+- **Cost:** 🟢 Mac MPS, ~1 hour total (data gen + LeWM train + probe train + TL wiring). No internet after initial model code pull.
+- **Unlocks:** First end-to-end perception→reasoning pipeline in the repo. Closes the "Multimodal grounding eventually" README line with a concrete working demo. If the linear probe step fails (latent doesn't encode discrete relations cleanly), that's the informative failure — tells us whether we need a structured encoder (object-centric like Slot Attention) instead of LeWM's holistic latent.
+
 ## Closed / decided against
 
 (none yet — keep this section honest, move things here when we explicitly rule them out)
