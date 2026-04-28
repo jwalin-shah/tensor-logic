@@ -110,16 +110,12 @@ def test_evaluator_populates_asi_on_miss():
 
 def test_make_proposer_returns_valid_json():
     """Smoke test: proposer with feedback="" returns parseable JSON."""
-    from experiments.exp78_rule_induction import Schema
-    schema = Schema(
-        target="grandparent",
-        primitives=["parent", "sibling"],
-        gold_body=["parent", "parent"],
-    )
+    from experiments.exp78_rule_induction import GOLD_RULES
+    schema, gold_body = GOLD_RULES["grandparent"]
     positive = [(0, 2), (1, 3)]
     negative = [(0, 1), (2, 3)]
     propose = make_proposer(schema=schema, target_rel="grandparent",
-                            positive=positive, negative=negative)
+                            positive=positive, negative=negative, n_entities=4)
     art = propose("")
     parsed = parse_artifact(art)
     assert parsed is not None
