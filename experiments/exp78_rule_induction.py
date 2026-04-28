@@ -214,15 +214,27 @@ def lm_prune(schema: Schema, target_rel: str, positive: list, negative: list,
                 "fallback": "no_transformers", "raw": ""}
 
     global _LM_CACHE
-    if "model" not in _LM_CACHE or _LM_CACHE.get("model_name") != model_name:
-        tok = AutoTokenizer.from_pretrained(model_name)
-        mdl = AutoModelForCausalLM.from_pretrained(model_name)
-        mdl.eval()
-        _LM_CACHE["model"] = mdl
-        _LM_CACHE["tokenizer"] = tok
+    if _LM_CACHE.get("model_name") != model_name:
+        use_mlx = "mlx-community" in model_name or model_name.endswith("-mlx") or "-MLX" in model_name
+        loaded = False
+        if use_mlx:
+            try:
+                from mlx_lm import load as mlx_load
+                mlx_model, mlx_tok = mlx_load(model_name)
+                _LM_CACHE["mlx_model"] = mlx_model
+                _LM_CACHE["mlx_tok"] = mlx_tok
+                _LM_CACHE["backend"] = "mlx"
+                loaded = True
+            except Exception:
+                pass
+        if not loaded:
+            tok = AutoTokenizer.from_pretrained(model_name)
+            mdl = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16)
+            mdl.eval()
+            _LM_CACHE["model"] = mdl
+            _LM_CACHE["tokenizer"] = tok
+            _LM_CACHE["backend"] = "transformers"
         _LM_CACHE["model_name"] = model_name
-    tok = _LM_CACHE["tokenizer"]
-    mdl = _LM_CACHE["model"]
 
     names = _ENTITY_NAMES[:max(n_entities, len(_ENTITY_NAMES))]
 
@@ -240,12 +252,21 @@ def lm_prune(schema: Schema, target_rel: str, positive: list, negative: list,
         f'{{"relevant_relations": ["rel1", "rel2"], "max_body_length": 2}}'
     )
 
-    inputs = tok(prompt, return_tensors="pt")
-    with torch.no_grad():
-        out = mdl.generate(**inputs, max_new_tokens=80, do_sample=False,
-                           pad_token_id=tok.eos_token_id)
-    response = tok.decode(out[0][inputs["input_ids"].shape[1]:],
-                          skip_special_tokens=True).strip()
+    if _LM_CACHE["backend"] == "mlx":
+        from mlx_lm import generate as mlx_generate
+        response = mlx_generate(
+            _LM_CACHE["mlx_model"], _LM_CACHE["mlx_tok"],
+            prompt=prompt, max_tokens=80, verbose=False,
+        ).strip()
+    else:
+        tok = _LM_CACHE["tokenizer"]
+        mdl = _LM_CACHE["model"]
+        inputs = tok(prompt, return_tensors="pt")
+        with torch.no_grad():
+            out = mdl.generate(**inputs, max_new_tokens=80, do_sample=False,
+                               pad_token_id=tok.eos_token_id)
+        response = tok.decode(out[0][inputs["input_ids"].shape[1]:],
+                              skip_special_tokens=True).strip()
 
     parsed = None
     try:
@@ -294,7 +315,7 @@ def schema_with_distractors(schema: Schema) -> Schema:
 def sample_examples(target: torch.Tensor, n_pos: int, n_neg: int, seed: int):
     rng = random.Random(seed)
     n = target.shape[0]
-    pos_pairs = [(i, j) for i in range(n) for j in range(n) if target[i, j] > 0]
+    pos_pairs = [(i, j) for i in range(n) for j in range(n) if target[i, j] > 0 and i != j]
     neg_pairs = [(i, j) for i in range(n) for j in range(n) if target[i, j] == 0 and i != j]
     rng.shuffle(pos_pairs); rng.shuffle(neg_pairs)
     return pos_pairs[:n_pos], neg_pairs[:n_neg]

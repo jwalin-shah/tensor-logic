@@ -10,7 +10,7 @@ class EvalResult:
     score: float
     secondary_score: float = 0.0
     asi: str = ""
-    asi_kind: Literal["proof", "why_not", "engine_error"] = "proof"
+    asi_kind: Literal["proof", "why_not", "wrong_rule", "engine_error"] = "proof"
 
 
 def _dominates(a: EvalResult, b: EvalResult) -> bool:
@@ -63,6 +63,7 @@ def optimize(
     feedback = ""
     stagnation_count = 0
     prev_artifacts: set[str] = set()
+    prev_best_score: float = -1.0
 
     for _step in range(max_steps):
         artifact = propose(feedback)
@@ -74,12 +75,14 @@ def optimize(
             return frontier
 
         current_artifacts = {e.artifact for e in frontier}
-        if current_artifacts == prev_artifacts:
+        current_best = frontier[0].score if frontier else 0.0
+        if current_artifacts == prev_artifacts and current_best <= prev_best_score:
             stagnation_count += 1
             if stagnation_count >= stagnation_k:
                 return frontier
         else:
             stagnation_count = 0
         prev_artifacts = current_artifacts
+        prev_best_score = current_best
 
     return frontier
