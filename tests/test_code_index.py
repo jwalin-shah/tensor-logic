@@ -11,7 +11,7 @@ def test_index_json_is_gitignored():
 
 
 import os
-from code_index import _extract_module, build_index, is_stale, ensure_fresh
+from code_index import _extract_module, build_index, is_stale, ensure_fresh, lookup
 
 def test_extract_class_init_args(tmp_path):
     src = tmp_path / "mymod.py"
@@ -108,3 +108,59 @@ def test_ensure_fresh_does_not_rebuild_when_current(tmp_path):
     os.utime(index_path, (new_time, new_time))
     result = ensure_fresh(source_dir=source_dir, index_path=index_path)
     assert result["tensor_logic.mymod"] == {}
+
+
+import subprocess
+
+def test_lookup_found(tmp_path):
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    (source_dir / "rules.py").write_text("""
+class Schema:
+    def __init__(self, name: str, relations: list):
+        pass
+    def add_rule(self): pass
+    def _internal(self): pass
+""")
+    index_path = tmp_path / "index.json"
+    out_file = tmp_path / "out.txt"
+    rc = lookup("Schema", source_dir=source_dir, index_path=index_path, out=out_file)
+    assert rc == 0
+    output = out_file.read_text()
+    assert "Schema [class]" in output
+    assert "name: str" in output
+    assert "add_rule" in output
+    assert "_internal" not in output
+
+def test_lookup_not_found(tmp_path):
+    source_dir = tmp_path / "src"
+    source_dir.mkdir()
+    (source_dir / "rules.py").write_text("def foo(): pass")
+    index_path = tmp_path / "index.json"
+    rc = lookup("Nonexistent", source_dir=source_dir, index_path=index_path, out=tmp_path / "out.txt")
+    assert rc == 1
+
+def test_cli_lookup_real_symbol():
+    result = subprocess.run(
+        [sys.executable, "tools/code_index.py", "--lookup", "Program"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT)
+    )
+    assert result.returncode == 0
+    assert "Program [class]" in result.stdout
+
+def test_cli_status_exits_0_when_fresh():
+    subprocess.run([sys.executable, "tools/code_index.py", "--rebuild"], cwd=str(REPO_ROOT))
+    result = subprocess.run(
+        [sys.executable, "tools/code_index.py", "--status"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT)
+    )
+    assert result.returncode == 0
+    assert "fresh" in result.stdout
+
+def test_cli_lookup_missing_exits_1():
+    result = subprocess.run(
+        [sys.executable, "tools/code_index.py", "--lookup", "DoesNotExistXYZ"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT)
+    )
+    assert result.returncode == 1
+    assert "symbol not found" in result.stderr
