@@ -8,8 +8,8 @@ Architecture: hybrid.
     the auditable derivation the spec requires
   - prove_sai_counterfactual() = do() analogue: re-run with modified inputs
 
-Formula source: 2024-25 Draft SAI Guide, Federal Student Aid (May 2023)
-  https://fsapartners.ed.gov/sites/default/files/2022-11/202425DraftStudentAidIndexSAIandPellGrantEligibilityGuide.pdf
+Formula source: 2024-25 Pell Eligibility and SAI Guide Version 4 (March 2024), Federal Student Aid
+  https://fsapartners.ed.gov/sites/default/files/2024-01/20242025FAFSAPellEligibilityandSAIGuide.pdf
 
 Coverage: Formula A (Dependent Student).
   Formula B/C (Independent) marked TODO — same structure, different tables.
@@ -104,44 +104,30 @@ class SAITrace:
 
 
 # ---------------------------------------------------------------------------
-# Table constants — all from 2024-25 Draft SAI Guide
+# Table constants — 2024-25 SAI Guide Version 4 (March 2024)
 # ---------------------------------------------------------------------------
 
-REF = "2024-25 Draft SAI Guide"
+REF = "2024-25 SAI Guide Version 4 (March 2024)"
 
 # Table A2 — Income Protection Allowance (parent, family size → IPA)
-# family_size 2–6; for each additional member add $5,590
-IPA_TABLE: dict[int, int] = {2: 23_330, 3: 29_040, 4: 35_870, 5: 42_320, 6: 49_500}
-IPA_ADDITIONAL = 5_590
+# family_size 2–6; for each additional member add $6,610
+IPA_TABLE: dict[int, int] = {2: 27_600, 3: 34_350, 4: 42_430, 5: 50_060, 6: 58_560}
+IPA_ADDITIONAL = 6_610
 
-# Table A4 — Asset Protection Allowance (parent only, by num_parents)
-# Keys: age; columns: two_parents, one_parent
-APA_TABLE: dict[int, tuple[int, int]] = {
-    # age: (two_parents, one_parent)
-    25: (0,     0),    26: (400,   100),  27: (700,   300),  28: (1100,  400),
-    29: (1500,  600),  30: (1800,  700),  31: (2200,  800),  32: (2600,  1000),
-    33: (2900,  1100), 34: (3300,  1300), 35: (3700,  1400), 36: (4000,  1500),
-    37: (4400,  1700), 38: (4800,  1800), 39: (5100,  2000), 40: (5500,  2100),
-    41: (5600,  2200), 42: (5700,  2200), 43: (5900,  2300), 44: (6000,  2300),
-    45: (6200,  2400), 46: (6300,  2400), 47: (6500,  2500), 48: (6600,  2500),
-    49: (6800,  2600), 50: (7000,  2700), 51: (7100,  2700), 52: (7300,  2800),
-    53: (7500,  2900), 54: (7700,  2900), 55: (7900,  3000), 56: (8100,  3100),
-    57: (8400,  3100), 58: (8600,  3200), 59: (8800,  3300), 60: (9100,  3400),
-    61: (9300,  3500), 62: (9600,  3600), 63: (9900,  3700), 64: (10200, 3800),
-    65: (10500, 3900),
-}
+# Table A4 — Asset Protection Allowance: $0 for ALL ages in Version 4
+APA_TABLE: dict[int, tuple[int, int]] = {}  # all zeros; see _apa()
 
 # Table A5 — Parent Contribution from Adjusted Available Income
 # Format: (lower_inclusive, upper_inclusive, base, marginal_rate, lower_for_base)
 # lower_for_base = the lower boundary used to compute the base amount
 AAI_SCHEDULE = [
     # AAI < -6820 → -1500 (handled separately)
-    (-6820,  17400,    0,    0.22, -6820),
-    (17401,  21800, 3828,    0.25, 17400),
-    (21801,  26200, 4928,    0.29, 21800),
-    (26201,  30700, 6204,    0.34, 26200),
-    (30701,  35100, 7734,    0.40, 30700),
-    (35101, 999999, 9494,    0.47, 35100),
+    (-6820,  20600,     0,    0.22,     0),  # 22% of AAI itself (not offset from lower bound)
+    (20601,  25800,  4532,    0.25, 20600),
+    (25801,  31000,  5832,    0.29, 25800),
+    (31001,  36300,  7340,    0.34, 31000),
+    (36301,  41500,  9142,    0.40, 36300),
+    (41501, 999999, 11222,    0.47, 41500),
 ]
 
 # OASDI wage base (2022 tax year, used for 2024-25 FAFSA)
@@ -158,11 +144,11 @@ MEDICARE_THRESHOLD_SINGLE = 200_000
 MEDICARE_THRESHOLD_JOINT  = 250_000
 
 # Employment Expense Allowance
-EEA_MAX = 4_000
+EEA_MAX = 4_730
 EEA_RATE = 0.35
 
 # Student Income Protection Allowance (Formula A, line 25)
-STUDENT_IPA = 9_410
+STUDENT_IPA = 11_130
 
 # Asset rates
 PARENT_ASSET_RATE  = 0.12
@@ -188,9 +174,7 @@ def _ipa(family_size: int) -> int:
 
 
 def _apa(age: int, num_parents: int) -> int:
-    age = max(25, min(age, 65))
-    two, one = APA_TABLE[age]
-    return two if num_parents >= 2 else one
+    return 0  # Table A4: APA = $0 for all ages in Version 4
 
 
 def _medicare(wages: int, is_joint: bool) -> int:
@@ -209,13 +193,13 @@ def _business_farm_adjustment(net_worth: int) -> int:
     """Table A3 — adjusted net worth of business/farm."""
     if net_worth < 1:
         return 0
-    if net_worth <= 140_000:
+    if net_worth <= 165_000:
         return _ed_round(net_worth * 0.40)
-    if net_worth <= 415_000:
-        return _ed_round(56_000 + (net_worth - 140_000) * 0.50)
-    if net_worth <= 695_500:
-        return _ed_round(193_500 + (net_worth - 415_000) * 0.60)
-    return _ed_round(361_500 + (net_worth - 695_500) * 1.00)
+    if net_worth <= 490_000:
+        return _ed_round(66_000 + (net_worth - 165_000) * 0.50)
+    if net_worth <= 820_000:
+        return _ed_round(228_500 + (net_worth - 490_000) * 0.60)
+    return _ed_round(426_500 + (net_worth - 820_000) * 1.00)
 
 
 def _aai_to_parent_contribution(aai: int) -> int:
@@ -620,7 +604,7 @@ def fmt_trace(trace: SAITrace, verbose: bool = False) -> str:
 def run():
     print("exp80: FAFSA SAI Knowledge Base (Formula A — Dependent Student)")
     print("=" * 72)
-    print(f"Source: 2024-25 Draft SAI Guide (May 2023)")
+    print(f"Source: {REF}")
     print("=" * 72)
 
     for name, family in FAMILIES.items():
