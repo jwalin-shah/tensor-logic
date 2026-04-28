@@ -35,8 +35,9 @@ class DependentFamily:
     parent_agi: int = 0
     parent_deductible_ira_payments: int = 0   # IRA/KEOGH/other deductible payments
     parent_tax_exempt_interest: int = 0
-    parent_untaxed_ira_distributions: int = 0 # excl. rollovers; floor 0
-    parent_foreign_income_exclusion: int = 0  # from US tax return; floor 0
+    parent_untaxed_ira_distributions: int = 0  # excl. rollovers; floor 0
+    parent_untaxed_pension: int = 0            # untaxed pension distributions minus rollover; floor 0
+    parent_foreign_income_exclusion: int = 0   # from US tax return; floor 0
 
     # --- Parent income offsets (lines f-h) ---
     parent_taxable_scholarships: int = 0      # college grant/scholarship aid as income
@@ -68,6 +69,7 @@ class DependentFamily:
     student_deductible_ira_payments: int = 0
     student_tax_exempt_interest: int = 0
     student_untaxed_ira_distributions: int = 0
+    student_untaxed_pension: int = 0           # untaxed pension distributions minus rollover; floor 0
     student_foreign_income_exclusion: int = 0
 
     # --- Student income offsets (lines f-h) ---
@@ -244,6 +246,7 @@ def prove_sai(family: DependentFamily) -> SAITrace:
         + family.parent_deductible_ira_payments
         + family.parent_tax_exempt_interest
         + max(0, family.parent_untaxed_ira_distributions)
+        + max(0, family.parent_untaxed_pension)
         + max(0, family.parent_foreign_income_exclusion),
         f"{REF}, Formula A, Line 1 (lines a-e)",
         "AGI + IRA/KEOGH deductions + tax-exempt interest + untaxed IRA dist + foreign exclusion",
@@ -268,8 +271,12 @@ def prove_sai(family: DependentFamily) -> SAITrace:
     )
 
     # Line 4: US income tax paid
-    # (just stored directly — no calculation needed)
-    p_tax_paid = family.parent_income_tax_paid
+    p_tax_paid = step(
+        "parent_income_tax_paid",
+        family.parent_income_tax_paid,
+        f"{REF}, Formula A, Line 4",
+        "US income tax paid (or foreign equivalent)",
+    )
 
     # Line 5: Payroll Tax Allowance (Table A1)
     combined_wages = family.parent_earned_income_p1 + family.parent_earned_income_p2
@@ -300,7 +307,7 @@ def prove_sai(family: DependentFamily) -> SAITrace:
         "parent_employment_expense_allowance",
         min(_ed_round(combined_wages * EEA_RATE), EEA_MAX) if combined_wages > 0 else 0,
         f"{REF}, Formula A, Line 7",
-        f"min(35% × ${combined_wages:,}, $4,000)",
+        f"min(35% × ${combined_wages:,}, ${EEA_MAX:,})",
     )
 
     # Line 8: Total Allowances Against Income
@@ -389,6 +396,7 @@ def prove_sai(family: DependentFamily) -> SAITrace:
         + family.student_deductible_ira_payments
         + family.student_tax_exempt_interest
         + max(0, family.student_untaxed_ira_distributions)
+        + max(0, family.student_untaxed_pension)
         + max(0, family.student_foreign_income_exclusion),
         f"{REF}, Formula A, Line 20",
         "student AGI + IRA + tax-exempt interest + untaxed IRA dist + foreign exclusion",
@@ -428,7 +436,7 @@ def prove_sai(family: DependentFamily) -> SAITrace:
     )
 
     # Line 25: Student IPA
-    s_ipa = STUDENT_IPA  # $9,410
+    s_ipa = STUDENT_IPA
 
     # Line 26: Allowance for parents' negative PAAI
     # If PAAI (line 18) is negative, add it as a positive number to student allowances
@@ -444,7 +452,7 @@ def prove_sai(family: DependentFamily) -> SAITrace:
         "student_total_allowances",
         family.student_income_tax_paid + s_medicare + s_oasdi + s_ipa + paai_negative_allowance,
         f"{REF}, Formula A, Line 27",
-        "student income tax + payroll tax + IPA($9,410) + parents' negative PAAI allowance",
+        f"student income tax + payroll tax + IPA(${STUDENT_IPA:,}) + parents' negative PAAI allowance",
     )
 
     # Line 28: Student Available Income (may be negative)
