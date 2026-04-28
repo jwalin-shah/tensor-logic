@@ -1,0 +1,222 @@
+[
+  {
+    "name": "zero-everything",
+    "inputs": {},
+    "sai": -1500,
+    "parent_contribution": -1500,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "max-pell-floor",
+    "inputs": {
+      "family_size": 5
+    },
+    "sai": -1500,
+    "parent_contribution": -1500,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "median-family",
+    "inputs": {
+      "parent_agi": 85000,
+      "parent_income_tax_paid": 10500,
+      "parent_earned_income_p1": 55000,
+      "parent_earned_income_p2": 30000,
+      "parent_cash_savings": 15000,
+      "parent_investment_net_worth": 40000,
+      "family_size": 4,
+      "older_parent_age": 48,
+      "student_agi": 5000,
+      "student_income_tax_paid": 300,
+      "student_earned_income": 5000,
+      "student_cash_savings": 2000
+    },
+    "sai": 5207,
+    "parent_contribution": 6307,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 400
+  },
+  {
+    "name": "high-income-no-assets",
+    "inputs": {
+      "parent_agi": 250000,
+      "parent_income_tax_paid": 55000,
+      "parent_earned_income_p1": 150000,
+      "parent_earned_income_p2": 100000
+    },
+    "sai": 54511,
+    "parent_contribution": 56011,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "single-parent-low",
+    "inputs": {
+      "parent_agi": 28000,
+      "parent_income_tax_paid": 2000,
+      "parent_earned_income_p1": 28000,
+      "parent_cash_savings": 3000,
+      "num_parents": 1,
+      "older_parent_age": 40
+    },
+    "sai": -1500,
+    "parent_contribution": -1500,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "large-family-6",
+    "inputs": {
+      "parent_agi": 70000,
+      "parent_income_tax_paid": 7000,
+      "parent_earned_income_p1": 40000,
+      "parent_earned_income_p2": 30000,
+      "parent_cash_savings": 20000,
+      "parent_investment_net_worth": 50000,
+      "family_size": 6
+    },
+    "sai": -894,
+    "parent_contribution": 606,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "big-assets-moderate-income",
+    "inputs": {
+      "parent_agi": 80000,
+      "parent_income_tax_paid": 9000,
+      "parent_earned_income_p1": 80000,
+      "parent_cash_savings": 50000,
+      "parent_investment_net_worth": 300000,
+      "num_parents": 1
+    },
+    "sai": 22083,
+    "parent_contribution": 23583,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "student-has-income",
+    "inputs": {
+      "parent_agi": 65000,
+      "parent_income_tax_paid": 7000,
+      "parent_earned_income_p1": 65000,
+      "family_size": 4,
+      "student_agi": 18000,
+      "student_income_tax_paid": 1500,
+      "student_earned_income": 18000,
+      "student_cash_savings": 5000
+    },
+    "sai": 4288,
+    "parent_contribution": 1291,
+    "student_contribution_from_income": 1997,
+    "student_contribution_from_assets": 1000
+  },
+  {
+    "name": "boundary-pell-threshold",
+    "inputs": {
+      "parent_agi": 55000,
+      "parent_income_tax_paid": 5000,
+      "parent_earned_income_p1": 35000,
+      "parent_earned_income_p2": 20000,
+      "parent_cash_savings": 10000,
+      "family_size": 4
+    },
+    "sai": -1500,
+    "parent_contribution": -37,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "very-high-income",
+    "inputs": {
+      "parent_agi": 500000,
+      "parent_income_tax_paid": 140000,
+      "parent_earned_income_p1": 300000,
+      "parent_earned_income_p2": 200000,
+      "parent_cash_savings": 100000,
+      "parent_investment_net_worth": 800000
+    },
+    "sai": 178777,
+    "parent_contribution": 180277,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "untaxed-income-heavy",
+    "inputs": {
+      "parent_agi": 45000,
+      "parent_tax_exempt_interest": 3000,
+      "parent_untaxed_ira_distributions": 20000,
+      "parent_untaxed_pension": 15000,
+      "parent_income_tax_paid": 4000,
+      "parent_earned_income_p1": 45000,
+      "family_size": 4
+    },
+    "sai": 5085,
+    "parent_contribution": 6585,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "business-owner",
+    "inputs": {
+      "parent_agi": 120000,
+      "parent_income_tax_paid": 22000,
+      "parent_earned_income_p1": 120000,
+      "parent_cash_savings": 30000,
+      "parent_business_farm_net_worth": 400000,
+      "family_size": 4
+    },
+    "sai": 21839,
+    "parent_contribution": 23339,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "age-60-parent",
+    "inputs": {
+      "parent_agi": 80000,
+      "parent_income_tax_paid": 11000,
+      "parent_earned_income_p1": 80000,
+      "parent_cash_savings": 200000,
+      "parent_investment_net_worth": 150000,
+      "num_parents": 1,
+      "older_parent_age": 60
+    },
+    "sai": 21143,
+    "parent_contribution": 22643,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "negative-sai-likely",
+    "inputs": {
+      "parent_agi": 10000,
+      "parent_income_tax_paid": 500,
+      "parent_earned_income_p1": 10000,
+      "family_size": 5,
+      "num_parents": 1
+    },
+    "sai": -1500,
+    "parent_contribution": -1500,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  },
+  {
+    "name": "very-small-family",
+    "inputs": {
+      "parent_agi": 100000,
+      "parent_income_tax_paid": 15000,
+      "parent_earned_income_p1": 60000,
+      "parent_earned_income_p2": 40000,
+      "parent_cash_savings": 25000
+    },
+    "sai": 12786,
+    "parent_contribution": 14286,
+    "student_contribution_from_income": -1500,
+    "student_contribution_from_assets": 0
+  }
+]
