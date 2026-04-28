@@ -33,3 +33,53 @@ def _update_frontier(
     # Sort: best primary first; tiebreak secondary desc, then shorter artifact (Occam)
     pruned.sort(key=lambda e: (-e.score, -e.secondary_score, len(e.artifact)))
     return pruned[:frontier_size]
+
+
+def optimize(
+    propose: Callable[[str], str],
+    evaluate: Callable[[str], EvalResult],
+    accept: Callable[[EvalResult], bool],
+    pareto_axes: tuple[str, str],
+    max_steps: int = 50,
+    frontier_size: int = 10,
+    stagnation_k: int = 5,
+) -> list[EvalResult]:
+    """
+    Run the propose-evaluate-accept loop with Pareto frontier tracking.
+
+    Args:
+        propose: feedback_str -> artifact_str. Receives "" on first call.
+        evaluate: artifact_str -> EvalResult.
+        accept: stopping criterion; return True to halt early.
+        pareto_axes: names of (primary, secondary) score dimensions (for logging).
+        max_steps: hard iteration cap.
+        frontier_size: max entries in Pareto frontier.
+        stagnation_k: halt if frontier artifact set unchanged for this many consecutive steps.
+
+    Returns:
+        Current Pareto frontier at termination.
+    """
+    frontier: list[EvalResult] = []
+    feedback = ""
+    stagnation_count = 0
+    prev_artifacts: set[str] = set()
+
+    for _step in range(max_steps):
+        artifact = propose(feedback)
+        result = evaluate(artifact)
+        frontier = _update_frontier(frontier, result, frontier_size)
+        feedback = result.asi
+
+        if accept(result):
+            return frontier
+
+        current_artifacts = {e.artifact for e in frontier}
+        if current_artifacts == prev_artifacts:
+            stagnation_count += 1
+            if stagnation_count >= stagnation_k:
+                return frontier
+        else:
+            stagnation_count = 0
+        prev_artifacts = current_artifacts
+
+    return frontier
