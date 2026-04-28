@@ -8,6 +8,36 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-04-28 — Big-picture brainstorming: TL as self-improving world-knowledge engine
+
+**Session focus:** Evaluated the full project arc, then explored where TL can go at scale.
+
+**Key papers read:**
+- SGS: Scaling Self-Play with Self-Guidance (arxiv 2604.20209) — 7B beats 671B on Lean4 via Conjecturer/Solver/Guide self-play
+- Hyperloop Transformers (arxiv 2604.21254) — looped middle block = TL fixpoint; 50% parameter reduction
+- LLM-automated language bias for ILP (arxiv 2505.21486) — validates exp78 v2 independently
+- TL v3 — predicate invention added; repo promised but not yet open
+
+**Central insight: FAFSA as concrete first target**
+TL + rule extraction from PDFs = auditable eligibility engine with no runtime LLM. ED publishes the SAI formula as literal Horn clauses. Extract once/year, validate against FAFSA4caster, ship. All components already built. Assembly only. This is the proof-of-concept that validates the architecture on a real problem before going bigger.
+
+**The self-improving loop design:**
+SGS Conjecturer/Solver/Guide maps exactly to our architecture: exp78 (conjecturer) / proof engine (solver) / semantic_equiv (guide). Key difference: our solver and guide are exact (TL), not neural — reward hacking is impossible. Self-play is event-driven (triggered by NegativeProof(no_rules)), not batch training. 200 rounds is SGS's training budget for infinite theorem-proving; our bounded domains converge in 10-50 rule additions.
+
+**Conflict detection via fixpoint:** Run TL fixpoint after each new rule. Convergence = consistent. Oscillation = contradiction. This is already in the recurrence — no new code needed. Also: element-wise product of two rules' output tensors gives local conflict signal at entity-pair level.
+
+**Hyperloop = TL fixpoint:** Looped transformer middle block applying attention N times is structurally identical to TL fixpoint recurrence. Hyperloop is TL with softmax semiring and no relational structure constraints. Adding explicit relational structure to the middle block = exp61, now with a clean architectural home.
+
+**Architecture decision:** Gradient descent is wrong for discrete rule structure. Right tools: MCTS/enumeration for structure (which relations compose), gradient descent for weights (confidence), LM for language bias (which predicates worth trying). exp78 already does this correctly — the vocabulary was missing, not the approach.
+
+**Framework landscape:** Datalog/Soufflé (fast, no learning), ASP (exceptions/defaults), MLNs (TL's predecessor, too slow), ILP (theoretically complete, too slow at scale), KG embeddings (scale but no proofs), Scallop (differentiable Datalog + foundation model plugins). TL's unique position: learns rules from data AND scales AND gives interpretable proofs.
+
+**What's still research:** Schema induction from unstructured text, abduction at scale, TL-as-transformer-layer (exp61), predicate invention from scratch. These are 6-18 month bets running in parallel with the engineering work.
+
+**What to do next:** (1) Commit uncommitted PR integration. (2) Build FAFSA system — 2-4 weeks, proves architecture. (3) Implement exp79 self-play loop. (4) Read LLM-automated ILP bias paper for exp78 v2 implementation details.
+
+---
+
 ## 2026-04-27 — Paper: "Open-world evaluations for measuring frontier AI capabilities" (Kapoor, Kirgis, Narayanan et al., Princeton/CRUX)
 
 **Session focus:** Read and noted implications for how we evaluate the TL-as-tool claim.

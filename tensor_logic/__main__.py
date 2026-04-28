@@ -5,7 +5,10 @@ import json
 import sys
 
 from .file_format import Command, load_tl
+from .http_api import serve
+from .ingest import ingest_python, render_python_imports_tl
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
+from .repo_graph_view import dependency_report, repo_graph_repl
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -29,12 +32,47 @@ def main(argv: list[str] | None = None) -> int:
     prove_p.add_argument("--format", choices=["tree", "json"], default="tree")
     prove_p.add_argument("--why-not", action="store_true", help="Show explanation of why query is false (if false)")
 
+    ingest_p = sub.add_parser("ingest-python")
+    ingest_p.add_argument("path")
+    ingest_p.add_argument("-o", "--output")
+
     sub.add_parser("repl")
+
+    graph_p = sub.add_parser("repo-graph", help="Dependency graph view for Module/imports/depends_on facts")
+    graph_p.add_argument("file", nargs="?", default="/tmp/repo.tl")
+    graph_p.add_argument("--module")
+    graph_p.add_argument("--src")
+    graph_p.add_argument("--dst")
+    graph_p.add_argument("--interactive", action="store_true")
+
+    serve_p = sub.add_parser("serve")
+    serve_p.add_argument("--host", default="127.0.0.1")
+    serve_p.add_argument("--port", type=int, default=8000)
 
     args = parser.parse_args(argv)
 
+    if args.cmd == "ingest-python":
+        text = render_python_imports_tl(ingest_python(args.path))
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(text)
+        else:
+            print(text)
+        return 0
+
     if args.cmd == "repl":
         _run_repl()
+        return 0
+    if args.cmd == "repo-graph":
+        if args.interactive:
+            repo_graph_repl(args.file)
+            return 0
+        if (args.src is None) != (args.dst is None):
+            parser.error("--src and --dst must be provided together")
+        print(dependency_report(args.file, module=args.module, src=args.src, dst=args.dst))
+        return 0
+    if args.cmd == "serve":
+        serve(args.host, args.port)
         return 0
 
     loaded = load_tl(args.file)
@@ -56,11 +94,14 @@ def main(argv: list[str] | None = None) -> int:
 
 def _proof_to_json(proof: Proof) -> dict:
     rel, src, dst = proof.head
-    return {
+    result = {
         "head": [rel, src, dst],
         "confidence": proof.confidence,
         "body": [_proof_to_json(child) for child in proof.body],
     }
+    if proof.source is not None:
+        result["source"] = {"file": proof.source.file, "lineno": proof.source.lineno}
+    return result
 
 def _negative_proof_to_json(neg_proof: NegativeProof) -> dict:
     rel, src, dst = neg_proof.head

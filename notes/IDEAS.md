@@ -8,6 +8,31 @@ Cost legend: 🟢 hours on CPU | 🟡 day on Colab T4 | 🟠 weekend on A10G | �
 
 ---
 
+## Real-world applications + self-improving loop (do these first — Apr 2026)
+
+### 💡 exp80 — FAFSA regulatory KB (first real-world application)
+- **Hypothesis:** TL proof engine + rule extraction from ED publications produces an auditable FAFSA SAI calculator that (a) correctly computes SAI on 1000 synthetic families vs FAFSA4caster within $0 tolerance, (b) generates full derivation traces with ED citation for every number, (c) answers counterfactuals ("what if parent income were $60k?") by re-running proof with modified facts.
+- **Falsified if:** Extracted rules disagree with FAFSA4caster on >2% of test families, OR a NegativeProof(no_rules) occurs for a standard W-2 family (meaning extraction missed a core rule).
+- **Smallest test:** Extract rules from 2024-25 EFC Formula Guide (PDF, ~15 pages). Validate against 10 published ED worked examples. Run 1000 synthetic families. Diff against FAFSA4caster.
+- **Unlocks:** First proof the architecture works on a real problem. Same pipeline extends to tax, Medicaid, visa eligibility.
+- **Cost:** 🟢 LM extraction pass (1 day) + validation (1 day) + integration (1 day). All runtime components already built. No GPU needed at runtime.
+
+### 💡 exp79 — Self-play rule factory loop (SGS pattern)
+- **Hypothesis:** Wiring exp78 (conjecturer) + proof engine (solver) + semantic_equiv (guide) into an event-driven self-play loop lets the system induce new rules when it hits NegativeProof(no_rules), without human-provided examples. Triggered by query gaps, not batch training. Conflict check: run_fixpoint() after each add_rule(); oscillation = reject.
+- **Falsified if:** Induced rules don't generalize (semantic_equiv < 0.95), OR fixpoint oscillates after addition, OR coverage doesn't improve after 20 induction steps on a real KB.
+- **Smallest test:** 50-person contacts KB with knows/works_at/manages. Ask 10 multi-hop queries. For each NegativeProof(no_rules): run one induction step, validate, add. Measure queries answered after 20 steps vs 0.
+- **Unlocks:** Self-improving system. Grows from usage. No human labeling once KB has entities. Exact solver/guide = no reward hacking (unlike neural self-play systems).
+- **Cost:** 🟢 ~150 lines wiring existing components. No new algorithms needed.
+
+### 💡 do() causal operator
+- **Hypothesis:** Extending prove() with do(fact, value) — assert fact while severing its derivation parents — enables Pearl level-2 causal intervention. Correct behaviour: do(parent(alice,bob), false) makes grandparent(alice,charlie) unprovable even if other paths exist through alice→bob.
+- **Falsified if:** do() produces different result than manually asserting + running prove() — implementation bug in derivation-parent severing.
+- **Smallest test:** Family KB. prove(grandparent(alice,charlie)) = true. do(parent(alice,bob), false). Re-prove: NegativeProof because causal chain cut, not just fact retracted.
+- **Unlocks:** Pearl's causal hierarchy level 2 (intervention). Every regulatory domain needs "what if we change X" answered correctly.
+- **Cost:** 🟢 ~50 lines in proofs.py. Afternoon.
+
+---
+
 ## High leverage / low cost (do these next)
 
 ### 💡 exp68 — Lazy / top-K proof generation for openhuman scale

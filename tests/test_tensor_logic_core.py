@@ -493,6 +493,116 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertIsNotNone(proof)
         self.assertEqual(proof.body[0].head[0], "imports")
 
+    def test_ingest_python_imports_generates_dependency_program(self):
+        import os
+        import tempfile
+        from tensor_logic.ingest import ingest_python, render_python_imports_tl
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pkg = os.path.join(tmpdir, "pkg")
+            os.mkdir(pkg)
+            with open(os.path.join(pkg, "__init__.py"), "w") as f:
+                f.write("")
+            with open(os.path.join(pkg, "api.py"), "w") as f:
+                f.write("from . import db\n")
+            with open(os.path.join(pkg, "db.py"), "w") as f:
+                f.write("from . import models\n")
+            with open(os.path.join(pkg, "models.py"), "w") as f:
+                f.write("")
+            graph = ingest_python(tmpdir)
+            text = render_python_imports_tl(graph)
+            tl_path = os.path.join(tmpdir, "repo.tl")
+            with open(tl_path, "w") as f:
+                f.write(text)
+
+            loaded = load_tl(tl_path)
+            self.assertEqual(loaded.program.query("depends_on", "pkg_api", "pkg_models", recursive=True), 1.0)
+            proof = prove(loaded.program, "depends_on", "pkg_api", "pkg_models")
+            self.assertIsNotNone(proof)
+
+    def test_repo_graph_helpers_and_report(self):
+        from tensor_logic.repo_graph_view import build_adjacency, dependency_report, filter_modules, imports_path, load_repo_graph
+
+        graph = load_repo_graph("examples/code_dependencies.tl")
+        self.assertIn("worker", graph.modules)
+        self.assertIn(("worker", "api"), graph.imports)
+        adjacency = build_adjacency(graph.modules, graph.imports)
+        self.assertEqual(adjacency["worker"], ["api"])
+        self.assertEqual(filter_modules(graph.modules, "mo"), ["models"])
+        self.assertEqual(imports_path(graph.modules, graph.imports, "worker", "models"), ["worker", "api", "db", "models"])
+        report = dependency_report("examples/code_dependencies.tl", module="worker", src="worker", dst="models")
+        self.assertIn("direct imports(worker): api", report)
+        self.assertIn("depends_on(worker, models) = True", report)
+        self.assertIn("path: worker -> api -> db -> models", report)
+
+    def test_proof_tree_viewer_renders_positive_and_negative(self):
+        from tensor_logic.proof_tree_viewer import build_proof_tree_view, render_proof_tree
+
+        positive = {
+            "answer": True,
+            "proof": {
+                "head": ["depends_on", "worker", "models"],
+                "confidence": 0.81,
+                "source": {"file": "examples/code_dependencies.tl", "lineno": 14},
+                "body": [{"head": ["imports", "worker", "api"], "confidence": 0.9, "body": []}],
+            },
+        }
+        rendered = render_proof_tree(build_proof_tree_view(positive))
+        self.assertIn("depends_on(worker, models)", rendered)
+        self.assertIn("(0.81)", rendered)
+        self.assertIn("[examples/code_dependencies.tl:14]", rendered)
+
+        negative = {
+            "answer": False,
+            "explanation": {
+                "head": ["depends_on", "models", "worker"],
+                "reason": "all_rules_failed",
+                "body": [{"head": ["imports", "models", "worker"], "reason": "no_rules", "body": []}],
+            },
+        }
+        rendered = render_proof_tree(build_proof_tree_view(negative), collapsed={"0"})
+        self.assertIn("[+] depends_on(models, worker) = False", rendered)
+        self.assertNotIn("imports(models, worker)", rendered)
+
+    def test_http_api_helpers_and_repo_ingest(self):
+        import os
+        import tempfile
+        from tensor_logic.http_api import ingest_python_source, prove_source, query_source, run_source
+
+        source = open("examples/code_dependencies.tl", encoding="utf-8").read()
+        self.assertEqual(len(run_source(source)["outputs"]), 2)
+        query = query_source(source, "depends_on", ["worker", "models"], recursive=True)
+        self.assertTrue(query["answer"])
+        proof = prove_source(source, "depends_on", ["worker", "models"], recursive=True, format_type="json")
+        self.assertTrue(proof["answer"])
+        self.assertIn("proof", proof)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pkg = os.path.join(tmpdir, "pkg")
+            os.mkdir(pkg)
+            with open(os.path.join(pkg, "__init__.py"), "w") as f:
+                f.write("")
+            with open(os.path.join(pkg, "api.py"), "w") as f:
+                f.write("from . import db\n")
+            with open(os.path.join(pkg, "db.py"), "w") as f:
+                f.write("")
+            tl_source = ingest_python_source(tmpdir)
+        self.assertIn("fact imports(pkg_api, pkg_db)", tl_source)
+
+    def test_web_workbench_sample_is_valid_tl(self):
+        import re
+        from tensor_logic.file_format import load_tl
+
+        app_js = open("web_workbench/static/app.js", encoding="utf-8").read()
+        match = re.search(r"sourceEl\.value = `(?P<source>.*?)`;", app_js, re.S)
+        self.assertIsNotNone(match)
+        import tempfile
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write(match.group("source"))
+            path = f.name
+        loaded = load_tl(path)
+        self.assertEqual(loaded.program.query("ancestor", "alice", "cara", recursive=True), 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()
