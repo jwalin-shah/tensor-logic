@@ -1,0 +1,1666 @@
+{
+  "easy": {
+    "mode": "easy",
+    "answered_at_0": 0,
+    "answered_after": 10,
+    "total_queries": 10,
+    "rules_induced": 10,
+    "steps_taken": 11,
+    "step_log": [
+      {
+        "step": 0,
+        "target": "friend_of_friend",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "knows"
+        ],
+        "gold": [
+          "knows",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 0.146,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 1,
+        "target": "skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 0.147,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 2,
+        "target": "managed_peer",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "manages"
+        ],
+        "gold": [
+          "manages^T",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 0.147,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 3,
+        "target": "peer_friend",
+        "outcome": "accepted",
+        "induced": [
+          "peers_with",
+          "knows"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 0.146,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 4,
+        "target": "friend_peer",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "peers_with"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 0.146,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 5,
+        "target": "managed_friend",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "knows"
+        ],
+        "gold": [
+          "manages^T",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 0.148,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 6,
+        "target": "skip_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 0.191,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 7,
+        "target": "friend_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 0.191,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 8,
+        "target": "peer_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "peers_with",
+          "knows",
+          "knows"
+        ],
+        "gold": [
+          "peers_with",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 0.186,
+        "gen_scores": null
+      },
+      {
+        "step": 9,
+        "target": "peer_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "peers_with",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "peers_with",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 0.191,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 10,
+        "target": "managed_peer_friend",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "peers_with",
+          "knows"
+        ],
+        "gold": [
+          "manages^T",
+          "peers_with",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 0.192,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      }
+    ],
+    "rules": [
+      [
+        "friend_of_friend",
+        [
+          "knows",
+          "knows"
+        ]
+      ],
+      [
+        "skip_manager",
+        [
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "managed_peer",
+        [
+          "manages^T",
+          "manages"
+        ]
+      ],
+      [
+        "peer_friend",
+        [
+          "peers_with",
+          "knows"
+        ]
+      ],
+      [
+        "friend_peer",
+        [
+          "knows",
+          "peers_with"
+        ]
+      ],
+      [
+        "managed_friend",
+        [
+          "manages^T",
+          "knows"
+        ]
+      ],
+      [
+        "skip_skip_manager",
+        [
+          "manages",
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "friend_skip_manager",
+        [
+          "knows",
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "peer_skip_manager",
+        [
+          "peers_with",
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "managed_peer_friend",
+        [
+          "manages^T",
+          "peers_with",
+          "knows"
+        ]
+      ]
+    ],
+    "wall_s": 1.84
+  },
+  "medium": {
+    "mode": "medium",
+    "answered_at_0": 0,
+    "answered_after": 10,
+    "total_queries": 10,
+    "rules_induced": 10,
+    "steps_taken": 10,
+    "step_log": [
+      {
+        "step": 0,
+        "target": "friend_of_friend",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "knows"
+        ],
+        "gold": [
+          "knows",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 2.965,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 1,
+        "target": "skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 3.313,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 2,
+        "target": "managed_peer",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "manages"
+        ],
+        "gold": [
+          "manages^T",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 3.488,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 3,
+        "target": "peer_friend",
+        "outcome": "accepted",
+        "induced": [
+          "peers_with",
+          "knows"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 2.963,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 4,
+        "target": "friend_peer",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "peers_with"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 2.951,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 5,
+        "target": "managed_friend",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "knows"
+        ],
+        "gold": [
+          "manages^T",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 2.944,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 6,
+        "target": "skip_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 2.963,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 7,
+        "target": "friend_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 2.966,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 8,
+        "target": "peer_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "peers_with",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "peers_with",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 2.965,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 9,
+        "target": "managed_peer_friend",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "peers_with",
+          "knows"
+        ],
+        "gold": [
+          "manages^T",
+          "peers_with",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 2.988,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      }
+    ],
+    "rules": [
+      [
+        "friend_of_friend",
+        [
+          "knows",
+          "knows"
+        ]
+      ],
+      [
+        "skip_manager",
+        [
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "managed_peer",
+        [
+          "manages^T",
+          "manages"
+        ]
+      ],
+      [
+        "peer_friend",
+        [
+          "peers_with",
+          "knows"
+        ]
+      ],
+      [
+        "friend_peer",
+        [
+          "knows",
+          "peers_with"
+        ]
+      ],
+      [
+        "managed_friend",
+        [
+          "manages^T",
+          "knows"
+        ]
+      ],
+      [
+        "skip_skip_manager",
+        [
+          "manages",
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "friend_skip_manager",
+        [
+          "knows",
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "peer_skip_manager",
+        [
+          "peers_with",
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "managed_peer_friend",
+        [
+          "manages^T",
+          "peers_with",
+          "knows"
+        ]
+      ]
+    ],
+    "wall_s": 30.52
+  },
+  "hard": {
+    "mode": "hard",
+    "answered_at_0": 0,
+    "answered_after": 4,
+    "total_queries": 10,
+    "rules_induced": 4,
+    "steps_taken": 20,
+    "step_log": [
+      {
+        "step": 0,
+        "target": "friend_of_friend",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "knows"
+        ],
+        "gold": [
+          "knows",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 5.966,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 1,
+        "target": "skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 5.932,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 2,
+        "target": "managed_peer",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "manages"
+        ],
+        "gold": [
+          "manages^T",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 5.912,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 3,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "admires^T",
+          "admires^T",
+          "admires"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.727,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.933,
+        "gen_scores": null
+      },
+      {
+        "step": 4,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies^T",
+          "envies"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.769,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.971,
+        "gen_scores": null
+      },
+      {
+        "step": 5,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "reports_to^T",
+          "reports_to^T",
+          "reports_to^T"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.727,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.965,
+        "gen_scores": null
+      },
+      {
+        "step": 6,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "likes",
+          "likes",
+          "likes^T"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.8,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.972,
+        "gen_scores": null
+      },
+      {
+        "step": 7,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies",
+          "envies"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.667,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.966,
+        "gen_scores": null
+      },
+      {
+        "step": 8,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "reports_to",
+          "reports_to",
+          "reports_to"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.615,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.946,
+        "gen_scores": null
+      },
+      {
+        "step": 9,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "likes",
+          "likes",
+          "likes"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.667,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.954,
+        "gen_scores": null
+      },
+      {
+        "step": 10,
+        "target": "peer_friend",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies^T",
+          "envies^T"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 0.8,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.955,
+        "gen_scores": null
+      },
+      {
+        "step": 11,
+        "target": "peer_friend",
+        "outcome": "accepted",
+        "induced": [
+          "peers_with",
+          "knows"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 5.901,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 12,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies^T",
+          "envies",
+          "envies^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.667,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.951,
+        "gen_scores": null
+      },
+      {
+        "step": 13,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies",
+          "envies^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.8,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.945,
+        "gen_scores": null
+      },
+      {
+        "step": 14,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "reports_to",
+          "reports_to",
+          "reports_to"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.769,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.988,
+        "gen_scores": null
+      },
+      {
+        "step": 15,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies^T",
+          "envies^T",
+          "envies^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.833,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.957,
+        "gen_scores": null
+      },
+      {
+        "step": 16,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "peers_with",
+          "peers_with",
+          "peers_with^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.727,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.958,
+        "gen_scores": null
+      },
+      {
+        "step": 17,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "likes",
+          "likes",
+          "likes"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.667,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.95,
+        "gen_scores": null
+      },
+      {
+        "step": 18,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "peers_with^T",
+          "peers_with",
+          "peers_with"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.75,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.933,
+        "gen_scores": null
+      },
+      {
+        "step": 19,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies^T",
+          "envies^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.727,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 5.962,
+        "gen_scores": null
+      }
+    ],
+    "rules": [
+      [
+        "friend_of_friend",
+        [
+          "knows",
+          "knows"
+        ]
+      ],
+      [
+        "skip_manager",
+        [
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "managed_peer",
+        [
+          "manages^T",
+          "manages"
+        ]
+      ],
+      [
+        "peer_friend",
+        [
+          "peers_with",
+          "knows"
+        ]
+      ]
+    ],
+    "wall_s": 119.03
+  },
+  "very_hard": {
+    "mode": "very_hard",
+    "answered_at_0": 0,
+    "answered_after": 7,
+    "total_queries": 10,
+    "rules_induced": 7,
+    "steps_taken": 20,
+    "step_log": [
+      {
+        "step": 0,
+        "target": "friend_of_friend",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "knows"
+        ],
+        "gold": [
+          "knows",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 7.215,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 1,
+        "target": "skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 7.201,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 2,
+        "target": "managed_peer",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "manages"
+        ],
+        "gold": [
+          "manages^T",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 7.219,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 3,
+        "target": "peer_friend",
+        "outcome": "accepted",
+        "induced": [
+          "peers_with",
+          "knows"
+        ],
+        "gold": [
+          "peers_with",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 7.213,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 4,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "peers_with^T",
+          "peers_with^T",
+          "peers_with^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.75,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.224,
+        "gen_scores": null
+      },
+      {
+        "step": 5,
+        "target": "friend_peer",
+        "outcome": "failed_equiv",
+        "induced": [
+          "reports_to",
+          "reports_to^T",
+          "reports_to^T"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.229,
+        "gen_scores": null
+      },
+      {
+        "step": 6,
+        "target": "friend_peer",
+        "outcome": "accepted",
+        "induced": [
+          "knows",
+          "peers_with"
+        ],
+        "gold": [
+          "knows",
+          "peers_with"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 7.251,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 7,
+        "target": "managed_friend",
+        "outcome": "accepted",
+        "induced": [
+          "manages^T",
+          "knows"
+        ],
+        "gold": [
+          "manages^T",
+          "knows"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 20,
+        "elapsed_s": 7.216,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 8,
+        "target": "skip_skip_manager",
+        "outcome": "accepted",
+        "induced": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 1.0,
+        "search_cost": 258,
+        "elapsed_s": 7.235,
+        "gen_scores": {
+          "100": 1,
+          "101": 1,
+          "102": 1,
+          "103": 1,
+          "104": 1
+        }
+      },
+      {
+        "step": 9,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "reports_to^T",
+          "reports_to^T",
+          "reports_to"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.8,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.251,
+        "gen_scores": null
+      },
+      {
+        "step": 10,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies^T",
+          "envies^T"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.8,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.244,
+        "gen_scores": null
+      },
+      {
+        "step": 11,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "reports_to",
+          "reports_to",
+          "reports_to^T"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.224,
+        "gen_scores": null
+      },
+      {
+        "step": 12,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "admires",
+          "admires^T",
+          "admires^T"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.244,
+        "gen_scores": null
+      },
+      {
+        "step": 13,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "manages",
+          "manages",
+          "manages"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.234,
+        "gen_scores": null
+      },
+      {
+        "step": 14,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies^T",
+          "envies",
+          "envies^T"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.257,
+        "gen_scores": null
+      },
+      {
+        "step": 15,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies^T",
+          "envies^T",
+          "envies"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.75,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.237,
+        "gen_scores": null
+      },
+      {
+        "step": 16,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "envies",
+          "envies",
+          "envies"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.314,
+        "gen_scores": null
+      },
+      {
+        "step": 17,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "admires",
+          "admires",
+          "likes^T"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 1.0,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.242,
+        "gen_scores": null
+      },
+      {
+        "step": 18,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "admires",
+          "admires^T",
+          "reports_to"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.257,
+        "gen_scores": null
+      },
+      {
+        "step": 19,
+        "target": "friend_skip_manager",
+        "outcome": "failed_equiv",
+        "induced": [
+          "likes",
+          "likes^T",
+          "likes"
+        ],
+        "gold": [
+          "knows",
+          "manages",
+          "manages"
+        ],
+        "f1": 0.857,
+        "equiv": 0.0,
+        "search_cost": 258,
+        "elapsed_s": 7.314,
+        "gen_scores": null
+      }
+    ],
+    "rules": [
+      [
+        "friend_of_friend",
+        [
+          "knows",
+          "knows"
+        ]
+      ],
+      [
+        "skip_manager",
+        [
+          "manages",
+          "manages"
+        ]
+      ],
+      [
+        "managed_peer",
+        [
+          "manages^T",
+          "manages"
+        ]
+      ],
+      [
+        "peer_friend",
+        [
+          "peers_with",
+          "knows"
+        ]
+      ],
+      [
+        "friend_peer",
+        [
+          "knows",
+          "peers_with"
+        ]
+      ],
+      [
+        "managed_friend",
+        [
+          "manages^T",
+          "knows"
+        ]
+      ],
+      [
+        "skip_skip_manager",
+        [
+          "manages",
+          "manages",
+          "manages"
+        ]
+      ]
+    ],
+    "wall_s": 144.84
+  },
+  "adversarial": {
+    "mode": "adversarial",
+    "falsified": false,
+    "attempts": [
+      {
+        "target": "impossible_0",
+        "outcome": "correctly_rejected",
+        "best_f1": 1.0,
+        "equiv": 0.0,
+        "induced": [
+          "knows",
+          "manages^T",
+          "trusts^T"
+        ],
+        "accepted": false
+      },
+      {
+        "target": "impossible_1",
+        "outcome": "correctly_rejected",
+        "best_f1": 1.0,
+        "equiv": 0.0,
+        "induced": [
+          "likes^T",
+          "envies^T",
+          "admires^T"
+        ],
+        "accepted": false
+      },
+      {
+        "target": "impossible_2",
+        "outcome": "correctly_rejected",
+        "best_f1": 1.0,
+        "equiv": 0.0,
+        "induced": [
+          "knows^T",
+          "admires^T",
+          "likes"
+        ],
+        "accepted": false
+      }
+    ]
+  }
+}

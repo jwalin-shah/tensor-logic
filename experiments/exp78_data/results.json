@@ -11,9 +11,17 @@
       ],
       "f1": 1.0,
       "semantic_equiv": 1.0,
-      "search_cost": 84,
+      "search_cost": 20,
       "search_time_s": 0.014,
-      "rule_found": true
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "parent",
+        "sibling"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 4.2
     },
     "uncle": {
       "induced": [
@@ -27,8 +35,16 @@
       "f1": 1.0,
       "semantic_equiv": 1.0,
       "search_cost": 84,
-      "search_time_s": 0.013,
-      "rule_found": true
+      "search_time_s": 0.031,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "parent",
+        "sibling"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 1.0
     }
   },
   "heldout_schema": {
@@ -43,9 +59,17 @@
       ],
       "f1": 1.0,
       "semantic_equiv": 1.0,
-      "search_cost": 84,
-      "search_time_s": 0.013,
-      "rule_found": true
+      "search_cost": 20,
+      "search_time_s": 0.008,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "manages",
+        "peer_of"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 4.2
     },
     "skip_peer": {
       "induced": [
@@ -59,8 +83,16 @@
       "f1": 1.0,
       "semantic_equiv": 1.0,
       "search_cost": 84,
-      "search_time_s": 0.013,
-      "rule_found": true
+      "search_time_s": 0.026,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "manages",
+        "peer_of"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 1.0
     }
   },
   "heldout_compose": {
@@ -78,8 +110,16 @@
       "f1": 1.0,
       "semantic_equiv": 1.0,
       "search_cost": 84,
-      "search_time_s": 0.013,
-      "rule_found": true
+      "search_time_s": 0.031,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "parent",
+        "sibling"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 1.0
     },
     "skip_skip_manager": {
       "induced": [
@@ -95,8 +135,16 @@
       "f1": 1.0,
       "semantic_equiv": 1.0,
       "search_cost": 84,
-      "search_time_s": 0.013,
-      "rule_found": true
+      "search_time_s": 0.026,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "manages",
+        "peer_of"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 1.0
     }
   },
   "distractor": {
@@ -112,8 +160,21 @@
       "f1": 1.0,
       "semantic_equiv": 1.0,
       "search_cost": 2954,
-      "search_time_s": 0.462,
-      "rule_found": true
+      "search_time_s": 0.877,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "parent",
+        "sibling",
+        "lives_in",
+        "born_in",
+        "owns",
+        "knows_lang",
+        "speaks"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": "parse_failed",
+      "pruner_speedup": 1.0
     },
     "uncle": {
       "induced": [
@@ -126,9 +187,22 @@
       ],
       "f1": 1.0,
       "semantic_equiv": 1.0,
-      "search_cost": 2954,
-      "search_time_s": 0.521,
-      "rule_found": true
+      "search_cost": 210,
+      "search_time_s": 0.075,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "parent",
+        "sibling",
+        "lives_in",
+        "born_in",
+        "owns",
+        "knows_lang",
+        "speaks"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 14.07
     },
     "skip_manager": {
       "induced": [
@@ -142,8 +216,21 @@
       "f1": 1.0,
       "semantic_equiv": 1.0,
       "search_cost": 2954,
-      "search_time_s": 0.465,
-      "rule_found": true
+      "search_time_s": 0.874,
+      "rule_found": true,
+      "lm_suggested_rels": [
+        "manages",
+        "peer_of",
+        "lives_in",
+        "born_in",
+        "owns",
+        "knows_lang",
+        "speaks"
+      ],
+      "gold_in_pruned": true,
+      "lm_fallback": false,
+      "lm_fallback_reason": null,
+      "pruner_speedup": 1.0
     }
   }
 }
