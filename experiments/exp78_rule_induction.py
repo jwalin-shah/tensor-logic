@@ -159,7 +159,8 @@ def induce(base: dict, target: torch.Tensor, max_len: int = 3) -> dict:
 # ---------- Examples-only induction (the realistic setup) ----------
 
 def induce_from_examples(base: dict, positive: list, negative: list,
-                         n_entities: int, max_len: int = 3) -> dict:
+                         n_entities: int, max_len: int = 3,
+                         allowed_rels: list | None = None) -> dict:
     """Induce rule from pos/neg example pairs.
 
     Score F1 over LABELED pairs only (standard ILP setup): TP = predicted+pos,
@@ -171,7 +172,8 @@ def induce_from_examples(base: dict, positive: list, negative: list,
     if not pos_set:
         return {"f1": 0.0, "body": None, "search_cost": 0, "search_time_s": 0.0}
     t0 = time.perf_counter()
-    candidates = enumerate_rules(list(base.keys()), max_len)
+    rel_names = allowed_rels if allowed_rels is not None else list(base.keys())
+    candidates = enumerate_rules(rel_names, max_len)
     best = (-1.0, None)
     for body in candidates:
         pred = apply_body(body, base)
@@ -189,6 +191,85 @@ def induce_from_examples(base: dict, positive: list, negative: list,
         "search_cost": len(candidates),
         "search_time_s": time.perf_counter() - t0,
     }
+
+
+# ---------- LM pruner (v2) ----------
+
+_LM_CACHE: dict = {}
+_ENTITY_NAMES = ["alice", "bob", "carol", "dave", "eve", "frank", "grace", "hank"]
+
+
+def lm_prune(schema: Schema, target_rel: str, positive: list, negative: list,
+             n_entities: int, model_name: str = "Qwen/Qwen2.5-0.5B-Instruct") -> dict:
+    """Ask LM which relations are relevant for target_rel.
+
+    Returns dict with relevant_relations, max_body_length, fallback (None = clean parse).
+    Falls back to all relations on any failure — never blocks TL search.
+    """
+    import re as _re
+    try:
+        from transformers import AutoTokenizer, AutoModelForCausalLM
+    except ImportError:
+        return {"relevant_relations": schema.rel_names(), "max_body_length": 3,
+                "fallback": "no_transformers", "raw": ""}
+
+    global _LM_CACHE
+    if "model" not in _LM_CACHE or _LM_CACHE.get("model_name") != model_name:
+        tok = AutoTokenizer.from_pretrained(model_name)
+        mdl = AutoModelForCausalLM.from_pretrained(model_name)
+        mdl.eval()
+        _LM_CACHE["model"] = mdl
+        _LM_CACHE["tokenizer"] = tok
+        _LM_CACHE["model_name"] = model_name
+    tok = _LM_CACHE["tokenizer"]
+    mdl = _LM_CACHE["model"]
+
+    names = _ENTITY_NAMES[:max(n_entities, len(_ENTITY_NAMES))]
+
+    def fmt_pairs(pairs, limit=4):
+        return "; ".join(f"X={names[i]},Y={names[j]}" for i, j in pairs[:limit])
+
+    rels_str = ", ".join(schema.rel_names())
+    prompt = (
+        f"Schema relations: {rels_str}\n\n"
+        f"Task: find a rule for the relation: {target_rel}\n\n"
+        f"Positive examples ({target_rel} is TRUE): {fmt_pairs(positive)}\n"
+        f"Negative examples ({target_rel} is FALSE): {fmt_pairs(negative)}\n\n"
+        f"Which relations from the schema are needed to define {target_rel}?\n"
+        f"Reply with JSON only, no explanation:\n"
+        f'{{"relevant_relations": ["rel1", "rel2"], "max_body_length": 2}}'
+    )
+
+    inputs = tok(prompt, return_tensors="pt")
+    with torch.no_grad():
+        out = mdl.generate(**inputs, max_new_tokens=80, do_sample=False,
+                           pad_token_id=tok.eos_token_id)
+    response = tok.decode(out[0][inputs["input_ids"].shape[1]:],
+                          skip_special_tokens=True).strip()
+
+    parsed = None
+    try:
+        parsed = json.loads(response)
+    except json.JSONDecodeError:
+        pass
+    if parsed is None:
+        m = _re.search(r'\{[^{}]+\}', response, _re.DOTALL)
+        if m:
+            try:
+                parsed = json.loads(m.group())
+            except json.JSONDecodeError:
+                pass
+
+    if parsed is None:
+        return {"relevant_relations": schema.rel_names(), "max_body_length": 3,
+                "fallback": "parse_failed", "raw": response[:120]}
+
+    valid_rels = [r for r in parsed.get("relevant_relations", []) if r in schema.rel_names()]
+    if not valid_rels:
+        valid_rels = schema.rel_names()
+    max_len = max(1, min(int(parsed.get("max_body_length", 3)), 4))
+    return {"relevant_relations": valid_rels, "max_body_length": max_len,
+            "fallback": None, "raw": response[:120]}
 
 
 # ---------- Eval splits ----------
@@ -235,7 +316,8 @@ def semantic_equiv(induced_body: list, gold_body: list, schema: Schema,
 
 
 def eval_split(name: str, targets: list, schema_for_world, n_pos: int = 20,
-               n_neg: int = 20, n_entities: int = 8, max_len: int = 3) -> dict:
+               n_neg: int = 20, n_entities: int = 8, max_len: int = 3,
+               use_lm: bool = False, lm_model: str = "Qwen/Qwen2.5-0.5B-Instruct") -> dict:
     """Run induction on each target; return per-target metrics."""
     out = {}
     for tgt in targets:
@@ -247,10 +329,26 @@ def eval_split(name: str, targets: list, schema_for_world, n_pos: int = 20,
         if len(pos) == 0:
             out[tgt] = {"skipped": "no positives in sampled world"}
             continue
-        result = induce_from_examples(base, pos, neg, n_entities, max_len=max_len)
+
+        lm_info = None
+        allowed_rels = None
+        pruned_max_len = max_len
+        if use_lm:
+            lm_info = lm_prune(eval_schema, tgt, pos, neg, n_entities, model_name=lm_model)
+            allowed_rels = lm_info["relevant_relations"]
+            pruned_max_len = lm_info["max_body_length"]
+
+        result = induce_from_examples(base, pos, neg, n_entities,
+                                      max_len=pruned_max_len, allowed_rels=allowed_rels)
+
+        lm_fallback = False
+        if use_lm and result["f1"] < 0.9:
+            result = induce_from_examples(base, pos, neg, n_entities, max_len=max_len)
+            lm_fallback = True
+
         equiv = semantic_equiv(result["body"], gold_body, eval_schema,
                                n_worlds=20, n_entities=n_entities)
-        out[tgt] = {
+        entry = {
             "induced": result["body"],
             "gold": gold_body,
             "f1": round(result["f1"], 3),
@@ -259,6 +357,14 @@ def eval_split(name: str, targets: list, schema_for_world, n_pos: int = 20,
             "search_time_s": round(result["search_time_s"], 3),
             "rule_found": result["f1"] >= 0.9,
         }
+        if use_lm:
+            full_cost = len(list(enumerate_rules(list(base.keys()), max_len)))
+            entry["lm_suggested_rels"] = lm_info["relevant_relations"]
+            entry["gold_in_pruned"] = all(r in lm_info["relevant_relations"] for r in gold_body)
+            entry["lm_fallback"] = lm_fallback
+            entry["lm_fallback_reason"] = lm_info.get("fallback")
+            entry["pruner_speedup"] = round(full_cost / max(result["search_cost"], 1), 2)
+        out[tgt] = entry
     return out
 
 
@@ -269,6 +375,9 @@ def main():
     ap.add_argument("--n-neg", type=int, default=20)
     ap.add_argument("--n-entities", type=int, default=8)
     ap.add_argument("--max-len", type=int, default=3)
+    ap.add_argument("--lm", action="store_true", help="Enable LM pruner (v2)")
+    ap.add_argument("--lm-model", default="Qwen/Qwen2.5-0.5B-Instruct",
+                    help="HuggingFace model ID for pruner")
     args = ap.parse_args()
 
     splits = {
@@ -282,15 +391,17 @@ def main():
                              schema_with_distractors),
     }
 
+    mode = "v2 (LM-guided)" if args.lm else "v1 (TL-only)"
     all_results = {}
-    print(f"exp78: TL-only rule induction (max_len={args.max_len}, "
+    print(f"exp78: {mode} rule induction (max_len={args.max_len}, "
           f"n_pos={args.n_pos}, n_neg={args.n_neg})")
     print("=" * 70)
     for split_name, (targets, schema_fn) in splits.items():
         print(f"\n--- {split_name} ---")
         res = eval_split(split_name, targets, schema_fn,
                          n_pos=args.n_pos, n_neg=args.n_neg,
-                         n_entities=args.n_entities, max_len=args.max_len)
+                         n_entities=args.n_entities, max_len=args.max_len,
+                         use_lm=args.lm, lm_model=args.lm_model)
         all_results[split_name] = res
         for tgt, m in res.items():
             if m.get("skipped"):
@@ -301,8 +412,12 @@ def main():
                   f"cost={m['search_cost']:>4}  t={m['search_time_s']:.3f}s")
             print(f"      gold:    {m['gold']}")
             print(f"      induced: {m['induced']}")
+            if args.lm:
+                fb = " [FALLBACK]" if m.get("lm_fallback") else ""
+                print(f"      pruner:  {m.get('lm_suggested_rels')}  "
+                      f"speedup={m.get('pruner_speedup', 'n/a')}x  "
+                      f"gold_covered={m.get('gold_in_pruned')}{fb}")
 
-    # Aggregate falsification check.
     print("\n=== Falsification check ===")
     family_targets = ["grandparent", "uncle", "great_uncle"]
     family_results = {}
@@ -320,6 +435,21 @@ def main():
         verdict = all_found and all_fast and all_equiv
         print(f"  v1 thesis (TL-only works) : "
               f"{'PASS — proceed to v2 LM pruner' if verdict else 'FAIL — prune search space first'}")
+
+    if args.lm:
+        print("\n=== v2 falsification check ===")
+        lm_results = [m for r in all_results.values() for m in r.values()
+                      if not m.get("skipped") and "pruner_speedup" in m]
+        if lm_results:
+            avg_speedup = sum(m["pruner_speedup"] for m in lm_results) / len(lm_results)
+            all_covered = all(m["gold_in_pruned"] for m in lm_results)
+            no_accuracy_loss = all(m["rule_found"] for m in lm_results)
+            speedup_ok = avg_speedup >= 3.0
+            print(f"  avg pruner speedup        : {avg_speedup:.2f}x  {'PASS' if speedup_ok else 'FAIL (need >=3x)'}")
+            print(f"  gold always in pruned set : {'PASS' if all_covered else 'FAIL'}")
+            print(f"  no accuracy loss          : {'PASS' if no_accuracy_loss else 'FAIL'}")
+            v2_verdict = speedup_ok and no_accuracy_loss
+            print(f"  v2 thesis (LM adds value) : {'PASS' if v2_verdict else 'FAIL'}")
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
