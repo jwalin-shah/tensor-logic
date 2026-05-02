@@ -1,5 +1,7 @@
 # Tensor Logic → Cognition
 
+Note: this repository now also serves as the shared `tensor_logic` library dependency for other projects in this workspace (e.g. `fafsa-engine`, and later `officeqa-*`).
+
 Working through Pedro Domingos' [Tensor Logic: The Language of AI](https://arxiv.org/abs/2510.12269) (2025) and following the threads where they lead — into architectures, world models, developmental learning, and continual learning.
 
 A learning project, not a product. Each demo is intended to make one idea click viscerally.

@@ -2,6 +2,8 @@ AGENTS.md
 .claude/
 __pycache__/
 *.pyc
+.pytest_cache/
+.ruff_cache/
 .venv/
 .uv/
 *.pt
@@ -13,6 +15,9 @@ __pycache__/
 POST_*.md
 make_post_charts.py
 chart*.png
-# CocoIndex Code (ccc)
 /.cocoindex_code/
 tools/index.json
+dist/
+build/
+*.egg-info/
+
