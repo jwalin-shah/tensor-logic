@@ -37,12 +37,13 @@ def _proof_to_json(proof: Proof) -> dict[str, Any]:
 
 
 def _negative_proof_to_json(neg_proof: NegativeProof) -> dict[str, Any]:
+    return {"answer": False, "explanation": _negative_proof_explanation_to_json(neg_proof)}
+
+
+def _negative_proof_explanation_to_json(neg_proof: NegativeProof) -> dict[str, Any]:
     rel, src, dst = neg_proof.head
     return {
-        "answer": False,
-        "explanation": {
-            "head": [rel, src, dst],
-            "reason": neg_proof.reason,
-            "body": [_negative_proof_to_json(child) for child in neg_proof.body] if neg_proof.body else [],
-        },
+        "head": [rel, src, dst],
+        "reason": neg_proof.reason,
+        "body": [_negative_proof_explanation_to_json(child) for child in neg_proof.body],
     }
