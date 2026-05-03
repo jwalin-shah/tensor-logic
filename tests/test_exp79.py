@@ -157,9 +157,12 @@ class TestProbe(unittest.TestCase):
 
     def test_eval_probe_returns_acc_dict(self):
         frames = generate_labeled_frames(n=20, seed=9)
-        acc = eval_probe(self.probe, frames, self.enc, self.device)
-        self.assertEqual(set(acc.keys()), set(RELATIONS))
-        for v in acc.values():
+        metrics = eval_probe(self.probe, frames, self.enc, self.device)
+        expected_keys = []
+        for r in RELATIONS:
+            expected_keys.extend([f"{r}_acc", f"{r}_f1"])
+        self.assertEqual(set(metrics.keys()), set(expected_keys))
+        for v in metrics.values():
             self.assertGreaterEqual(v, 0.0)
             self.assertLessEqual(v, 1.0)
 

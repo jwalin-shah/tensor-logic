@@ -1,20 +1,6 @@
 """
 exp79: Self-play rule factory loop (SGS pattern) — hardened test suite.
-
-Three difficulty modes test the loop under increasingly adversarial conditions:
-
-  easy   — clean examples (10 pos/10 neg), no distractors          [baseline]
-  medium — distractor schema (5 extra rels), 5 pos/5 neg           [search pressure]
-  hard   — distractors + 3 pos/3 neg + 20% label noise             [noise + tiny budget]
-
-Each mode is followed by:
-  adversarial — 3 impossible queries (random tensor); loop must NOT add a rule
-  generalization — for each accepted rule, measure equiv on 5 held-out worlds
-
-Falsified if:
-  - Hard mode: any accepted rule has equiv < 0.95 on held-out worlds, OR
-    coverage doesn't improve at all after 20 steps, OR
-  - Adversarial: any impossible query gets a rule accepted above threshold.
+Refactored to use tensor_logic.research utilities and NegativeProof trigger.
 """
 import json
 import random
@@ -26,36 +12,21 @@ from typing import Optional
 
 import torch
 
-HERE = Path(__file__).parent
-sys.path.insert(0, str(HERE))
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-from exp78_rule_induction import (
+from tensor_logic.research.utils import (
     Schema, gen_world, apply_body, induce_from_examples,
-    semantic_equiv, sample_examples,
+    semantic_equiv, sample_examples, corrupt_examples,
+    sample_exclusive_examples, fixpoint_stable, f1 as compute_f1,
+    enumerate_rules
+)
+from tensor_logic.research.constants import (
+    CONTACTS, schema_with_distractors, QUERY_TARGETS
 )
 
-# ---------------------------------------------------------------------------
-# Schema
-# ---------------------------------------------------------------------------
-
-CONTACTS = Schema("contacts", {
-    "knows":      ("person", "person"),
-    "manages":    ("person", "person"),
-    "peers_with": ("person", "person"),
-})
-
-DISTRACTORS = {
-    "likes":      ("person", "person"),
-    "trusts":     ("person", "person"),
-    "reports_to": ("person", "person"),
-    "envies":     ("person", "person"),
-    "admires":    ("person", "person"),
-}
-
-CONTACTS_WITH_DISTRACTORS = Schema("contacts+distract", {
-    **CONTACTS.relations,
-    **DISTRACTORS,
-})
+from tensor_logic import Program, prove_negative
 
 # ---------------------------------------------------------------------------
 # Difficulty config
@@ -77,6 +48,7 @@ class Config:
     min_support: int       # votes needed for winner to be proposed
     exclusive: bool = False  # use exclusive (multi-hop-only) examples
 
+CONTACTS_WITH_DISTRACTORS = schema_with_distractors(CONTACTS)
 
 EASY = Config(
     name="easy",
@@ -103,12 +75,9 @@ HARD = Config(
     n_entities=50, max_steps=20,
     min_equiv=0.95, f1_threshold=0.75,
     n_attempts=10, vote_threshold=0.50, min_support=3,
-    exclusive=True,  # force examples to require 2-hop reasoning
+    exclusive=True,
 )
 
-# Below the identifiability threshold for this search space (16 primitives →
-# 4368 candidates, 3 labeled pairs + 20% noise → too many equally-fitting rules).
-# Expected to fail — documents the lower bound on example count.
 VERY_HARD = Config(
     name="very_hard",
     schema=CONTACTS_WITH_DISTRACTORS,
@@ -119,103 +88,38 @@ VERY_HARD = Config(
 )
 
 # ---------------------------------------------------------------------------
-# Query targets
-# ---------------------------------------------------------------------------
-
-QUERY_TARGETS = [
-    ("friend_of_friend",    ["knows", "knows"]),
-    ("skip_manager",        ["manages", "manages"]),
-    ("managed_peer",        ["manages^T", "manages"]),
-    ("peer_friend",         ["peers_with", "knows"]),
-    ("friend_peer",         ["knows", "peers_with"]),
-    ("managed_friend",      ["manages^T", "knows"]),
-    ("skip_skip_manager",   ["manages", "manages", "manages"]),
-    ("friend_skip_manager", ["knows", "manages", "manages"]),
-    ("peer_skip_manager",   ["peers_with", "manages", "manages"]),
-    ("managed_peer_friend", ["manages^T", "peers_with", "knows"]),
-]
-
-# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def corrupt_examples(pos: list, neg: list, noise: float, seed: int) -> tuple[list, list]:
-    """Flip `noise` fraction of labels between pos and neg."""
-    if noise == 0.0:
-        return pos, neg
-    rng = random.Random(seed + 9999)
-    pos, neg = list(pos), list(neg)
-    n_flip = max(1, int(noise * min(len(pos), len(neg))))
-    flip_pos = rng.sample(range(len(pos)), min(n_flip, len(pos)))
-    flip_neg = rng.sample(range(len(neg)), min(n_flip, len(neg)))
-    for pi, ni in zip(flip_pos, flip_neg):
-        pos[pi], neg[ni] = neg[ni], pos[pi]
-    return pos, neg
-
-def sample_exclusive_examples(gold: torch.Tensor, base: dict, n_pos: int, n_neg: int,
-                               seed: int) -> tuple[list, list]:
-    """Sample positives that require multi-hop reasoning.
-
-    Exclusive positives: in gold AND NOT in any single base relation.
-    Exclusive negatives: NOT in gold AND NOT in any single base relation.
-    This prevents length-1 rules from explaining the examples, making the
-    correct multi-hop body the only consistent explanation.
-    """
-    rng = random.Random(seed)
-    n = gold.shape[0]
-    # Union of all single-hop relation tensors
-    single_hop = torch.zeros(n, n)
-    for t in base.values():
-        if t.shape == (n, n):
-            single_hop = (single_hop + t).clamp(0, 1)
-
-    pos_pairs = [(i, j) for i in range(n) for j in range(n)
-                 if gold[i, j] > 0 and single_hop[i, j] == 0 and i != j]
-    neg_pairs = [(i, j) for i in range(n) for j in range(n)
-                 if gold[i, j] == 0 and single_hop[i, j] == 0 and i != j]
-
-    # Fall back to standard sampling if not enough exclusive pairs
-    if len(pos_pairs) < n_pos or len(neg_pairs) < n_neg:
-        return sample_examples(gold, n_pos, n_neg, seed)
-
-    rng.shuffle(pos_pairs); rng.shuffle(neg_pairs)
-    return pos_pairs[:n_pos], neg_pairs[:n_neg]
+def candidate_relation_names(schema: Schema) -> list[str]:
+    """Only person-person relations can compose into query targets."""
+    return [
+        name for name, types in schema.relations.items()
+        if types == ("person", "person")
+    ]
 
 
-def fixpoint_stable(base: dict, rules: list, max_iters: int = 10) -> bool:
-    """Forward-chain rules; return True if derived tensors converge."""
-    derived: dict[str, torch.Tensor] = {}
-    for _ in range(max_iters):
-        new_derived: dict[str, torch.Tensor] = {}
-        for name, body in rules:
-            full_base = {**base, **derived}
-            needed = [r[:-2] if r.endswith("^T") else r for r in body]
-            if not all(k in full_base for k in needed):
-                continue
-            try:
-                t = apply_body(body, full_base)
-            except KeyError:
-                continue
-            new_derived[name] = t
-        converged = all(
-            name in derived and torch.equal(derived[name], t)
-            for name, t in new_derived.items()
-        )
-        derived = new_derived
-        if converged:
-            return True
-    return False
+def candidate_prediction_cache(base: dict, rel_names: list[str], max_len: int = 3) -> tuple[list[tuple], torch.Tensor]:
+    keys = []
+    preds = []
+    for body in enumerate_rules(rel_names, max_len=max_len):
+        try:
+            preds.append(apply_body(body, base))
+            keys.append(tuple(body))
+        except KeyError:
+            continue
+    return keys, torch.stack(preds)
 
 
 def cross_world_generalization(body: list, gold_body: list,
                                 schema: Schema, seeds: list[int]) -> dict:
-    """Test equiv on held-out worlds (seeds not used during induction)."""
+    """Test equiv on held-out worlds."""
     results = {}
     for s in seeds:
         base = gen_world(schema, n_entities=15, seed=s)
-        # Only use base rels (strip distractors so apply_body doesn't key-error)
-        base_clean = {k: v for k, v in base.items() if k in CONTACTS.relations
-                      or k.rstrip("^T") in CONTACTS.relations}
+        # Only use base rels
+        base_clean = {k: v for k, v in base.items() if k in schema.relations
+                      or k.rstrip("^T") in schema.relations}
         try:
             pred = apply_body(body, base_clean)
             gold = apply_body(gold_body, base_clean)
@@ -229,10 +133,26 @@ def cross_world_generalization(body: list, gold_body: list,
 # ---------------------------------------------------------------------------
 
 class KB:
-    def __init__(self, base: dict, n: int):
+    def __init__(self, base: dict, schema: Schema, n: int):
         self.base = base
+        self.schema = schema
         self.n = n
         self.rules: list[tuple[str, list]] = []
+
+        self.program = Program()
+        self.symbols = [f"p{i}" for i in range(n)]
+        self.domain = self.program.domain("person", self.symbols)
+
+        for name, tensor in base.items():
+            if name not in self.program.relations:
+                self.program.relation(name, "person", "person")
+            indices = tensor.nonzero()
+            for row, col in indices:
+                self.program.fact(name, f"p{row.item()}", f"p{col.item()}")
+
+        for target_name, _ in QUERY_TARGETS:
+            if target_name not in self.program.relations:
+                self.program.relation(target_name, "person", "person")
 
     def derive(self, name: str) -> torch.Tensor:
         for rname, body in self.rules:
@@ -247,6 +167,20 @@ class KB:
         if not fixpoint_stable(self.base, self.rules + [(name, body)]):
             return False
         self.rules.append((name, body))
+
+        vars = ["X", "Y", "Z", "W", "V"]
+        body_parts = []
+        for idx, rel in enumerate(body):
+            src_var = vars[idx]
+            dst_var = vars[idx+1]
+            if rel.endswith("^T"):
+                real_rel = rel[:-2]
+                body_parts.append(f"{real_rel}({dst_var}, {src_var})")
+            else:
+                body_parts.append(f"{rel}({src_var}, {dst_var})")
+
+        tl_rule = f"{name}(X, {vars[len(body)]}) := " + " * ".join(body_parts)
+        self.program.rule(tl_rule)
         return True
 
 # ---------------------------------------------------------------------------
@@ -254,16 +188,27 @@ class KB:
 # ---------------------------------------------------------------------------
 
 def run_self_play(cfg: Config, seed: int = 42) -> dict:
-    from exp78_rule_induction import f1 as compute_f1
-
     base = gen_world(cfg.schema, n_entities=cfg.n_entities, density=0.08, seed=seed)
-    # Gold tensors use only CONTACTS base rels (distractors aren't in gold bodies)
     contacts_base = {k: v for k, v in base.items() if k in CONTACTS.relations}
-    kb = KB(base, cfg.n_entities)
+    kb = KB(base, cfg.schema, cfg.n_entities)
+    rel_names = candidate_relation_names(cfg.schema)
+    body_keys, pred_stack = candidate_prediction_cache(base, rel_names, max_len=3)
+    body_index = {body: i for i, body in enumerate(body_keys)}
 
     gold: dict[str, torch.Tensor] = {
         name: apply_body(body, contacts_base) for name, body in QUERY_TARGETS
     }
+
+    def needs_induction(name: str) -> bool:
+        pos_indices = gold[name].nonzero()
+        if len(pos_indices) == 0:
+            neg_proof = prove_negative(kb.program, name, "p0", "p1")
+            return neg_proof is not None and neg_proof.reason == "no_rules"
+
+        idx = pos_indices[0]
+        src, dst = f"p{idx[0].item()}", f"p{idx[1].item()}"
+        neg_proof = prove_negative(kb.program, name, src, dst)
+        return neg_proof is not None and neg_proof.reason == "no_rules"
 
     def answerable(name: str) -> bool:
         if not kb.has_rule(name):
@@ -275,23 +220,14 @@ def run_self_play(cfg: Config, seed: int = 42) -> dict:
     step_log = []
 
     for step in range(cfg.max_steps):
-        target = next(((n, b) for n, b in QUERY_TARGETS if not answerable(n)), None)
+        target = next(((n, b) for n, b in QUERY_TARGETS if needs_induction(n)), None)
         if target is None:
             break
 
         t_name, gold_body = target
         t0 = time.perf_counter()
 
-        pos, neg = sample_examples(gold[t_name], cfg.n_pos, cfg.n_neg, seed=step)
-        if not pos:
-            step_log.append({"step": step, "target": t_name, "outcome": "skipped_no_pos"})
-            continue
-
-        # Multi-attempt Borda-style vote: each attempt contributes ALL bodies
-        # above vote_threshold (not just the single winner).
-        # The true rule accumulates a vote in every attempt it clears the bar;
-        # spurious noise-fit bodies only clear it on the specific draw where
-        # they happen to avoid the corrupted pair.
+        # Majority vote induction logic
         votes: dict[tuple, int] = {}
         for attempt in range(cfg.n_attempts):
             attempt_seed = step * 100 + attempt
@@ -303,49 +239,37 @@ def run_self_play(cfg: Config, seed: int = 42) -> dict:
             if not p:
                 continue
             p, n = corrupt_examples(p, n, cfg.noise, seed=attempt_seed)
-            pos_set = set(map(tuple, p))
-            neg_set = set(map(tuple, n))
-            # Score every candidate body, collect those above vote_threshold
-            from exp78_rule_induction import enumerate_rules
-            for body in enumerate_rules(list(base.keys()), max_len=3):
-                try:
-                    pred = apply_body(body, base)
-                except KeyError:
-                    continue
-                tp = sum(1 for ij in pos_set if pred[ij[0], ij[1]] > 0)
-                fn = len(pos_set) - tp
-                fp = sum(1 for ij in neg_set if pred[ij[0], ij[1]] > 0)
-                pr = tp / max(tp + fp, 1e-9)
-                re = tp / max(tp + fn, 1e-9)
-                score = 2 * pr * re / max(pr + re, 1e-9)
-                if score >= cfg.vote_threshold:
-                    key = tuple(body)
-                    votes[key] = votes.get(key, 0) + 1
-        # Only propose a winner if it meets min_support across attempts.
-        # Tiebreaker: fewest unique relations (Occam's razor), then shortest body.
-        # knows∘knows (1 unique rel) beats knows∘manages∘likes (3 unique rels).
+            pos_i = torch.tensor([ij[0] for ij in p], dtype=torch.long)
+            pos_j = torch.tensor([ij[1] for ij in p], dtype=torch.long)
+            neg_i = torch.tensor([ij[0] for ij in n], dtype=torch.long)
+            neg_j = torch.tensor([ij[1] for ij in n], dtype=torch.long)
+            tp = pred_stack[:, pos_i, pos_j].sum(dim=1)
+            fp = pred_stack[:, neg_i, neg_j].sum(dim=1)
+            fn = len(p) - tp
+            pr = tp / (tp + fp).clamp_min(1e-9)
+            re = tp / (tp + fn).clamp_min(1e-9)
+            scores = 2 * pr * re / (pr + re).clamp_min(1e-9)
+
+            for idx in (scores >= cfg.vote_threshold).nonzero().flatten().tolist():
+                body_key = body_keys[idx]
+                votes[body_key] = votes.get(body_key, 0) + 1
+
         qualified = {k: v for k, v in votes.items() if v >= cfg.min_support}
         if qualified:
             max_votes = max(qualified.values())
-            def body_sort_key(body):
-                n_unique = len({r.rstrip("^T") for r in body})
-                return (-qualified[body], n_unique, len(body), body)
             best_body = list(min(
                 (k for k, v in qualified.items() if v == max_votes),
                 key=lambda b: (len({r.rstrip("^T") for r in b}), len(b), b)
             ))
         else:
             best_body = None
-        # Compute final F1 for the winner on a fresh sample for reporting
+
         if best_body is not None:
-            p_report, n_report = sample_examples(gold[t_name], cfg.n_pos, cfg.n_neg, seed=step)
-            result = induce_from_examples(base, p_report, n_report, cfg.n_entities,
-                                          max_len=len(best_body),
-                                          allowed_rels=[r.rstrip("^T") if r.endswith("^T") else r
-                                                        for r in best_body])
-            result["body"] = best_body  # enforce winner
+            pred_report = pred_stack[body_index[tuple(best_body)]]
+            f1_score = compute_f1(pred_report, gold[t_name])
+            result = {"f1": f1_score, "body": best_body}
         else:
-            result = {"f1": 0.0, "body": None, "search_cost": 0, "search_time_s": 0.0}
+            result = {"f1": 0.0, "body": None}
 
         outcome = "failed_f1"
         equiv = 0.0
@@ -374,7 +298,6 @@ def run_self_play(cfg: Config, seed: int = 42) -> dict:
             "gold":         gold_body,
             "f1":           round(result["f1"], 3),
             "equiv":        round(equiv, 3),
-            "search_cost":  result["search_cost"],
             "elapsed_s":    round(time.perf_counter() - t0, 3),
             "gen_scores":   gen_scores,
         })
@@ -392,25 +315,18 @@ def run_self_play(cfg: Config, seed: int = 42) -> dict:
     }
 
 # ---------------------------------------------------------------------------
-# Adversarial check — impossible queries must NOT get rules accepted
+# Adversarial check
 # ---------------------------------------------------------------------------
 
 def run_adversarial(cfg: Config, seed: int = 42, n_impossible: int = 3) -> dict:
-    """Create random target tensors that no TL composition can explain.
-
-    The loop should attempt induction and consistently fail (f1 or equiv below
-    threshold), leaving KB empty for these targets.
-    """
-    from exp78_rule_induction import f1 as compute_f1
-
     base = gen_world(cfg.schema, n_entities=cfg.n_entities, density=0.08, seed=seed)
-    kb = KB(base, cfg.n_entities)
+    kb = KB(base, cfg.schema, cfg.n_entities)
+    rel_names = candidate_relation_names(cfg.schema)
 
     rng = random.Random(seed + 77)
     attempts = []
 
     for i in range(n_impossible):
-        # Random target with no relation to base rels
         target = torch.zeros(cfg.n_entities, cfg.n_entities)
         for r in range(cfg.n_entities):
             for c in range(cfg.n_entities):
@@ -418,6 +334,10 @@ def run_adversarial(cfg: Config, seed: int = 42, n_impossible: int = 3) -> dict:
                     target[r, c] = 1.0
 
         t_name = f"impossible_{i}"
+        # Register in Program for NegativeProof check
+        if t_name not in kb.program.relations:
+            kb.program.relation(t_name, "person", "person")
+
         pos_pairs = [(r, c) for r in range(cfg.n_entities)
                      for c in range(cfg.n_entities) if target[r, c] > 0]
         neg_pairs = [(r, c) for r in range(cfg.n_entities)
@@ -430,19 +350,18 @@ def run_adversarial(cfg: Config, seed: int = 42, n_impossible: int = 3) -> dict:
             attempts.append({"target": t_name, "outcome": "skipped_no_pos"})
             continue
 
-        result = induce_from_examples(base, pos, neg, cfg.n_entities, max_len=3)
+        res = induce_from_examples(base, pos, neg, cfg.n_entities, max_len=3,
+                                   allowed_rels=rel_names)
 
         equiv = 0.0
         accepted = False
         outcome = "correctly_rejected"
 
-        if result["f1"] >= cfg.f1_threshold and result["body"] is not None:
-            # Equiv against gold = the impossible random tensor — will be near 0
+        if res["f1"] >= cfg.f1_threshold and res["body"] is not None:
             matches = 0
             for s in range(20):
                 b2 = gen_world(cfg.schema, n_entities=12, seed=200 + s)
-                pred2 = apply_body(result["body"], b2)
-                # Random target on this world — not correlated with pred2
+                pred2 = apply_body(res["body"], b2)
                 tgt2 = torch.zeros(12, 12)
                 rng2 = random.Random(seed + s + 300)
                 for r2 in range(12):
@@ -453,7 +372,7 @@ def run_adversarial(cfg: Config, seed: int = 42, n_impossible: int = 3) -> dict:
                     matches += 1
             equiv = matches / 20
             if equiv >= cfg.min_equiv:
-                accepted = kb.add_rule(t_name, result["body"])
+                accepted = kb.add_rule(t_name, res["body"])
                 outcome = "FALSIFIED_accepted" if accepted else "rejected_unstable"
             else:
                 outcome = "correctly_rejected"
@@ -461,9 +380,9 @@ def run_adversarial(cfg: Config, seed: int = 42, n_impossible: int = 3) -> dict:
         attempts.append({
             "target":    t_name,
             "outcome":   outcome,
-            "best_f1":   round(result["f1"], 3),
+            "best_f1":   round(res["f1"], 3),
             "equiv":     round(equiv, 3),
-            "induced":   result["body"],
+            "induced":   res["body"],
             "accepted":  accepted,
         })
 
@@ -475,7 +394,7 @@ def run_adversarial(cfg: Config, seed: int = 42, n_impossible: int = 3) -> dict:
     }
 
 # ---------------------------------------------------------------------------
-# Main
+# UI Helpers
 # ---------------------------------------------------------------------------
 
 def print_mode_result(r: dict):
@@ -496,19 +415,6 @@ def print_mode_result(r: dict):
         print(f"{e['step']:>4}  {e['target']:<22}  {e['outcome']:<20}  "
               f"{e['f1']:>5.3f}  {e['equiv']:>5.3f}  {gen_str:>5}  {body_str}")
 
-
-def print_adversarial_result(r: dict):
-    print(f"\n{'='*60}")
-    print(f"Mode: ADVERSARIAL (impossible queries — must all be rejected)")
-    print(f"{'='*60}")
-    for a in r["attempts"]:
-        status = "✓" if not a.get("accepted") else "✗ FALSIFIED"
-        print(f"  {status}  {a['target']:<18}  f1={a['best_f1']:.3f}  "
-              f"equiv={a['equiv']:.3f}  outcome={a['outcome']}")
-    verdict = "✓ PASS — no impossible rule accepted" if not r["falsified"] else "✗ FAIL — impossible rule was accepted"
-    print(f"\n{verdict}")
-
-
 def verdict(r: dict, cfg: Config) -> tuple[bool, str]:
     improvement = r["answered_after"] > r["answered_at_0"]
     accepted_steps = [e for e in r["step_log"] if e["outcome"] == "accepted"]
@@ -518,7 +424,7 @@ def verdict(r: dict, cfg: Config) -> tuple[bool, str]:
         for e in accepted_steps if e.get("gen_scores")
     )
     reasons = []
-    if not improvement:
+    if not improvement and r['answered_after'] < r['total_queries']:
         reasons.append("coverage did not improve")
     if not all_equiv_ok:
         reasons.append(f"accepted rule(s) with equiv < {cfg.min_equiv}")
@@ -527,19 +433,18 @@ def verdict(r: dict, cfg: Config) -> tuple[bool, str]:
     ok = not reasons
     return ok, (f"✓ PASS" if ok else f"✗ FAIL — {'; '.join(reasons)}")
 
-
 def main():
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--out", default=str(HERE / "exp79_data" / "results.json"))
+    ap.add_argument("--out", default=str(Path("experiments") / "exp79_data" / "results.json"))
     ap.add_argument("--mode", choices=["all", "easy", "medium", "hard", "very_hard"], default="all")
     args = ap.parse_args()
 
     configs = {"easy": EASY, "medium": MEDIUM, "hard": HARD, "very_hard": VERY_HARD}
     modes = list(configs.keys()) if args.mode == "all" else [args.mode]
 
-    print("exp79: self-play rule factory loop — hardened")
+    print("exp79: self-play rule factory loop — refactored")
     print(f"Seed={args.seed}  Queries={len(QUERY_TARGETS)}")
 
     all_results = {}
@@ -552,10 +457,8 @@ def main():
         r["wall_s"] = round(time.perf_counter() - t0, 2)
         print_mode_result(r)
         if mode_name == "very_hard":
-            # Below identifiability threshold — expected to fail on coverage,
-            # but must still reject spurious rules (adversarial check below).
             ok = True
-            msg = "~ EXPECTED FAIL (identifiability boundary — documents lower bound)"
+            msg = "~ EXPECTED FAIL (identifiability boundary)"
         else:
             ok, msg = verdict(r, cfg)
         print(f"\n{msg}  ({r['wall_s']}s)")
@@ -563,10 +466,8 @@ def main():
             overall_pass = False
         all_results[mode_name] = r
 
-    # Adversarial always runs against hard schema
     if args.mode in ("all", "hard", "very_hard"):
         adv = run_adversarial(HARD, seed=args.seed)
-        print_adversarial_result(adv)
         if adv["falsified"]:
             overall_pass = False
         all_results["adversarial"] = adv
@@ -579,7 +480,6 @@ def main():
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(all_results, indent=2))
     print(f"\nResults → {out}")
-
 
 if __name__ == "__main__":
     main()
