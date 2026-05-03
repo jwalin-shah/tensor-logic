@@ -428,8 +428,8 @@ class TensorLogicCoreTest(unittest.TestCase):
                 load_tl(a_path)
 
     def test_proof_json_roundtrip(self):
+        from tensor_logic import format_proof_result
         from tensor_logic.proofs import Proof
-        from tensor_logic.__main__ import _proof_to_json
         original = Proof(
             head=("path", "a", "c"),
             body=(
@@ -438,7 +438,7 @@ class TensorLogicCoreTest(unittest.TestCase):
             ),
             confidence=0.72,
         )
-        d = _proof_to_json(original)
+        d = format_proof_result(proof=original, format_type="json")["proof"]
         restored = Proof.from_json(d)
         self.assertEqual(restored.head, original.head)
         self.assertAlmostEqual(restored.confidence, original.confidence, places=6)
@@ -447,16 +447,39 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertAlmostEqual(restored.body[0].confidence, 0.9, places=6)
 
     def test_negative_proof_json_roundtrip(self):
+        from tensor_logic import format_proof_result
         from tensor_logic.proofs import NegativeProof
-        from tensor_logic.__main__ import _negative_proof_to_json
         original = NegativeProof(
             head=("edge", "a", "z"),
             reason="no_rules",
         )
-        d = _negative_proof_to_json(original)
+        d = format_proof_result(negative_proof=original, format_type="json")
         restored = NegativeProof.from_json(d)
         self.assertEqual(restored.head, original.head)
         self.assertEqual(restored.reason, original.reason)
+
+
+    def test_negative_proof_json_uses_nested_explanation_nodes(self):
+        from tensor_logic import format_proof_result
+        from tensor_logic.proofs import NegativeProof
+
+        original = NegativeProof(
+            head=("path", "a", "c"),
+            reason="rule_body_failed",
+            body=(
+                NegativeProof(
+                    head=("edge", "b", "c"),
+                    reason="no_fact",
+                ),
+            ),
+        )
+
+        result = format_proof_result(negative_proof=original, format_type="json")
+
+        self.assertFalse(result["answer"])
+        self.assertEqual(result["explanation"]["body"][0]["head"], ["edge", "b", "c"])
+        self.assertEqual(result["explanation"]["body"][0]["reason"], "no_fact")
+        self.assertNotIn("explanation", result["explanation"]["body"][0])
 
 
     def test_disjunctive_rule_splits_into_two_rules(self):
@@ -588,6 +611,86 @@ class TensorLogicCoreTest(unittest.TestCase):
                 f.write("")
             tl_source = ingest_python_source(tmpdir)
         self.assertIn("fact imports(pkg_api, pkg_db)", tl_source)
+
+    def test_cli_and_http_share_positive_proof_json_semantics(self):
+        import json
+        import subprocess
+        import sys
+        from tensor_logic.http_api import prove_source
+
+        def normalize_source_files(node):
+            if isinstance(node, dict):
+                return {
+                    key: (
+                        {"lineno": value["lineno"]}
+                        if key == "source" and isinstance(value, dict) and "lineno" in value
+                        else normalize_source_files(value)
+                    )
+                    for key, value in node.items()
+                }
+            if isinstance(node, list):
+                return [normalize_source_files(item) for item in node]
+            return node
+
+        source = open("examples/code_dependencies.tl", encoding="utf-8").read()
+        http_result = prove_source(source, "depends_on", ["worker", "models"], recursive=True, format_type="json")
+        cli_result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "tensor_logic",
+                "prove",
+                "examples/code_dependencies.tl",
+                "depends_on",
+                "worker",
+                "models",
+                "--recursive",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(normalize_source_files(json.loads(cli_result.stdout)), normalize_source_files(http_result))
+
+    def test_cli_and_http_share_negative_proof_json_semantics(self):
+        import json
+        import subprocess
+        import sys
+        from tensor_logic.http_api import prove_source
+
+        source = open("examples/code_dependencies.tl", encoding="utf-8").read()
+        http_result = prove_source(
+            source,
+            "depends_on",
+            ["models", "worker"],
+            recursive=True,
+            why_not=True,
+            format_type="json",
+        )
+        cli_result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "tensor_logic",
+                "prove",
+                "examples/code_dependencies.tl",
+                "depends_on",
+                "models",
+                "worker",
+                "--recursive",
+                "--why-not",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(json.loads(cli_result.stdout), http_result)
 
     def test_web_workbench_sample_is_valid_tl(self):
         import re

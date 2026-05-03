@@ -11,7 +11,8 @@ from typing import Any
 
 from .file_format import Command, load_tl
 from .ingest import ingest_python, render_python_imports_tl
-from .proofs import NegativeProof, Proof, fmt_negative_proof_tree, fmt_proof_tree, prove, prove_negative
+from .proof_result import format_proof_result
+from .proofs import prove, prove_negative
 
 
 @dataclass(frozen=True)
@@ -62,12 +63,8 @@ def prove_source(
         neg_proof = prove_negative(loaded.program, relation, args[0], args[1], recursive=recursive)
         if neg_proof is None:
             return {"answer": True}
-        if format_type == "json":
-            return _negative_proof_to_json(neg_proof)
-        return {"answer": False, "proof": fmt_negative_proof_tree(neg_proof)}
-    if format_type == "json":
-        return {"answer": True, "proof": _proof_to_json(proof)}
-    return {"answer": True, "proof": fmt_proof_tree(proof)}
+        return format_proof_result(negative_proof=neg_proof, format_type=format_type)
+    return format_proof_result(proof=proof, format_type=format_type)
 
 
 class TensorLogicHandler(BaseHTTPRequestHandler):
@@ -158,33 +155,6 @@ def _execute_command(program, command: Command, format_type: str = "tree", why_n
             print(f"{command.relation}({', '.join(command.args)}) = False", file=out)
         return
     if format_type == "json":
-        print(json.dumps({"answer": True, "proof": _proof_to_json(proof)}), file=out)
+        print(json.dumps(format_proof_result(proof=proof, format_type=format_type)), file=out)
     else:
-        print(fmt_proof_tree(proof), file=out)
-
-
-def _proof_to_json(proof: Proof) -> dict[str, Any]:
-    rel, src, dst = proof.head
-    source = None
-    if proof.source is not None:
-        source = {"file": proof.source.file, "lineno": proof.source.lineno}
-    result = {
-        "head": [rel, src, dst],
-        "confidence": proof.confidence,
-        "body": [_proof_to_json(child) for child in proof.body],
-    }
-    if source is not None:
-        result["source"] = source
-    return result
-
-
-def _negative_proof_to_json(neg_proof: NegativeProof) -> dict[str, Any]:
-    rel, src, dst = neg_proof.head
-    return {
-        "answer": False,
-        "explanation": {
-            "head": [rel, src, dst],
-            "reason": neg_proof.reason,
-            "body": [_negative_proof_to_json(child) for child in neg_proof.body] if neg_proof.body else [],
-        },
-    }
+        print(format_proof_result(proof=proof, format_type=format_type)["proof"], file=out)
