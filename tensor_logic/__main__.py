@@ -7,7 +7,8 @@ import sys
 from .file_format import Command, load_tl
 from .http_api import serve
 from .ingest import ingest_python, render_python_imports_tl
-from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, Proof, NegativeProof
+from .proof_result import format_proof_result
+from .proofs import prove, prove_negative
 from .repo_graph_view import dependency_report, repo_graph_repl
 
 
@@ -92,29 +93,6 @@ def main(argv: list[str] | None = None) -> int:
     return 1
 
 
-def _proof_to_json(proof: Proof) -> dict:
-    rel, src, dst = proof.head
-    result = {
-        "head": [rel, src, dst],
-        "confidence": proof.confidence,
-        "body": [_proof_to_json(child) for child in proof.body],
-    }
-    if proof.source is not None:
-        result["source"] = {"file": proof.source.file, "lineno": proof.source.lineno}
-    return result
-
-def _negative_proof_to_json(neg_proof: NegativeProof) -> dict:
-    rel, src, dst = neg_proof.head
-    return {
-        "answer": False,
-        "explanation": {
-            "head": [rel, src, dst],
-            "reason": neg_proof.reason,
-            "body": [_negative_proof_to_json(child) for child in neg_proof.body] if neg_proof.body else []
-        }
-    }
-
-
 def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
     if out is None:
         out = sys.stdout
@@ -129,10 +107,8 @@ def _execute_command(program, command: Command, format_type: str = "tree", why_n
         if why_not:
             neg_proof = prove_negative(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
             if neg_proof is not None:
-                if format_type == "json":
-                    print(json.dumps(_negative_proof_to_json(neg_proof)), file=out)
-                else:
-                    print(fmt_negative_proof_tree(neg_proof), file=out)
+                result = format_proof_result(negative_proof=neg_proof, format_type=format_type)
+                print(json.dumps(result) if format_type == "json" else result["proof"], file=out)
             else:
                 print(f"{command.relation}({', '.join(command.args)}) = True", file=out)
         else:
@@ -142,9 +118,9 @@ def _execute_command(program, command: Command, format_type: str = "tree", why_n
                 print(f"{command.relation}({', '.join(command.args)}) = False", file=out)
     else:
         if format_type == "json":
-            print(json.dumps({"answer": True, "proof": _proof_to_json(proof)}), file=out)
+            print(json.dumps(format_proof_result(proof=proof, format_type=format_type)), file=out)
         else:
-            print(fmt_proof_tree(proof), file=out)
+            print(format_proof_result(proof=proof, format_type=format_type)["proof"], file=out)
 
 
 def _repl_eval(program, line: str, out=None) -> None:
