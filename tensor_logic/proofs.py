@@ -139,16 +139,17 @@ def _prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...],
     if not unbound_vars:
         return _try_prove_negative_body_atoms(program, atoms, bindings,
                                               _table=_table, _neg_table=_neg_table)
-    var = unbound_vars.pop()
+    var = sorted(unbound_vars)[0]
     witnesses = _get_witness_domain(program, atoms, bindings, var)
     failed_witnesses = []
     for symbol in witnesses:
         extended_bindings = {**bindings, var: symbol}
-        neg_proof = _try_prove_negative_body_atoms(program, atoms, extended_bindings,
-                                                   _table=_table, _neg_table=_neg_table)
+        neg_proof = _prove_negative_body_atoms(program, atoms, extended_bindings,
+                                               _table=_table, _neg_table=_neg_table)
         if neg_proof is None:
             return None
         failed_witnesses.append(neg_proof)
+
     if failed_witnesses:
         return NegativeProof(
             ("\u2203" + var, "", ""),
@@ -168,6 +169,15 @@ def _try_prove_negative_body_atoms(program: Program, atoms: tuple[Atom, ...],
             return NegativeProof((atom.relation, "", ""), reason="invalid_arity")
         bound_src = bindings.get(atom.args[0], atom.args[0])
         bound_dst = bindings.get(atom.args[1], atom.args[1])
+        if atom.negated:
+            atom_proof = prove(program, atom.relation, bound_src, bound_dst,
+                               recursive=False, _table=_table)
+            if atom_proof is not None:
+                return NegativeProof(
+                    (atom.relation, bound_src, bound_dst),
+                    reason="negated_atom_proven"
+                )
+            continue
         atom_proof = prove(program, atom.relation, bound_src, bound_dst,
                            recursive=False, _table=_table)
         if atom_proof is None:
@@ -248,10 +258,10 @@ def _prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: dict[
     unbound_vars = _find_unbound_vars(atoms, bindings)
     if not unbound_vars:
         return _try_prove_body_atoms(program, atoms, bindings, _table=_table, _do=_do)
-    var = unbound_vars.pop()
+    var = sorted(unbound_vars)[0]
     for symbol in _get_witness_domain(program, atoms, bindings, var):
         extended_bindings = {**bindings, var: symbol}
-        proofs = _try_prove_body_atoms(program, atoms, extended_bindings, _table=_table, _do=_do)
+        proofs = _prove_body_atoms(program, atoms, extended_bindings, _table=_table, _do=_do)
         if proofs is not None:
             return proofs
     return None
@@ -284,6 +294,10 @@ def _try_prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: d
             return None
         bound_src = bindings.get(atom.args[0], atom.args[0])
         bound_dst = bindings.get(atom.args[1], atom.args[1])
+        if atom.negated:
+            if prove(program, atom.relation, bound_src, bound_dst, _table=_table, _do=_do) is not None:
+                return None
+            continue
         atom_proof = prove(program, atom.relation, bound_src, bound_dst, _table=_table, _do=_do)
         if atom_proof is None:
             return None

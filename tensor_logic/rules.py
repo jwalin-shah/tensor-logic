@@ -1,26 +1,13 @@
-from dataclasses import dataclass
 import re
 
 import torch
+
+from .program import Atom, Rule
 
 RULE_RE = re.compile(
     r'<tl_rule\s+head="(?P<head>[^"]+)"\s+body="(?P<body>[^"]+)"\s*></tl_rule>'
 )
 ATOM_RE = re.compile(r'(?P<neg>!?)\s*(?P<rel>\w+)\s*\(\s*(?P<a>\w+)\s*,\s*(?P<b>\w+)\s*\)')
-
-
-@dataclass(frozen=True)
-class Atom:
-    rel: str
-    left: str
-    right: str
-    negated: bool = False
-
-
-@dataclass(frozen=True)
-class Rule:
-    head: Atom
-    body: tuple[Atom, ...]
 
 
 def parse_rule(text: str) -> Rule | None:
@@ -34,16 +21,13 @@ def parse_rule(text: str) -> Rule | None:
         return None
     head = Atom(
         head_match.group("rel"),
-        head_match.group("a"),
-        head_match.group("b"),
-        False,
+        (head_match.group("a"), head_match.group("b")),
     )
     body = tuple(
         Atom(
             atom.group("rel"),
-            atom.group("a"),
-            atom.group("b"),
-            atom.group("neg") == "!",
+            (atom.group("a"), atom.group("b")),
+            negated=atom.group("neg") == "!",
         )
         for atom in body_matches
     )

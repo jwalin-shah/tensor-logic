@@ -63,6 +63,11 @@ class TensorLogicCoreTest(unittest.TestCase):
 
     def test_positive_rule_join(self):
         rule = parse_rule('<tl_rule head="uncle(X, Y)" body="sibling(X, P), parent(P, Y)"></tl_rule>')
+        from tensor_logic.program import Rule as ProgramRule
+
+        self.assertIsInstance(rule, ProgramRule)
+        self.assertEqual(rule.head.relation, "uncle")
+        self.assertEqual(rule.head.args, ("X", "Y"))
         result, err = evaluate_rule(GRAPH, rule)
         self.assertIsNone(err)
         self.assertTrue(query_relation(result, "carol", "dave"))
@@ -72,10 +77,17 @@ class TensorLogicCoreTest(unittest.TestCase):
         rule = parse_rule(
             '<tl_rule head="sibling_not_parent(X, Y)" body="sibling(X, Y), !parent(X, Y)"></tl_rule>'
         )
+        self.assertTrue(rule.body[1].negated)
+        self.assertEqual(rule.body[1].relation, "parent")
+        self.assertEqual(rule.body[1].args, ("X", "Y"))
         result, err = evaluate_rule(GRAPH, rule)
         self.assertIsNone(err)
         self.assertTrue(query_relation(result, "bob", "carol"))
         self.assertFalse(query_relation(result, "alice", "bob"))
+
+    def test_tl_rule_invalid_syntax_returns_none(self):
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X)" body="parent(X, Y)"></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="ok(X, Y)" body=""></tl_rule>'))
 
     def test_provenance_and_ranking(self):
         rules = [
@@ -138,6 +150,23 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(program.query("grandparent", "alice", "carol"), 1.0)
         self.assertEqual(program.query("ancestor", "alice", "dave", recursive=True), 1.0)
         self.assertEqual(program.query("ancestor", "dave", "alice", recursive=True), 0.0)
+
+    def test_program_rules_use_shared_rule_shape(self):
+        from tensor_logic import Atom as PublicAtom, Rule as PublicRule
+        from tensor_logic.program import Atom as ProgramAtom, Rule as ProgramRule
+
+        program = Program()
+        program.domain("Person", ["alice", "bob", "carol"])
+        program.relation("parent", "Person", "Person")
+        program.relation("grandparent", "Person", "Person")
+        program.rule("grandparent(x,z) := parent(x,y) * parent(y,z)")
+        rule = program.rules["grandparent"][0]
+
+        self.assertIs(PublicAtom, ProgramAtom)
+        self.assertIs(PublicRule, ProgramRule)
+        self.assertIsInstance(rule, ProgramRule)
+        self.assertIsInstance(rule.body[0], ProgramAtom)
+        self.assertFalse(rule.body[0].negated)
 
     def test_tl_file_query_and_proof(self):
         loaded = load_tl("examples/code_dependencies.tl")
@@ -305,6 +334,58 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(neg.head, ("connected", "a", "d"))
         self.assertEqual(neg.reason, "all_rules_failed")
         self.assertEqual(len(neg.body), 2)
+
+    def test_proof_search_respects_shared_negated_atom(self):
+        from tensor_logic.program import Atom, Rule
+
+        program = Program()
+        program.domain("Person", ["alice", "bob"])
+        program.relation("parent", "Person", "Person")
+        program.relation("blocked", "Person", "Person")
+        program.relation("allowed_parent", "Person", "Person")
+        program.fact("parent", "alice", "bob")
+        program.rules.setdefault("allowed_parent", []).append(
+            Rule(
+                Atom("allowed_parent", ("X", "Y")),
+                (
+                    Atom("parent", ("X", "Y")),
+                    Atom("blocked", ("X", "Y"), negated=True),
+                ),
+            )
+        )
+
+        self.assertIsNotNone(prove(program, "allowed_parent", "alice", "bob"))
+
+        program.fact("blocked", "alice", "bob")
+
+        self.assertIsNone(prove(program, "allowed_parent", "alice", "bob"))
+
+    def test_negative_proof_reports_negated_atom_failure(self):
+        from tensor_logic.program import Atom, Rule
+
+        program = Program()
+        program.domain("Person", ["alice", "bob"])
+        program.relation("parent", "Person", "Person")
+        program.relation("blocked", "Person", "Person")
+        program.relation("allowed_parent", "Person", "Person")
+        program.fact("parent", "alice", "bob")
+        program.fact("blocked", "alice", "bob")
+        program.rules.setdefault("allowed_parent", []).append(
+            Rule(
+                Atom("allowed_parent", ("X", "Y")),
+                (
+                    Atom("parent", ("X", "Y")),
+                    Atom("blocked", ("X", "Y"), negated=True),
+                ),
+            )
+        )
+
+        neg = prove_negative(program, "allowed_parent", "alice", "bob")
+
+        self.assertIsNotNone(neg)
+        self.assertEqual(neg.reason, "rule_body_failed")
+        self.assertEqual(neg.body[0].reason, "negated_atom_proven")
+        self.assertEqual(neg.body[0].head, ("blocked", "alice", "bob"))
 
 
     def _make_ancestor_program(self):
