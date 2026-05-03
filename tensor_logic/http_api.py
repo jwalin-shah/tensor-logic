@@ -6,12 +6,13 @@ import tempfile
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from io import StringIO
 from typing import Any
 
+from .execution import execute_command
 from .file_format import Command, load_tl
 from .ingest import ingest_python, render_python_imports_tl
-from .proofs import NegativeProof, Proof, fmt_negative_proof_tree, fmt_proof_tree, prove, prove_negative
+from .proof_result import format_proof_result
+from .proofs import prove, prove_negative
 
 
 @dataclass(frozen=True)
@@ -28,9 +29,7 @@ def run_source(source: str) -> dict[str, Any]:
     loaded = _load_program_from_source(source)
     outputs = []
     for command in loaded.commands:
-        out = StringIO()
-        _execute_command(loaded.program, command, out=out)
-        outputs.append(out.getvalue().strip())
+        outputs.append(execute_command(loaded.program, command))
     return {"outputs": outputs}
 
 
@@ -62,12 +61,8 @@ def prove_source(
         neg_proof = prove_negative(loaded.program, relation, args[0], args[1], recursive=recursive)
         if neg_proof is None:
             return {"answer": True}
-        if format_type == "json":
-            return _negative_proof_to_json(neg_proof)
-        return {"answer": False, "proof": fmt_negative_proof_tree(neg_proof)}
-    if format_type == "json":
-        return {"answer": True, "proof": _proof_to_json(proof)}
-    return {"answer": True, "proof": fmt_proof_tree(proof)}
+        return format_proof_result(negative_proof=neg_proof, format_type=format_type)
+    return format_proof_result(proof=proof, format_type=format_type)
 
 
 class TensorLogicHandler(BaseHTTPRequestHandler):
@@ -139,52 +134,6 @@ def _load_program_from_source(source: str):
 
 def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
     if out is None:
+        from io import StringIO
         out = StringIO()
-    if len(command.args) != 2:
-        raise ValueError("CLI proof/query currently supports binary relations")
-    if command.kind == "query":
-        value = program.query(command.relation, *command.args, recursive=command.recursive)
-        print(f"{command.relation}({', '.join(command.args)}) = {bool(value)}", file=out)
-        return
-    proof = prove(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
-    if proof is None:
-        if why_not:
-            neg_proof = prove_negative(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
-            if neg_proof is not None:
-                print(fmt_negative_proof_tree(neg_proof), file=out)
-            else:
-                print(f"{command.relation}({', '.join(command.args)}) = True", file=out)
-        else:
-            print(f"{command.relation}({', '.join(command.args)}) = False", file=out)
-        return
-    if format_type == "json":
-        print(json.dumps({"answer": True, "proof": _proof_to_json(proof)}), file=out)
-    else:
-        print(fmt_proof_tree(proof), file=out)
-
-
-def _proof_to_json(proof: Proof) -> dict[str, Any]:
-    rel, src, dst = proof.head
-    source = None
-    if proof.source is not None:
-        source = {"file": proof.source.file, "lineno": proof.source.lineno}
-    result = {
-        "head": [rel, src, dst],
-        "confidence": proof.confidence,
-        "body": [_proof_to_json(child) for child in proof.body],
-    }
-    if source is not None:
-        result["source"] = source
-    return result
-
-
-def _negative_proof_to_json(neg_proof: NegativeProof) -> dict[str, Any]:
-    rel, src, dst = neg_proof.head
-    return {
-        "answer": False,
-        "explanation": {
-            "head": [rel, src, dst],
-            "reason": neg_proof.reason,
-            "body": [_negative_proof_to_json(child) for child in neg_proof.body] if neg_proof.body else [],
-        },
-    }
+    print(execute_command(program, command, format_type=format_type, why_not=why_not), file=out)

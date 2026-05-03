@@ -195,6 +195,17 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertIn("depends_on(models, worker)", formatted)
         self.assertIsInstance(formatted, str)
 
+    def test_format_proof_result_tree_uses_existing_negative_proof_text(self):
+        from tensor_logic import format_proof_result
+        loaded = load_tl("examples/code_dependencies.tl")
+        neg_proof = prove_negative(loaded.program, "depends_on", "models", "worker")
+        self.assertIsNotNone(neg_proof)
+
+        result = format_proof_result(negative_proof=neg_proof, format_type="tree")
+
+        self.assertFalse(result["answer"])
+        self.assertEqual(result["proof"], fmt_negative_proof_tree(neg_proof))
+
 
     def test_validation_errors(self):
         program = Program()
@@ -243,6 +254,17 @@ class TensorLogicCoreTest(unittest.TestCase):
         # Formatted tree should include file:line annotations
         formatted = fmt_proof_tree(proof)
         self.assertIn("personal_memory.tl:", formatted)
+
+    def test_format_proof_result_tree_uses_existing_proof_text(self):
+        from tensor_logic import format_proof_result
+        loaded = load_tl("examples/personal_memory.tl")
+        proof = prove(loaded.program, "should_follow_up", "ryan", "tensor_demo")
+        self.assertIsNotNone(proof)
+
+        result = format_proof_result(proof=proof, format_type="tree")
+
+        self.assertTrue(result["answer"])
+        self.assertEqual(result["proof"], fmt_proof_tree(proof))
 
     def test_prove_with_multiple_rules(self):
         # connected(x,y) if there is a direct link OR a via_hub path
@@ -383,6 +405,63 @@ class TensorLogicCoreTest(unittest.TestCase):
         result = out.getvalue()
         self.assertIn("True", result)
 
+    def test_execute_command_returns_query_output(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        output = execute_command(program, Command("query", "edge", ("a", "b")))
+
+        self.assertEqual(output, "edge(a, b) = True")
+
+    def test_execute_command_returns_proof_output(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        output = execute_command(program, Command("prove", "edge", ("a", "b")))
+
+        self.assertEqual(output, "edge(a, b)")
+
+    def test_execute_command_returns_json_proof_output(self):
+        import json
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        output = execute_command(program, Command("prove", "edge", ("a", "b")), format_type="json")
+
+        self.assertEqual(json.loads(output)["proof"]["head"], ["edge", "a", "b"])
+
+    def test_execute_command_returns_negative_proof_output_when_requested(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+
+        output = execute_command(program, Command("prove", "edge", ("a", "b")), why_not=True)
+
+        self.assertIn("edge(a, b) = False", output)
+        self.assertIn("reason: no_rules", output)
+
     def test_repl_prove_command(self):
         from tensor_logic.__main__ import _repl_eval
         from tensor_logic.program import Program
@@ -428,8 +507,8 @@ class TensorLogicCoreTest(unittest.TestCase):
                 load_tl(a_path)
 
     def test_proof_json_roundtrip(self):
+        from tensor_logic import format_proof_result
         from tensor_logic.proofs import Proof
-        from tensor_logic.__main__ import _proof_to_json
         original = Proof(
             head=("path", "a", "c"),
             body=(
@@ -438,7 +517,7 @@ class TensorLogicCoreTest(unittest.TestCase):
             ),
             confidence=0.72,
         )
-        d = _proof_to_json(original)
+        d = format_proof_result(proof=original, format_type="json")["proof"]
         restored = Proof.from_json(d)
         self.assertEqual(restored.head, original.head)
         self.assertAlmostEqual(restored.confidence, original.confidence, places=6)
@@ -447,13 +526,13 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertAlmostEqual(restored.body[0].confidence, 0.9, places=6)
 
     def test_negative_proof_json_roundtrip(self):
+        from tensor_logic import format_proof_result
         from tensor_logic.proofs import NegativeProof
-        from tensor_logic.__main__ import _negative_proof_to_json
         original = NegativeProof(
             head=("edge", "a", "z"),
             reason="no_rules",
         )
-        d = _negative_proof_to_json(original)
+        d = format_proof_result(negative_proof=original, format_type="json")
         restored = NegativeProof.from_json(d)
         self.assertEqual(restored.head, original.head)
         self.assertEqual(restored.reason, original.reason)
@@ -588,6 +667,49 @@ class TensorLogicCoreTest(unittest.TestCase):
                 f.write("")
             tl_source = ingest_python_source(tmpdir)
         self.assertIn("fact imports(pkg_api, pkg_db)", tl_source)
+
+    def test_cli_and_http_share_positive_proof_json_semantics(self):
+        import json
+        import subprocess
+        import sys
+        from tensor_logic.http_api import prove_source
+
+        def normalize_source_files(node):
+            if isinstance(node, dict):
+                return {
+                    key: (
+                        {"lineno": value["lineno"]}
+                        if key == "source" and isinstance(value, dict) and "lineno" in value
+                        else normalize_source_files(value)
+                    )
+                    for key, value in node.items()
+                }
+            if isinstance(node, list):
+                return [normalize_source_files(item) for item in node]
+            return node
+
+        source = open("examples/code_dependencies.tl", encoding="utf-8").read()
+        http_result = prove_source(source, "depends_on", ["worker", "models"], recursive=True, format_type="json")
+        cli_result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "tensor_logic",
+                "prove",
+                "examples/code_dependencies.tl",
+                "depends_on",
+                "worker",
+                "models",
+                "--recursive",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(normalize_source_files(json.loads(cli_result.stdout)), normalize_source_files(http_result))
 
     def test_web_workbench_sample_is_valid_tl(self):
         import re
