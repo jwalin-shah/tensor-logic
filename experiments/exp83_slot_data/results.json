@@ -1,0 +1,31 @@
+{
+  "probe_val_metrics": {
+    "above_acc": 0.8583333333333333,
+    "left_of_acc": 0.8716666666666667,
+    "touching_acc": 0.905,
+    "occluded_acc": 0.9608333333333333
+  },
+  "tl_only_retraction": {
+    "active": 50,
+    "correct": 50
+  },
+  "e2e_retraction": {
+    "active": 50,
+    "correct": 46
+  },
+  "depth1_acc": {
+    "above": 0.8583333333333333,
+    "left_of": 0.8716666666666667,
+    "touching": 0.905,
+    "occluded": 0.9608333333333333
+  },
+  "depth2_acc": {
+    "blocked_path": 0.9116666666666666,
+    "same_side": 0.86
+  },
+  "gates": {
+    "probe": false,
+    "tl_only": true,
+    "e2e": true
+  }
+}
