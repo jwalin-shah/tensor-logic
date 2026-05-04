@@ -692,6 +692,148 @@ class TensorLogicCoreTest(unittest.TestCase):
 
         self.assertEqual(json.loads(cli_result.stdout), http_result)
 
+    def test_cli_run_query_and_prove_execute_tl_commands(self):
+        import json
+        import os
+        import subprocess
+        import sys
+        import tempfile
+
+        source = "\n".join(
+            [
+                "domain Node { a, b, c }",
+                "relation edge(Node, Node)",
+                "relation path(Node, Node)",
+                "fact edge(a, b)",
+                "fact edge(b, c)",
+                "rule path(x,y) := edge(x,y).step()",
+                "rule path(x,y) := edge(x,z) * path(z,y).step()",
+                "query path(a, c) recursive",
+                "prove path(a, c) recursive",
+            ]
+        )
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write(source)
+            path = f.name
+        try:
+            run_result = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "run", path],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertIn("path(a, c) = True", run_result.stdout)
+            self.assertIn("edge(a, b)", run_result.stdout)
+
+            query_result = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "query", path, "path", "a", "c", "--recursive"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(query_result.stdout.strip(), "path(a, c) = True")
+
+            prove_result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "tensor_logic",
+                    "prove",
+                    path,
+                    "path",
+                    "a",
+                    "c",
+                    "--recursive",
+                    "--format",
+                    "json",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertTrue(json.loads(prove_result.stdout)["answer"])
+        finally:
+            os.unlink(path)
+
+    def test_cli_invalid_arity_and_parse_errors_are_external_failures(self):
+        import os
+        import subprocess
+        import sys
+        import tempfile
+
+        source = "\n".join(
+            [
+                "domain Node { a, b }",
+                "relation edge(Node, Node)",
+                "fact edge(a, b)",
+            ]
+        )
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write(source)
+            valid_path = f.name
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write("not valid tl\n")
+            invalid_path = f.name
+        try:
+            arity = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "query", valid_path, "edge", "a"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(arity.returncode, 0)
+            self.assertIn("query currently supports binary relations", arity.stderr)
+
+            parse = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "run", invalid_path],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(parse.returncode, 0)
+            self.assertIn("unrecognized statement", parse.stderr)
+        finally:
+            os.unlink(valid_path)
+            os.unlink(invalid_path)
+
+    def test_http_source_execution_preserves_arity_and_load_errors(self):
+        from http import HTTPStatus
+        from tensor_logic.http_api import ApiError, query_source, run_source
+
+        source = "\n".join(
+            [
+                "domain Node { a, b }",
+                "relation edge(Node, Node)",
+                "fact edge(a, b)",
+            ]
+        )
+        with self.assertRaises(ApiError) as caught:
+            query_source(source, "edge", ["a"])
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "query requires exactly 2 args")
+
+        with self.assertRaises(ValueError) as parse:
+            run_source("not valid tl\n")
+        self.assertIn("unrecognized statement", str(parse.exception))
+
+    def test_repl_uses_recursive_query_and_prove_semantics(self):
+        from tensor_logic.__main__ import _repl_eval
+        from tensor_logic.program import Program
+        import io
+
+        program = Program()
+        out = io.StringIO()
+        _repl_eval(program, "domain Node { a, b, c }", out)
+        _repl_eval(program, "relation edge(Node, Node)", out)
+        _repl_eval(program, "relation path(Node, Node)", out)
+        _repl_eval(program, "fact edge(a, b)", out)
+        _repl_eval(program, "fact edge(b, c)", out)
+        _repl_eval(program, "rule path(x,y) := edge(x,y).step()", out)
+        _repl_eval(program, "rule path(x,y) := edge(x,z) * path(z,y).step()", out)
+        _repl_eval(program, "query path(a, c) recursive", out)
+        _repl_eval(program, "prove path(a, c) recursive", out)
+        result = out.getvalue()
+        self.assertIn("path(a, c) = True", result)
+        self.assertIn("edge(a, b)", result)
+
     def test_web_workbench_sample_is_valid_tl(self):
         import re
         from tensor_logic.file_format import load_tl

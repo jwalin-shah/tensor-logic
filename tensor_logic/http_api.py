@@ -1,18 +1,14 @@
 from __future__ import annotations
 
 import json
-import os
-import tempfile
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from io import StringIO
 from typing import Any
 
-from .file_format import Command, load_tl
+from .execution import execute_command, execute_prove, execute_query, execute_run, load_tl_source
+from .file_format import Command
 from .ingest import ingest_python, render_python_imports_tl
-from .proof_result import format_proof_result
-from .proofs import prove, prove_negative
 
 
 @dataclass(frozen=True)
@@ -26,21 +22,16 @@ def ingest_python_source(path: str) -> str:
 
 
 def run_source(source: str) -> dict[str, Any]:
-    loaded = _load_program_from_source(source)
-    outputs = []
-    for command in loaded.commands:
-        out = StringIO()
-        _execute_command(loaded.program, command, out=out)
-        outputs.append(out.getvalue().strip())
-    return {"outputs": outputs}
+    return execute_run(_load_program_from_source(source))
 
 
 def query_source(source: str, relation: str, args: list[str], recursive: bool = False) -> dict[str, Any]:
-    if len(args) != 2:
-        raise ApiError(HTTPStatus.BAD_REQUEST, "query requires exactly 2 args")
-    loaded = _load_program_from_source(source)
-    value = loaded.program.query(relation, *args, recursive=recursive)
-    return {"answer": bool(value), "value": float(value), "relation": relation, "args": args, "recursive": recursive}
+    try:
+        return execute_query(_load_program_from_source(source).program, relation, args, recursive=recursive)
+    except ValueError as exc:
+        if str(exc) == "query requires exactly 2 args":
+            raise ApiError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
+        raise
 
 
 def prove_source(
@@ -55,16 +46,19 @@ def prove_source(
         raise ApiError(HTTPStatus.BAD_REQUEST, "prove requires exactly 2 args")
     if format_type not in {"tree", "json"}:
         raise ApiError(HTTPStatus.BAD_REQUEST, "format must be 'tree' or 'json'")
-    loaded = _load_program_from_source(source)
-    proof = prove(loaded.program, relation, args[0], args[1], recursive=recursive)
-    if proof is None:
-        if not why_not:
-            return {"answer": False, "proof": None}
-        neg_proof = prove_negative(loaded.program, relation, args[0], args[1], recursive=recursive)
-        if neg_proof is None:
-            return {"answer": True}
-        return format_proof_result(negative_proof=neg_proof, format_type=format_type)
-    return format_proof_result(proof=proof, format_type=format_type)
+    try:
+        return execute_prove(
+            _load_program_from_source(source).program,
+            relation,
+            args,
+            recursive=recursive,
+            why_not=why_not,
+            format_type=format_type,
+        )
+    except ValueError as exc:
+        if str(exc) == "prove requires exactly 2 args":
+            raise ApiError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
+        raise
 
 
 class TensorLogicHandler(BaseHTTPRequestHandler):
@@ -125,36 +119,10 @@ def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
 
 
 def _load_program_from_source(source: str):
-    fd, path = tempfile.mkstemp(suffix=".tl", prefix="tensor_logic_api_")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(source)
-        return load_tl(path)
-    finally:
-        os.unlink(path)
+    return load_tl_source(source, prefix="tensor_logic_api_")
 
 
 def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
     if out is None:
-        out = StringIO()
-    if len(command.args) != 2:
-        raise ValueError("CLI proof/query currently supports binary relations")
-    if command.kind == "query":
-        value = program.query(command.relation, *command.args, recursive=command.recursive)
-        print(f"{command.relation}({', '.join(command.args)}) = {bool(value)}", file=out)
         return
-    proof = prove(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
-    if proof is None:
-        if why_not:
-            neg_proof = prove_negative(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
-            if neg_proof is not None:
-                print(fmt_negative_proof_tree(neg_proof), file=out)
-            else:
-                print(f"{command.relation}({', '.join(command.args)}) = True", file=out)
-        else:
-            print(f"{command.relation}({', '.join(command.args)}) = False", file=out)
-        return
-    if format_type == "json":
-        print(json.dumps(format_proof_result(proof=proof, format_type=format_type)), file=out)
-    else:
-        print(format_proof_result(proof=proof, format_type=format_type)["proof"], file=out)
+    print(execute_command(program, command, format_type=format_type, why_not=why_not).text, file=out)

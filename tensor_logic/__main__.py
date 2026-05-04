@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 
 from .file_format import Command, load_tl
 from .http_api import serve
 from .ingest import ingest_python, render_python_imports_tl
-from .proof_result import format_proof_result
-from .proofs import prove, prove_negative
+from .execution import execute_command, write_command_result
 from .repo_graph_view import dependency_report, repo_graph_repl
 
 
@@ -96,31 +94,7 @@ def main(argv: list[str] | None = None) -> int:
 def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
     if out is None:
         out = sys.stdout
-    if len(command.args) != 2:
-        raise ValueError("CLI proof/query currently supports binary relations")
-    if command.kind == "query":
-        value = program.query(command.relation, *command.args, recursive=command.recursive)
-        print(f"{command.relation}({', '.join(command.args)}) = {bool(value)}", file=out)
-        return
-    proof = prove(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
-    if proof is None:
-        if why_not:
-            neg_proof = prove_negative(program, command.relation, command.args[0], command.args[1], recursive=command.recursive)
-            if neg_proof is not None:
-                result = format_proof_result(negative_proof=neg_proof, format_type=format_type)
-                print(json.dumps(result) if format_type == "json" else result["proof"], file=out)
-            else:
-                print(f"{command.relation}({', '.join(command.args)}) = True", file=out)
-        else:
-            if format_type == "json":
-                print(json.dumps({"answer": False, "proof": None}), file=out)
-            else:
-                print(f"{command.relation}({', '.join(command.args)}) = False", file=out)
-    else:
-        if format_type == "json":
-            print(json.dumps(format_proof_result(proof=proof, format_type=format_type)), file=out)
-        else:
-            print(format_proof_result(proof=proof, format_type=format_type)["proof"], file=out)
+    write_command_result(execute_command(program, command, format_type=format_type, why_not=why_not), out)
 
 
 def _repl_eval(program, line: str, out=None) -> None:
