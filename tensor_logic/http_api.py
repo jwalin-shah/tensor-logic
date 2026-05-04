@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 import json
-import os
-import tempfile
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from .execution import execute_command
-from .file_format import Command, load_tl
+from .execution import execute_command, execute_prove, execute_query, execute_run, load_tl_source
+from .file_format import Command
 from .ingest import ingest_python, render_python_imports_tl
-from .proof_result import prove_binary_relation_result
 
 
 @dataclass(frozen=True)
@@ -25,19 +22,16 @@ def ingest_python_source(path: str) -> str:
 
 
 def run_source(source: str) -> dict[str, Any]:
-    loaded = _load_program_from_source(source)
-    outputs = []
-    for command in loaded.commands:
-        outputs.append(execute_command(loaded.program, command))
-    return {"outputs": outputs}
+    return execute_run(_load_program_from_source(source))
 
 
 def query_source(source: str, relation: str, args: list[str], recursive: bool = False) -> dict[str, Any]:
-    if len(args) != 2:
-        raise ApiError(HTTPStatus.BAD_REQUEST, "query requires exactly 2 args")
-    loaded = _load_program_from_source(source)
-    value = loaded.program.query(relation, *args, recursive=recursive)
-    return {"answer": bool(value), "value": float(value), "relation": relation, "args": args, "recursive": recursive}
+    try:
+        return execute_query(_load_program_from_source(source).program, relation, args, recursive=recursive)
+    except ValueError as exc:
+        if str(exc) == "query requires exactly 2 args":
+            raise ApiError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
+        raise
 
 
 def prove_source(
@@ -52,16 +46,19 @@ def prove_source(
         raise ApiError(HTTPStatus.BAD_REQUEST, "prove requires exactly 2 args")
     if format_type not in {"tree", "json"}:
         raise ApiError(HTTPStatus.BAD_REQUEST, "format must be 'tree' or 'json'")
-    loaded = _load_program_from_source(source)
-    return prove_binary_relation_result(
-        loaded.program,
-        relation,
-        args[0],
-        args[1],
-        recursive=recursive,
-        why_not=why_not,
-        format_type=format_type,
-    )
+    try:
+        return execute_prove(
+            _load_program_from_source(source).program,
+            relation,
+            args,
+            recursive=recursive,
+            why_not=why_not,
+            format_type=format_type,
+        )
+    except ValueError as exc:
+        if str(exc) == "prove requires exactly 2 args":
+            raise ApiError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
+        raise
 
 
 class TensorLogicHandler(BaseHTTPRequestHandler):
@@ -122,17 +119,10 @@ def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
 
 
 def _load_program_from_source(source: str):
-    fd, path = tempfile.mkstemp(suffix=".tl", prefix="tensor_logic_api_")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(source)
-        return load_tl(path)
-    finally:
-        os.unlink(path)
+    return load_tl_source(source, prefix="tensor_logic_api_")
 
 
 def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
     if out is None:
-        from io import StringIO
-        out = StringIO()
-    print(execute_command(program, command, format_type=format_type, why_not=why_not), file=out)
+        return
+    print(execute_command(program, command, format_type=format_type, why_not=why_not).text, file=out)

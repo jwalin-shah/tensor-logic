@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tensor-logic"
+version = "0.1.0"
+description = "Tensor logic experiments, demos, and reusable reasoning utilities."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "torch>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "matplotlib>=3.7",
+    "numpy>=1.24",
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["tensor_logic*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

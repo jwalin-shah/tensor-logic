@@ -16,22 +16,51 @@ def parse_rule(text: str) -> Rule | None:
     if not match:
         return None
     head_match = ATOM_RE.fullmatch(match.group("head").strip())
-    body_matches = tuple(ATOM_RE.finditer(match.group("body")))
-    if not head_match or not body_matches:
+    body_atoms = _parse_body_atoms(match.group("body"))
+    if not head_match or head_match.group("neg") or not body_atoms:
         return None
     head = Atom(
         head_match.group("rel"),
         (head_match.group("a"), head_match.group("b")),
     )
-    body = tuple(
-        Atom(
-            atom.group("rel"),
-            (atom.group("a"), atom.group("b")),
-            negated=atom.group("neg") == "!",
+    return Rule(head, tuple(body_atoms))
+
+
+def _parse_body_atoms(body: str) -> list[Atom] | None:
+    atoms: list[Atom] = []
+    pos = 0
+    expecting_atom = True
+    while pos < len(body):
+        if body[pos].isspace():
+            pos += 1
+            continue
+        if not expecting_atom:
+            if body[pos] != ",":
+                return None
+            pos += 1
+            expecting_atom = True
+            continue
+        atom = ATOM_RE.match(body, pos)
+        if atom is None:
+            return None
+        atoms.append(
+            Atom(
+                atom.group("rel"),
+                (atom.group("a"), atom.group("b")),
+                atom.group("neg") == "!",
+            )
         )
-        for atom in body_matches
-    )
-    return Rule(head, body)
+        pos = atom.end()
+        expecting_atom = False
+    if expecting_atom:
+        return None
+    return atoms
+
+
+def _binary_args(atom: Atom) -> tuple[str, str] | None:
+    if len(atom.args) != 2:
+        return None
+    return atom.args[0], atom.args[1]
 
 
 def all_entities(graph: dict[str, list[list[str]] | list[tuple[str, str]]]) -> list[str]:
@@ -77,37 +106,53 @@ def evaluate_rule(graph: dict, rule: Rule, name_to_idx: dict[str, int] | None = 
         operands = []
         operand_strs = []
         for atom in pos_atoms:
-            if atom.rel not in rel_tensors:
-                return None, f"unknown body relation: {atom.rel}"
-            for var in (atom.left, atom.right):
+            args = _binary_args(atom)
+            if args is None:
+                return None, f"body relation {atom.relation} expects 2 args, got {len(atom.args)}"
+            left, right = args
+            if atom.relation not in rel_tensors:
+                return None, f"unknown body relation: {atom.relation}"
+            for var in (left, right):
                 if var not in var_to_axis:
                     var_to_axis[var] = chr(ord("a") + len(var_to_axis))
-            operands.append(rel_tensors[atom.rel])
-            operand_strs.append(var_to_axis[atom.left] + var_to_axis[atom.right])
-        if rule.head.left not in var_to_axis or rule.head.right not in var_to_axis:
-            return None, f"head variables {rule.head.left}, {rule.head.right} not in positive body"
-        equation = ",".join(operand_strs) + "->" + var_to_axis[rule.head.left] + var_to_axis[rule.head.right]
+            operands.append(rel_tensors[atom.relation])
+            operand_strs.append(var_to_axis[left] + var_to_axis[right])
+        head_args = _binary_args(rule.head)
+        if head_args is None:
+            return None, f"head relation {rule.head.relation} expects 2 args, got {len(rule.head.args)}"
+        head_left, head_right = head_args
+        if head_left not in var_to_axis or head_right not in var_to_axis:
+            return None, f"head variables {head_left}, {head_right} not in positive body"
+        equation = ",".join(operand_strs) + "->" + var_to_axis[head_left] + var_to_axis[head_right]
         result = (torch.einsum(equation, *operands) > 0).float()
     else:
+        head_args = _binary_args(rule.head)
+        if head_args is None:
+            return None, f"head relation {rule.head.relation} expects 2 args, got {len(rule.head.args)}"
+        head_left, head_right = head_args
         result = torch.ones(n, n)
 
-    head_vars = {rule.head.left, rule.head.right}
+    head_vars = {head_left, head_right}
     for atom in neg_atoms:
-        if atom.rel not in rel_tensors:
-            return None, f"unknown negated relation: {atom.rel}"
-        if {atom.left, atom.right} != head_vars:
+        args = _binary_args(atom)
+        if args is None:
+            return None, f"negated relation {atom.relation} expects 2 args, got {len(atom.args)}"
+        left, right = args
+        if atom.relation not in rel_tensors:
+            return None, f"unknown negated relation: {atom.relation}"
+        if {left, right} != head_vars:
             return None, (
-                f"negated atom {atom.rel}({atom.left}, {atom.right}) must match head "
-                f"variables {rule.head.left}, {rule.head.right}"
+                f"negated atom {atom.relation}({left}, {right}) must match head "
+                f"variables {head_left}, {head_right}"
             )
-        neg_tensor = rel_tensors[atom.rel]
-        if (atom.left, atom.right) == (rule.head.left, rule.head.right):
+        neg_tensor = rel_tensors[atom.relation]
+        if (left, right) == (head_left, head_right):
             neg_aligned = neg_tensor
         else:
             neg_aligned = neg_tensor.t()
         result = result * (1.0 - neg_aligned)
 
-    return ((result > 0).float(), names, name_to_idx, rule.head.rel), None
+    return ((result > 0).float(), names, name_to_idx, rule.head.relation), None
 
 
 def query_relation(head_result, subj: str, obj: str) -> bool:

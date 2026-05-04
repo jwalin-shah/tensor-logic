@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .execution import execute_command
 from .file_format import Command, load_tl
 from .http_api import serve
 from .ingest import ingest_python, render_python_imports_tl
+from .execution import execute_command, write_command_result
 from .repo_graph_view import dependency_report, repo_graph_repl
 
 
@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
 def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
     if out is None:
         out = sys.stdout
-    print(execute_command(program, command, format_type=format_type, why_not=why_not), file=out)
+    write_command_result(execute_command(program, command, format_type=format_type, why_not=why_not), out)
 
 
 def _repl_eval(program, line: str, out=None) -> None:

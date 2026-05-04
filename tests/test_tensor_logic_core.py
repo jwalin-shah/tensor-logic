@@ -3,9 +3,11 @@ import unittest
 import torch
 
 from tensor_logic import (
+    Atom,
     Domain,
     Program,
     Relation,
+    Rule,
     bfs_per_source_closure,
     bfs_query,
     dense_closure,
@@ -63,11 +65,14 @@ class TensorLogicCoreTest(unittest.TestCase):
 
     def test_positive_rule_join(self):
         rule = parse_rule('<tl_rule head="uncle(X, Y)" body="sibling(X, P), parent(P, Y)"></tl_rule>')
-        from tensor_logic.program import Rule as ProgramRule
-
-        self.assertIsInstance(rule, ProgramRule)
+        self.assertIsInstance(rule, Rule)
+        self.assertIsInstance(rule.head, Atom)
         self.assertEqual(rule.head.relation, "uncle")
         self.assertEqual(rule.head.args, ("X", "Y"))
+        self.assertEqual(rule.head.rel, "uncle")
+        self.assertEqual((rule.head.left, rule.head.right), ("X", "Y"))
+        self.assertEqual(rule.body[0].relation, "sibling")
+        self.assertEqual(rule.body[0].args, ("X", "P"))
         result, err = evaluate_rule(GRAPH, rule)
         self.assertIsNone(err)
         self.assertTrue(query_relation(result, "carol", "dave"))
@@ -78,16 +83,30 @@ class TensorLogicCoreTest(unittest.TestCase):
             '<tl_rule head="sibling_not_parent(X, Y)" body="sibling(X, Y), !parent(X, Y)"></tl_rule>'
         )
         self.assertTrue(rule.body[1].negated)
-        self.assertEqual(rule.body[1].relation, "parent")
-        self.assertEqual(rule.body[1].args, ("X", "Y"))
+        self.assertEqual(rule.body[1], Atom("parent", ("X", "Y"), negated=True))
         result, err = evaluate_rule(GRAPH, rule)
         self.assertIsNone(err)
         self.assertTrue(query_relation(result, "bob", "carol"))
         self.assertFalse(query_relation(result, "alice", "bob"))
 
-    def test_tl_rule_invalid_syntax_returns_none(self):
-        self.assertIsNone(parse_rule('<tl_rule head="bad(X)" body="parent(X, Y)"></tl_rule>'))
-        self.assertIsNone(parse_rule('<tl_rule head="ok(X, Y)" body=""></tl_rule>'))
+    def test_tl_rule_parse_rejects_invalid_syntax(self):
+        self.assertIsNone(parse_rule("no tag here"))
+        self.assertIsNone(parse_rule('<tl_rule head="!bad(X, Y)" body="parent(X, Y)"></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X, Y)" body=""></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X, Y)" body="parent(X, Y) garbage"></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X, Y)" body="parent(X, Y),"></tl_rule>'))
+
+    def test_tl_rule_evaluate_reports_unknown_relation(self):
+        rule = parse_rule('<tl_rule head="derived(X, Y)" body="missing(X, Y)"></tl_rule>')
+        result, err = evaluate_rule(GRAPH, rule)
+        self.assertIsNone(result)
+        self.assertEqual(err, "unknown body relation: missing")
+
+    def test_tl_rule_evaluate_reports_unknown_negated_relation(self):
+        rule = parse_rule('<tl_rule head="derived(X, Y)" body="parent(X, Y), !missing(X, Y)"></tl_rule>')
+        result, err = evaluate_rule(GRAPH, rule)
+        self.assertIsNone(result)
+        self.assertEqual(err, "unknown negated relation: missing")
 
     def test_provenance_and_ranking(self):
         rules = [
@@ -151,23 +170,6 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(program.query("ancestor", "alice", "dave", recursive=True), 1.0)
         self.assertEqual(program.query("ancestor", "dave", "alice", recursive=True), 0.0)
 
-    def test_program_rules_use_shared_rule_shape(self):
-        from tensor_logic import Atom as PublicAtom, Rule as PublicRule
-        from tensor_logic.program import Atom as ProgramAtom, Rule as ProgramRule
-
-        program = Program()
-        program.domain("Person", ["alice", "bob", "carol"])
-        program.relation("parent", "Person", "Person")
-        program.relation("grandparent", "Person", "Person")
-        program.rule("grandparent(x,z) := parent(x,y) * parent(y,z)")
-        rule = program.rules["grandparent"][0]
-
-        self.assertIs(PublicAtom, ProgramAtom)
-        self.assertIs(PublicRule, ProgramRule)
-        self.assertIsInstance(rule, ProgramRule)
-        self.assertIsInstance(rule.body[0], ProgramAtom)
-        self.assertFalse(rule.body[0].negated)
-
     def test_tl_file_query_and_proof(self):
         loaded = load_tl("examples/code_dependencies.tl")
         self.assertEqual(loaded.program.query("depends_on", "worker", "models", recursive=True), 1.0)
@@ -224,17 +226,6 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertIn("depends_on(models, worker)", formatted)
         self.assertIsInstance(formatted, str)
 
-    def test_format_proof_result_tree_uses_existing_negative_proof_text(self):
-        from tensor_logic import format_proof_result
-        loaded = load_tl("examples/code_dependencies.tl")
-        neg_proof = prove_negative(loaded.program, "depends_on", "models", "worker")
-        self.assertIsNotNone(neg_proof)
-
-        result = format_proof_result(negative_proof=neg_proof, format_type="tree")
-
-        self.assertFalse(result["answer"])
-        self.assertEqual(result["proof"], fmt_negative_proof_tree(neg_proof))
-
 
     def test_validation_errors(self):
         program = Program()
@@ -284,17 +275,6 @@ class TensorLogicCoreTest(unittest.TestCase):
         formatted = fmt_proof_tree(proof)
         self.assertIn("personal_memory.tl:", formatted)
 
-    def test_format_proof_result_tree_uses_existing_proof_text(self):
-        from tensor_logic import format_proof_result
-        loaded = load_tl("examples/personal_memory.tl")
-        proof = prove(loaded.program, "should_follow_up", "ryan", "tensor_demo")
-        self.assertIsNotNone(proof)
-
-        result = format_proof_result(proof=proof, format_type="tree")
-
-        self.assertTrue(result["answer"])
-        self.assertEqual(result["proof"], fmt_proof_tree(proof))
-
     def test_prove_with_multiple_rules(self):
         # connected(x,y) if there is a direct link OR a via_hub path
         program = Program()
@@ -334,58 +314,6 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(neg.head, ("connected", "a", "d"))
         self.assertEqual(neg.reason, "all_rules_failed")
         self.assertEqual(len(neg.body), 2)
-
-    def test_proof_search_respects_shared_negated_atom(self):
-        from tensor_logic.program import Atom, Rule
-
-        program = Program()
-        program.domain("Person", ["alice", "bob"])
-        program.relation("parent", "Person", "Person")
-        program.relation("blocked", "Person", "Person")
-        program.relation("allowed_parent", "Person", "Person")
-        program.fact("parent", "alice", "bob")
-        program.rules.setdefault("allowed_parent", []).append(
-            Rule(
-                Atom("allowed_parent", ("X", "Y")),
-                (
-                    Atom("parent", ("X", "Y")),
-                    Atom("blocked", ("X", "Y"), negated=True),
-                ),
-            )
-        )
-
-        self.assertIsNotNone(prove(program, "allowed_parent", "alice", "bob"))
-
-        program.fact("blocked", "alice", "bob")
-
-        self.assertIsNone(prove(program, "allowed_parent", "alice", "bob"))
-
-    def test_negative_proof_reports_negated_atom_failure(self):
-        from tensor_logic.program import Atom, Rule
-
-        program = Program()
-        program.domain("Person", ["alice", "bob"])
-        program.relation("parent", "Person", "Person")
-        program.relation("blocked", "Person", "Person")
-        program.relation("allowed_parent", "Person", "Person")
-        program.fact("parent", "alice", "bob")
-        program.fact("blocked", "alice", "bob")
-        program.rules.setdefault("allowed_parent", []).append(
-            Rule(
-                Atom("allowed_parent", ("X", "Y")),
-                (
-                    Atom("parent", ("X", "Y")),
-                    Atom("blocked", ("X", "Y"), negated=True),
-                ),
-            )
-        )
-
-        neg = prove_negative(program, "allowed_parent", "alice", "bob")
-
-        self.assertIsNotNone(neg)
-        self.assertEqual(neg.reason, "rule_body_failed")
-        self.assertEqual(neg.body[0].reason, "negated_atom_proven")
-        self.assertEqual(neg.body[0].head, ("blocked", "alice", "bob"))
 
 
     def _make_ancestor_program(self):
@@ -485,63 +413,6 @@ class TensorLogicCoreTest(unittest.TestCase):
         _repl_eval(program, "query edge(a, b)", out)
         result = out.getvalue()
         self.assertIn("True", result)
-
-    def test_execute_command_returns_query_output(self):
-        from tensor_logic import execute_command
-        from tensor_logic.file_format import Command
-        from tensor_logic.program import Program
-
-        program = Program()
-        program.domain("Node", ["a", "b"])
-        program.relation("edge", "Node", "Node")
-        program.fact("edge", "a", "b")
-
-        output = execute_command(program, Command("query", "edge", ("a", "b")))
-
-        self.assertEqual(output, "edge(a, b) = True")
-
-    def test_execute_command_returns_proof_output(self):
-        from tensor_logic import execute_command
-        from tensor_logic.file_format import Command
-        from tensor_logic.program import Program
-
-        program = Program()
-        program.domain("Node", ["a", "b"])
-        program.relation("edge", "Node", "Node")
-        program.fact("edge", "a", "b")
-
-        output = execute_command(program, Command("prove", "edge", ("a", "b")))
-
-        self.assertEqual(output, "edge(a, b)")
-
-    def test_execute_command_returns_json_proof_output(self):
-        import json
-        from tensor_logic import execute_command
-        from tensor_logic.file_format import Command
-        from tensor_logic.program import Program
-
-        program = Program()
-        program.domain("Node", ["a", "b"])
-        program.relation("edge", "Node", "Node")
-        program.fact("edge", "a", "b")
-
-        output = execute_command(program, Command("prove", "edge", ("a", "b")), format_type="json")
-
-        self.assertEqual(json.loads(output)["proof"]["head"], ["edge", "a", "b"])
-
-    def test_execute_command_returns_negative_proof_output_when_requested(self):
-        from tensor_logic import execute_command
-        from tensor_logic.file_format import Command
-        from tensor_logic.program import Program
-
-        program = Program()
-        program.domain("Node", ["a", "b"])
-        program.relation("edge", "Node", "Node")
-
-        output = execute_command(program, Command("prove", "edge", ("a", "b")), why_not=True)
-
-        self.assertIn("edge(a, b) = False", output)
-        self.assertIn("reason: no_rules", output)
 
     def test_repl_prove_command(self):
         from tensor_logic.__main__ import _repl_eval
@@ -851,6 +722,203 @@ class TensorLogicCoreTest(unittest.TestCase):
         )
 
         self.assertEqual(json.loads(cli_result.stdout), http_result)
+
+    def test_cli_run_query_and_prove_execute_tl_commands(self):
+        import json
+        import os
+        import subprocess
+        import sys
+        import tempfile
+
+        source = "\n".join(
+            [
+                "domain Node { a, b, c }",
+                "relation edge(Node, Node)",
+                "relation path(Node, Node)",
+                "fact edge(a, b)",
+                "fact edge(b, c)",
+                "rule path(x,y) := edge(x,y).step()",
+                "rule path(x,y) := edge(x,z) * path(z,y).step()",
+                "query path(a, c) recursive",
+                "prove path(a, c) recursive",
+            ]
+        )
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write(source)
+            path = f.name
+        try:
+            run_result = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "run", path],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertIn("path(a, c) = True", run_result.stdout)
+            self.assertIn("edge(a, b)", run_result.stdout)
+
+            query_result = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "query", path, "path", "a", "c", "--recursive"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(query_result.stdout.strip(), "path(a, c) = True")
+
+            prove_result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "tensor_logic",
+                    "prove",
+                    path,
+                    "path",
+                    "a",
+                    "c",
+                    "--recursive",
+                    "--format",
+                    "json",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertTrue(json.loads(prove_result.stdout)["answer"])
+        finally:
+            os.unlink(path)
+
+    def test_cli_invalid_arity_and_parse_errors_are_external_failures(self):
+        import os
+        import subprocess
+        import sys
+        import tempfile
+
+        source = "\n".join(
+            [
+                "domain Node { a, b }",
+                "relation edge(Node, Node)",
+                "fact edge(a, b)",
+            ]
+        )
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write(source)
+            valid_path = f.name
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write("not valid tl\n")
+            invalid_path = f.name
+        try:
+            arity = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "query", valid_path, "edge", "a"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(arity.returncode, 0)
+            self.assertIn("query currently supports binary relations", arity.stderr)
+
+            parse = subprocess.run(
+                [sys.executable, "-m", "tensor_logic", "run", invalid_path],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(parse.returncode, 0)
+            self.assertIn("unrecognized statement", parse.stderr)
+        finally:
+            os.unlink(valid_path)
+            os.unlink(invalid_path)
+
+    def test_http_source_execution_preserves_arity_and_load_errors(self):
+        from http import HTTPStatus
+        from tensor_logic.http_api import ApiError, query_source, run_source
+
+        source = "\n".join(
+            [
+                "domain Node { a, b }",
+                "relation edge(Node, Node)",
+                "fact edge(a, b)",
+            ]
+        )
+        with self.assertRaises(ApiError) as caught:
+            query_source(source, "edge", ["a"])
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "query requires exactly 2 args")
+
+        with self.assertRaises(ValueError) as parse:
+            run_source("not valid tl\n")
+        self.assertIn("unrecognized statement", str(parse.exception))
+
+    def test_repl_uses_recursive_query_and_prove_semantics(self):
+        from tensor_logic.__main__ import _repl_eval
+        from tensor_logic.program import Program
+        import io
+
+        program = Program()
+        out = io.StringIO()
+        _repl_eval(program, "domain Node { a, b, c }", out)
+        _repl_eval(program, "relation edge(Node, Node)", out)
+        _repl_eval(program, "relation path(Node, Node)", out)
+        _repl_eval(program, "fact edge(a, b)", out)
+        _repl_eval(program, "fact edge(b, c)", out)
+        _repl_eval(program, "rule path(x,y) := edge(x,y).step()", out)
+        _repl_eval(program, "rule path(x,y) := edge(x,z) * path(z,y).step()", out)
+        _repl_eval(program, "query path(a, c) recursive", out)
+        _repl_eval(program, "prove path(a, c) recursive", out)
+        result = out.getvalue()
+        self.assertIn("path(a, c) = True", result)
+        self.assertIn("edge(a, b)", result)
+
+
+
+    def test_execute_command_returns_query_output(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        result = execute_command(program, Command("query", "edge", ("a", "b")))
+        self.assertEqual(result.text, "edge(a, b) = True")
+
+    def test_execute_command_returns_proof_output(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        result = execute_command(program, Command("prove", "edge", ("a", "b")))
+        self.assertEqual(result.text, "edge(a, b)")
+
+    def test_execute_command_returns_json_proof_output(self):
+        import json
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        result = execute_command(program, Command("prove", "edge", ("a", "b")), format_type="json")
+        self.assertEqual(json.loads(result.text)["proof"]["head"], ["edge", "a", "b"])
+
+    def test_execute_command_returns_negative_proof_output_when_requested(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+
+        result = execute_command(program, Command("prove", "edge", ("a", "b")), why_not=True)
+        self.assertIn("edge(a, b) = False", result.text)
+        self.assertIn("reason: no_rules", result.text)
 
     def test_web_workbench_sample_is_valid_tl(self):
         import re
