@@ -11,8 +11,7 @@ from typing import Any
 from .execution import execute_command
 from .file_format import Command, load_tl
 from .ingest import ingest_python, render_python_imports_tl
-from .proof_result import format_proof_result
-from .proofs import prove, prove_negative
+from .proof_result import prove_binary_relation_result
 
 
 @dataclass(frozen=True)
@@ -54,15 +53,15 @@ def prove_source(
     if format_type not in {"tree", "json"}:
         raise ApiError(HTTPStatus.BAD_REQUEST, "format must be 'tree' or 'json'")
     loaded = _load_program_from_source(source)
-    proof = prove(loaded.program, relation, args[0], args[1], recursive=recursive)
-    if proof is None:
-        if not why_not:
-            return {"answer": False, "proof": None}
-        neg_proof = prove_negative(loaded.program, relation, args[0], args[1], recursive=recursive)
-        if neg_proof is None:
-            return {"answer": True}
-        return format_proof_result(negative_proof=neg_proof, format_type=format_type)
-    return format_proof_result(proof=proof, format_type=format_type)
+    return prove_binary_relation_result(
+        loaded.program,
+        relation,
+        args[0],
+        args[1],
+        recursive=recursive,
+        why_not=why_not,
+        format_type=format_type,
+    )
 
 
 class TensorLogicHandler(BaseHTTPRequestHandler):

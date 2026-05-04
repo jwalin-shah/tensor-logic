@@ -120,6 +120,27 @@ def sample_exclusive_examples(gold: torch.Tensor, base: dict, n_pos: int, n_neg:
     rng.shuffle(pos_pairs); rng.shuffle(neg_pairs)
     return pos_pairs[:n_pos], neg_pairs[:n_neg]
 
+def induce(base: dict, target: torch.Tensor, max_len: int = 3) -> dict:
+    """Brute-force search for the rule body that best matches ``target`` over the full grid."""
+    t0 = time.perf_counter()
+    candidates = enumerate_rules(list(base.keys()), max_len)
+    best = (-1.0, None)
+    for body in candidates:
+        try:
+            pred = apply_body(body, base)
+        except KeyError:
+            continue
+        score = f1(pred, target)
+        if score > best[0] or (score == best[0] and best[1] and len(body) < len(best[1])):
+            best = (score, body)
+    return {
+        "f1": best[0],
+        "body": best[1],
+        "search_cost": len(candidates),
+        "search_time_s": time.perf_counter() - t0,
+    }
+
+
 def induce_from_examples(base: dict, positive: list, negative: list,
                          n_entities: int, max_len: int = 3,
                          allowed_rels: list | None = None) -> dict:

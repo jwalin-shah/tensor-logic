@@ -169,7 +169,7 @@ def make_evaluator(base: dict, target: torch.Tensor, positive: list, negative: l
       3. Compute F1 (primary) and precision (secondary).
       4. For each missed positive pair, call explain_miss → append to ASI.
     """
-    from exp78_rule_induction import induce_from_examples, apply_body, f1 as compute_f1
+    from tensor_logic.research.utils import induce_from_examples, apply_body, f1 as compute_f1
     from tensor_logic.optimize import EvalResult
 
     def evaluate(artifact: str) -> EvalResult:
@@ -263,10 +263,8 @@ def run_exp81(cfg: Exp81Config) -> dict:
     Returns dict with: steps_to_f1_1, brute_force_template_count, accepted_f1, frontier_size.
     """
     import random
-    from exp78_rule_induction import (
-        GOLD_RULES, gen_world, apply_body, sample_examples, enumerate_rules,
-        schema_with_distractors,
-    )
+    from tensor_logic.research.constants import GOLD_RULES, schema_with_distractors
+    from tensor_logic.research.utils import gen_world, apply_body, sample_examples, enumerate_rules
     from tensor_logic.optimize import optimize, EvalResult
 
     random.seed(cfg.seed)

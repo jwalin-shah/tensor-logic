@@ -110,7 +110,7 @@ def test_evaluator_populates_asi_on_miss():
 
 def test_make_proposer_returns_valid_json():
     """Smoke test: proposer with feedback="" returns parseable JSON."""
-    from experiments.exp78_rule_induction import GOLD_RULES
+    from tensor_logic.research.constants import GOLD_RULES
     schema, gold_body = GOLD_RULES["grandparent"]
     positive = [(0, 2), (1, 3)]
     negative = [(0, 1), (2, 3)]

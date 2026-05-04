@@ -10,12 +10,15 @@ Stderr: progress/debug info
 from __future__ import annotations
 
 import json
-import re
-import sys
-import tempfile
 import os
+import re
+import tempfile
 from pathlib import Path
 from typing import Any
+
+from tensor_logic.file_format import load_tl
+from tensor_logic.optimize import EvalResult, optimize
+from tensor_logic.proofs import fmt_proof_tree, prove
 
 
 # EAV field mapping: observation dict key → TL relation name
@@ -120,61 +123,35 @@ def _extract_obs_ids(tl_source: str) -> list[int]:
     return sorted({int(m) for m in re.findall(r"obs_\w+\((\d+),", tl_source)})
 
 
-def make_query_evaluator(observations: list[dict[str, Any]]):
-    """
-    Returns an evaluate(rule: str) -> EvalResult closure.
+def _program_from_tl_source(tl_source: str):
+    """Parse TL source from a temp file; unlink before returning."""
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write(tl_source)
+            tmp_path = f.name
+        return load_tl(tmp_path).program
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
 
-    The rule must be a TL rule string defining result(x, y):
-        result(x, y) := obs_kind(x, y).step()
 
-    Builds a full TL program, evaluates it, and scores by coverage
-    (fraction of obs IDs for which result(id, _) > 0).
-    """
-    from tensor_logic.file_format import load_tl
-    from tensor_logic.proofs import prove, fmt_proof_tree
-    from tensor_logic.optimize import EvalResult
-
+def _eval_rule_on_program(
+    program,
+    observations: list[dict[str, Any]],
+    rule: str,
+) -> EvalResult:
+    """Score ``rule`` by coverage of ``result`` over ``observations`` ids."""
     all_ids = [obs["id"] for obs in observations]
     total = len(all_ids)
-
-    def evaluate(rule: str) -> EvalResult:
-        try:
-            tl_source = _build_tl_source(observations, rule)
-        except Exception as exc:
-            return EvalResult(
-                artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
-                score=0.0,
-                asi=f"source build error: {exc}",
-                asi_kind="engine_error",
-            )
-
-        tmp_path = None
-        try:
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.tl', delete=False) as f:
-                f.write(tl_source)
-                tmp_path = f.name
-            loaded = load_tl(tmp_path)
-            program = loaded.program
-        except Exception as exc:
-            return EvalResult(
-                artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
-                score=0.0,
-                asi=f"parse error: {exc}",
-                asi_kind="engine_error",
-            )
-        finally:
-            if tmp_path and os.path.exists(tmp_path):
-                os.unlink(tmp_path)
-
-        # Find which obs_ids have any result(id, y) > 0
-        result_tensor = program.eval("result")  # shape: [n_ids, n_vals]
-        matched_ids = []
-        proof_texts = []
+    try:
+        result_tensor = program.eval("result")
+        matched_ids: list[int] = []
+        proof_texts: list[str] = []
         result_domain = program.relations["result"].domains[1]
         for i, obs_id in enumerate(all_ids):
             if result_tensor[i].sum() > 0:
                 matched_ids.append(obs_id)
-                # Prove one witness value for proof text
                 for val in result_domain.symbols:
                     pr = prove(program, "result", str(obs_id), val)
                     if pr is not None:
@@ -189,7 +166,6 @@ def make_query_evaluator(observations: list[dict[str, Any]]):
             f"matched {len(matched_ids)}/{total}" if len(matched_ids) > 0
             else f"no matches — {unmatched_count} observations unmatched by rule: {rule}"
         )
-
         return EvalResult(
             artifact=json.dumps({"obs_ids": matched_ids, "query": rule, "proofs": proof_texts}),
             score=score,
@@ -197,6 +173,46 @@ def make_query_evaluator(observations: list[dict[str, Any]]):
             asi=asi,
             asi_kind="proof" if matched_ids else "why_not",
         )
+    except Exception as exc:
+        return EvalResult(
+            artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
+            score=0.0,
+            asi=f"eval error: {exc}",
+            asi_kind="engine_error",
+        )
+
+
+def make_query_evaluator(observations: list[dict[str, Any]]):
+    """
+    Returns an evaluate(rule: str) -> EvalResult closure.
+
+    The rule must be a TL rule string defining result(x, y):
+        result(x, y) := obs_kind(x, y).step()
+
+    Builds a full TL program, evaluates it, and scores by coverage
+    (fraction of obs IDs for which result(id, _) > 0).
+    """
+
+    def evaluate(rule: str) -> EvalResult:
+        try:
+            tl_source = _build_tl_source(observations, rule)
+        except Exception as exc:
+            return EvalResult(
+                artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
+                score=0.0,
+                asi=f"source build error: {exc}",
+                asi_kind="engine_error",
+            )
+        try:
+            program = _program_from_tl_source(tl_source)
+        except Exception as exc:
+            return EvalResult(
+                artifact=json.dumps({"obs_ids": [], "query": rule, "proofs": []}),
+                score=0.0,
+                asi=f"parse error: {exc}",
+                asi_kind="engine_error",
+            )
+        return _eval_rule_on_program(program, observations, rule)
 
     return evaluate
 
@@ -231,8 +247,6 @@ def reason(
 
     Returns: (matched_obs_ids, proof_texts, best_query_str)
     """
-    from tensor_logic.optimize import EvalResult, optimize
-
     all_ids = _extract_obs_ids(facts_to_tl_source(observations))
     propose = _make_reason_proposer(user_query, all_ids, model_name)
     evaluate = make_query_evaluator(observations)
