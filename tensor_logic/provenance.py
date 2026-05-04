@@ -31,10 +31,10 @@ def evaluate_with_provenance(
     entities = all_entities(graph)
 
     for rule in rules:
-        if rule.head.rel != rel:
+        if rule.head.relation != rel or len(rule.head.args) != 2:
             continue
-        bindings = {rule.head.left: subj, rule.head.right: obj}
-        body_vars = {var for atom in rule.body for var in (atom.left, atom.right)}
+        bindings = {rule.head.args[0]: subj, rule.head.args[1]: obj}
+        body_vars = {var for atom in rule.body for var in atom.args}
         free_vars = [var for var in sorted(body_vars) if var not in bindings]
         for assignment in _enumerate_assignments(free_vars, entities):
             full_bindings = {**bindings, **assignment}
@@ -68,21 +68,24 @@ def _enumerate_assignments(vars_: list[str], entities: list[str]):
 def _try_body(graph, rules, rule: Rule, bindings, max_depth, depth):
     per_atom = []
     for atom in rule.body:
+        if len(atom.args) != 2:
+            return []
+        left, right = atom.args
         if atom.negated:
-            if atom.left not in bindings or atom.right not in bindings:
+            if left not in bindings or right not in bindings:
                 return []
-            has_fact = bool(primitive_proofs(graph, atom.rel, bindings[atom.left], bindings[atom.right]))
+            has_fact = bool(primitive_proofs(graph, atom.relation, bindings[left], bindings[right]))
             if has_fact:
                 return []
             continue
-        if atom.left not in bindings or atom.right not in bindings:
+        if left not in bindings or right not in bindings:
             return []
         atom_proofs = evaluate_with_provenance(
             graph,
             rules,
-            atom.rel,
-            bindings[atom.left],
-            bindings[atom.right],
+            atom.relation,
+            bindings[left],
+            bindings[right],
             max_depth=max_depth,
             _depth=depth + 1,
         )
@@ -119,10 +122,10 @@ def fmt_proof(proof, indent: int = 0) -> str:
     head_rel, subj, obj = proof["head"]
     rule = proof["rule"]
     body = ", ".join(
-        f"{'!' if atom.negated else ''}{atom.rel}({atom.left},{atom.right})"
+        f"{'!' if atom.negated else ''}{atom.relation}({','.join(atom.args)})"
         for atom in rule.body
     )
-    lines = [f"{pad}- {head_rel}({subj}, {obj})  via  {rule.head.rel}({rule.head.left}, {rule.head.right}) :- {body}"]
+    lines = [f"{pad}- {head_rel}({subj}, {obj})  via  {rule.head.relation}({', '.join(rule.head.args)}) :- {body}"]
     for child in proof["body"]:
         lines.append(fmt_proof(child, indent + 1))
     return "\n".join(lines)
