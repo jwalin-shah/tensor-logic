@@ -865,6 +865,61 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertIn("path(a, c) = True", result)
         self.assertIn("edge(a, b)", result)
 
+
+
+    def test_execute_command_returns_query_output(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        result = execute_command(program, Command("query", "edge", ("a", "b")))
+        self.assertEqual(result.text, "edge(a, b) = True")
+
+    def test_execute_command_returns_proof_output(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        result = execute_command(program, Command("prove", "edge", ("a", "b")))
+        self.assertEqual(result.text, "edge(a, b)")
+
+    def test_execute_command_returns_json_proof_output(self):
+        import json
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        result = execute_command(program, Command("prove", "edge", ("a", "b")), format_type="json")
+        self.assertEqual(json.loads(result.text)["proof"]["head"], ["edge", "a", "b"])
+
+    def test_execute_command_returns_negative_proof_output_when_requested(self):
+        from tensor_logic import execute_command
+        from tensor_logic.file_format import Command
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+
+        result = execute_command(program, Command("prove", "edge", ("a", "b")), why_not=True)
+        self.assertIn("edge(a, b) = False", result.text)
+        self.assertIn("reason: no_rules", result.text)
+
     def test_web_workbench_sample_is_valid_tl(self):
         import re
         from tensor_logic.file_format import load_tl

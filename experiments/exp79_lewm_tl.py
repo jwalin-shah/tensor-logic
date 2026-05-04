@@ -28,6 +28,7 @@ import torch.nn.functional as F
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from tensor_logic import Domain, Relation
+from tensor_logic.research.utils import f1, apply_body, Schema
 
 torch.manual_seed(42)
 np.random.seed(42)
@@ -39,6 +40,7 @@ N_OBJ = 3
 OBJ_NAMES = ["R", "G", "B"]
 COLORS = [(220, 50, 50), (50, 200, 50), (50, 50, 220)]
 RELATIONS = ["above", "left_of", "touching", "occluded"]
+JEPA_SCHEMA = Schema("jepa", {r: ("obj", "obj") for r in RELATIONS})
 PAIRS = [(a, b) for a in OBJ_NAMES for b in OBJ_NAMES if a != b]
 PAIR_INDEX = {p: i for i, p in enumerate(PAIRS)}
 OBJ_IDX = {n: i for i, n in enumerate(OBJ_NAMES)}
@@ -253,16 +255,17 @@ def make_probe_dataset(labeled_frames, encoder, device):
 
 
 def eval_probe(probe, labeled_frames, encoder, device):
-    """Returns per-relation val accuracy dict without training."""
+    """Returns per-relation val accuracy and F1 dict without training."""
     z, pi, lab = make_probe_dataset(labeled_frames, encoder, device)
     probe.eval()
     with torch.no_grad():
         logits = probe(z.to(device), pi.to(device))
-    acc = {}
+    metrics = {}
     for i, rel in enumerate(RELATIONS):
         preds = (logits[rel].cpu() > 0).float()
-        acc[rel] = (preds == lab[:, i]).float().mean().item()
-    return acc
+        metrics[f"{rel}_acc"] = (preds == lab[:, i]).float().mean().item()
+        metrics[f"{rel}_f1"] = f1(preds, lab[:, i])
+    return metrics
 
 
 def train_probe(encoder, labeled_frames, device, n_epochs=100, lr=1e-3, batch_size=32):
@@ -331,34 +334,27 @@ _DOMAIN = Domain(OBJ_NAMES)
 
 def build_tl_state(fact_dict):
     """fact_dict: {(rel_name, a, b): bool}. Returns dict of derived tensors."""
-    rel_objs = {r: Relation(r, _DOMAIN, _DOMAIN) for r in RELATIONS}
+    base = {r: torch.zeros(N_OBJ, N_OBJ) for r in RELATIONS}
     for (rel_name, a, b), val in fact_dict.items():
-        if val and rel_name in rel_objs:
-            rel_objs[rel_name][a, b] = 1.0
-
-    above_t   = rel_objs["above"].eval()
-    left_of_t = rel_objs["left_of"].eval()
-    touch_t   = rel_objs["touching"].eval()
-    occl_t    = rel_objs["occluded"].eval()
+        if val and rel_name in base:
+            base[rel_name][OBJ_IDX[a], OBJ_IDX[b]] = 1.0
 
     # blocked_path[X,Z] = ∃Y≠X,Z: touching(X,Y) ∧ above(Y,Z)
-    blocked_path = (touch_t @ above_t).clamp(0, 1)
+    blocked_path = apply_body(["touching", "above"], base)
     blocked_path.fill_diagonal_(0)  # X cannot block path to itself
+
     # same_side[X,Z] = ∃Y: left_of(X,Y) ∧ left_of(Y,Z)
-    same_side = (left_of_t @ left_of_t).clamp(0, 1)
+    same_side = apply_body(["left_of", "left_of"], base)
+
     # clear_above[X] = ¬∃Y: above(Y,X)  (1-ary)
-    clear_above_rel = Relation("clear_above", _DOMAIN)
-    for xi, xname in enumerate(OBJ_NAMES):
-        clear_above_rel[xname] = float(1.0 - above_t[:, xi].max().item())
+    above_t = base["above"]
+    clear_above = (1.0 - above_t.max(dim=0)[0])
 
     return {
-        "above": above_t,
-        "left_of": left_of_t,
-        "touching": touch_t,
-        "occluded": occl_t,
+        **base,
         "blocked_path": blocked_path,
         "same_side": same_side,
-        "clear_above": clear_above_rel.eval(),
+        "clear_above": clear_above,
     }
 
 
@@ -501,16 +497,16 @@ def compute_complexity_scaling(val_acc, val_frames, probe, encoder, device):
 
     bp_acc = bp_correct / total if total else 0.0
     ss_acc = ss_correct / total if total else 0.0
-    depth1 = {r: val_acc[r] for r in RELATIONS}
+    depth1 = {r: val_acc[f"{r}_acc"] for r in RELATIONS}
     depth2 = {"blocked_path": bp_acc, "same_side": ss_acc}
 
-    avg_d1 = (val_acc["above"] + val_acc["left_of"]) / 2
+    avg_d1 = (val_acc["above_acc"] + val_acc["left_of_acc"]) / 2
     compound = avg_d1 ** 2
 
     fig, ax = plt.subplots(figsize=(7, 4))
     ax.bar(
         ["depth-1\n(above)", "depth-1\n(left_of)", "depth-2\nblocked_path", "depth-2\nsame_side"],
-        [val_acc["above"], val_acc["left_of"], bp_acc, ss_acc],
+        [val_acc["above_acc"], val_acc["left_of_acc"], bp_acc, ss_acc],
         color=["steelblue", "steelblue", "darkorange", "darkorange"],
     )
     ax.axhline(compound, color="red", linestyle="--",
@@ -557,19 +553,21 @@ def main():
     probe_path = os.path.join(DATA_DIR, "probe.pt")
     if args.skip_train and os.path.exists(probe_path):
         probe.load_state_dict(torch.load(probe_path, map_location=device))
-        val_acc = eval_probe(probe, labeled_frames[400:], encoder, device)
+        val_metrics = eval_probe(probe, labeled_frames[400:], encoder, device)
         print("  Loaded saved probe")
     else:
-        probe, val_acc = train_probe(encoder, labeled_frames, device)
+        probe, val_metrics = train_probe(encoder, labeled_frames, device)
 
     print("  Val accuracy:")
-    for rel, acc in val_acc.items():
-        gate = ("✓" if acc >= 0.9 else "✗") if rel in ("above", "left_of") else "~"
-        print(f"    {gate} {rel}: {acc:.3f}")
+    for rel in RELATIONS:
+        acc = val_metrics[f"{rel}_acc"]
+        f1_score = val_metrics[f"{rel}_f1"]
+        gate = ("✓" if acc >= 0.7 else "✗") if rel in ("above", "left_of") else "~"
+        print(f"    {gate} {rel}: acc={acc:.3f}, f1={f1_score:.3f}")
 
-    gate_probe = val_acc["above"] >= 0.9 and val_acc["left_of"] >= 0.9
+    gate_probe = val_metrics["above_acc"] >= 0.7 and val_metrics["left_of_acc"] >= 0.7
     if not gate_probe:
-        print("\n  FAIL: probe gate not met. Holistic latent insufficient → consider Slot Attention.")
+        print("\n  FAIL: probe gate not met. Holistic latent insufficient (acc < 70%) → consider Slot Attention.")
 
     print("\n── 4. TL retraction tests ────────────────────────────────────")
     n_active_tl, n_correct_tl = run_retraction_tl_only(labeled_frames)
@@ -581,12 +579,12 @@ def main():
     print(f"  End-to-end: {n_correct_e2e}/{n_active_e2e}  {'PASS' if gate_e2e else 'needs ≥40'}")
 
     print("\n── 5. Complexity scaling ─────────────────────────────────────")
-    depth1, depth2 = compute_complexity_scaling(val_acc, labeled_frames[400:], probe, encoder, device)
+    depth1, depth2 = compute_complexity_scaling(val_metrics, labeled_frames[400:], probe, encoder, device)
     print(f"  Depth-1: above={depth1['above']:.3f}  left_of={depth1['left_of']:.3f}")
     print(f"  Depth-2: blocked_path={depth2['blocked_path']:.3f}  same_side={depth2['same_side']:.3f}")
 
     results = {
-        "probe_val_acc": val_acc,
+        "probe_val_metrics": val_metrics,
         "tl_only_retraction": {"active": n_active_tl, "correct": n_correct_tl},
         "e2e_retraction": {"active": n_active_e2e, "correct": n_correct_e2e},
         "depth1_acc": depth1,

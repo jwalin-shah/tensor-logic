@@ -8,6 +8,37 @@ The point is to make session-to-session continuity possible. If you forget what 
 
 ---
 
+## 2026-05-02 — exp79 self-play rule factory stabilized
+
+**Session focus:** Stabilize the in-flight exp79 self-play loop and clean up the repo state enough to choose the next real task.
+
+**What we tried:**
+- Refactored exp79 to use `tensor_logic.research` utilities and the `NegativeProof(no_rules)` trigger rather than a separate "not answerable" check.
+- Added a recursive proof-search fix so proof bodies with multiple unbound variables are handled by recursively binding witnesses instead of trying one variable and then proving an under-bound body.
+- Added shared test import setup via `tests/conftest.py`.
+- Filtered induction candidates to person-person relations and vectorized candidate scoring over a cached prediction stack.
+
+**What worked:**
+- Full exp79 all-mode run passes and writes `experiments/exp79_data/results.json`.
+- Easy and medium answer all 10 query targets with accepted rules at semantic_equiv=1.0.
+- Hard mode improves 0/10 -> 4/10 under 5 positive / 5 negative examples with 20% label noise, while semantic_equiv rejects the spurious distractor chains.
+- Very-hard remains an expected identifiability-boundary run, not a contradiction.
+- Full test suite passes: 114 passed, 2 warnings.
+
+**What surprised us:**
+- The guide is the load-bearing safety check. In hard mode, noisy tiny samples repeatedly produce high local-F1 distractor chains, but semantic_equiv catches them before they enter the KB.
+- Runtime was mostly Python scoring overhead, not tensor algebra. Caching candidate tensors and vectorizing F1 scoring moved hard mode from ~98s to ~11s.
+
+**What we'd do next:**
+- Use exp79 as the substrate for a real small KB loop: contacts or FAFSA. The next useful milestone is no longer another synthetic rule-factory tweak; it is applying the loop to a domain where missing rules and proof traces matter.
+- Keep exp82/exp83 as exploratory branches until they have clean specs and falsification gates. The validated path today is rule induction + proof/guide integration, not TL-as-transformer-layer or perception slots.
+
+**FAFSA follow-up in same session:**
+- Ran `exp80_validate_synthetic.py`: 1,015/1,015 synthetic dependent-family cases computed without error; all internal SAI invariants passed.
+- Added `tests/test_exp80.py` with 7 regression tests covering exact median-family SAI, Max Pell short-circuit, cited trace steps, component-sum invariant, counterfactual direction, named cases, and seeded synthetic invariants.
+- Final full suite after exp80 tests: 121 passed, 2 warnings.
+- Important caveat: this is still internal validation of the 2024-25 Formula A prototype. External validation against published ED worked examples / aid-estimator spot checks remains the next gate before calling FAFSA "validated."
+
 ## 2026-04-28 — Big-picture brainstorming: TL as self-improving world-knowledge engine
 
 **Session focus:** Evaluated the full project arc, then explored where TL can go at scale.

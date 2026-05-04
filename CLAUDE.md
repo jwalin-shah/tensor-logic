@@ -35,3 +35,17 @@ pytest tests/ -v
 
 - `AGENTS.md` is memjuice-managed — do not edit it manually.
 - `.cocoindex_code/` contains a vector embedding index (semantic search) — separate from `tools/index.json` (structured API signatures).
+
+## Agent skills
+
+### Issue tracker
+
+Issues and PRDs for this repo live in GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+This repo uses the default triage label vocabulary. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This repo uses a single-context domain docs layout. See `docs/agents/domain.md`.

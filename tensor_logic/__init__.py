@@ -4,9 +4,10 @@ from .closure import bfs_query, bfs_per_source_closure, dense_closure
 from .language import Domain, Relation, evaluate_expr, facts
 from .program import Program, FactSource
 from .file_format import load_tl
+from .execution import execute_command
 from .http_api import ingest_python_source, prove_source, query_source, run_source, serve
 from .ingest import PythonImportGraph, ingest_python, render_python_imports_tl
-from .proof_result import format_proof_result
+from .proof_result import format_proof_result, prove_binary_relation_result
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, prove_with_do, Proof, NegativeProof
 from .proof_tree_viewer import ProofTreeNode, build_proof_tree_view, render_proof_tree
 from .provenance import evaluate_with_provenance, fmt_proof, proof_score
@@ -37,10 +38,12 @@ __all__ = [
     "evaluate_rule",
     "evaluate_expr",
     "evaluate_with_provenance",
+    "execute_command",
     "facts",
     "fmt_proof_tree",
     "fmt_negative_proof_tree",
     "format_proof_result",
+    "prove_binary_relation_result",
     "load_tl",
     "ingest_python",
     "ingest_python_source",
