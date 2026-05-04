@@ -82,6 +82,15 @@ Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` a
 | `notes/OPENHUMAN_TL_MEMO.md` | Memo: tensor logic as a substrate for openhuman, with knowledge-base reframe and related-work convergence. |
 | `notes/OPENHUMAN_TL_PROTOTYPE_PLAN.md` | 7-phase, ~14-day prototype plan for a TL+KB go/no-go spike. |
 
+## Worker validation
+
+Symphony workers should validate a clean checkout with:
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest tests/ -v
+```
+
 ## Run
 
 ```bash
