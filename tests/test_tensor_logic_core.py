@@ -3,9 +3,11 @@ import unittest
 import torch
 
 from tensor_logic import (
+    Atom,
     Domain,
     Program,
     Relation,
+    Rule,
     bfs_per_source_closure,
     bfs_query,
     dense_closure,
@@ -63,6 +65,14 @@ class TensorLogicCoreTest(unittest.TestCase):
 
     def test_positive_rule_join(self):
         rule = parse_rule('<tl_rule head="uncle(X, Y)" body="sibling(X, P), parent(P, Y)"></tl_rule>')
+        self.assertIsInstance(rule, Rule)
+        self.assertIsInstance(rule.head, Atom)
+        self.assertEqual(rule.head.relation, "uncle")
+        self.assertEqual(rule.head.args, ("X", "Y"))
+        self.assertEqual(rule.head.rel, "uncle")
+        self.assertEqual((rule.head.left, rule.head.right), ("X", "Y"))
+        self.assertEqual(rule.body[0].relation, "sibling")
+        self.assertEqual(rule.body[0].args, ("X", "P"))
         result, err = evaluate_rule(GRAPH, rule)
         self.assertIsNone(err)
         self.assertTrue(query_relation(result, "carol", "dave"))
@@ -72,10 +82,31 @@ class TensorLogicCoreTest(unittest.TestCase):
         rule = parse_rule(
             '<tl_rule head="sibling_not_parent(X, Y)" body="sibling(X, Y), !parent(X, Y)"></tl_rule>'
         )
+        self.assertTrue(rule.body[1].negated)
+        self.assertEqual(rule.body[1], Atom("parent", ("X", "Y"), negated=True))
         result, err = evaluate_rule(GRAPH, rule)
         self.assertIsNone(err)
         self.assertTrue(query_relation(result, "bob", "carol"))
         self.assertFalse(query_relation(result, "alice", "bob"))
+
+    def test_tl_rule_parse_rejects_invalid_syntax(self):
+        self.assertIsNone(parse_rule("no tag here"))
+        self.assertIsNone(parse_rule('<tl_rule head="!bad(X, Y)" body="parent(X, Y)"></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X, Y)" body=""></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X, Y)" body="parent(X, Y) garbage"></tl_rule>'))
+        self.assertIsNone(parse_rule('<tl_rule head="bad(X, Y)" body="parent(X, Y),"></tl_rule>'))
+
+    def test_tl_rule_evaluate_reports_unknown_relation(self):
+        rule = parse_rule('<tl_rule head="derived(X, Y)" body="missing(X, Y)"></tl_rule>')
+        result, err = evaluate_rule(GRAPH, rule)
+        self.assertIsNone(result)
+        self.assertEqual(err, "unknown body relation: missing")
+
+    def test_tl_rule_evaluate_reports_unknown_negated_relation(self):
+        rule = parse_rule('<tl_rule head="derived(X, Y)" body="parent(X, Y), !missing(X, Y)"></tl_rule>')
+        result, err = evaluate_rule(GRAPH, rule)
+        self.assertIsNone(result)
+        self.assertEqual(err, "unknown negated relation: missing")
 
     def test_provenance_and_ranking(self):
         rules = [

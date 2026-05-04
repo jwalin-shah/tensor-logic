@@ -13,6 +13,19 @@ TOKEN_RE = re.compile(r"\s*(?:(?P<ID>[A-Za-z_]\w*)|(?P<ASSIGN>:=)|(?P<LP>\()|(?P
 class Atom:
     relation: str
     args: tuple[str, ...]
+    negated: bool = False
+
+    @property
+    def rel(self) -> str:
+        return self.relation
+
+    @property
+    def left(self) -> str:
+        return self.args[0]
+
+    @property
+    def right(self) -> str:
+        return self.args[1]
 
 
 @dataclass(frozen=True)
