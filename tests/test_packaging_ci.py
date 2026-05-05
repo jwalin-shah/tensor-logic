@@ -40,3 +40,15 @@ def test_readme_documents_worker_validation_commands():
 
     assert 'python -m pip install -e ".[dev]"' in readme
     assert "python -m pytest tests/ -v" in readme
+    assert "tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v" in readme
+    assert "python experiments/exp86_support_baselines.py --quick" in readme
+
+
+def test_symphony_protocol_requires_real_github_prs_and_support_fast_path():
+    protocol = (REPO_ROOT / "docs" / "SYMPHONY_RUN_PROTOCOL.md").read_text()
+
+    assert "codex/SYM-25-short-title" in protocol
+    assert "real GitHub PR" in protocol
+    assert "gh pr view" in protocol
+    assert "tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v" in protocol
+    assert "python experiments/exp86_support_baselines.py --quick" in protocol

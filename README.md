@@ -91,6 +91,16 @@ python -m pip install -e ".[dev]"
 python -m pytest tests/ -v
 ```
 
+Support/stability fast path:
+
+```bash
+python -m pytest tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v
+python experiments/exp86_support_baselines.py --quick
+```
+
+`exp86` is a neural baseline smoke run and should stay out of CI unless it is
+kept quick and deterministic.
+
 ## Run
 
 ```bash
