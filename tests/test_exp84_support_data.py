@@ -1,3 +1,5 @@
+import pytest
+
 from experiments.exp84_support_data import compute_labels, generate_dataset
 
 
@@ -58,3 +60,22 @@ def test_branch_support_union_is_stable_then_falls_when_removed():
     assert labels["o2"] == "stable"
     labels2 = compute_labels(objects, {"type": "remove", "object_id": "o1"})
     assert labels2["o2"] == "falls"
+
+
+def test_generated_intervention_samples_do_not_alias_objects():
+    ds = generate_dataset(num_scenes=1, split="id", seed=1, interventions=("none", "remove"))
+
+    assert len(ds) == 2
+    assert ds[0]["objects"] is not ds[1]["objects"]
+    assert ds[0]["objects"][0] is not ds[1]["objects"][0]
+
+    original = ds[1]["objects"][0]["x"]
+    ds[0]["objects"][0]["x"] = 999.0
+    assert ds[1]["objects"][0]["x"] == original
+
+
+def test_unknown_remove_target_rejected():
+    objects = [{"id": "o0", "x": 0.0, "y": 0.0, "w": 1.0, "h": 1.0}]
+
+    with pytest.raises(ValueError, match="unknown remove target"):
+        compute_labels(objects, {"type": "remove", "object_id": "missing"})
