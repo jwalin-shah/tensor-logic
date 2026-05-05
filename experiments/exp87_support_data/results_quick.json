@@ -1,0 +1,269 @@
+{
+  "baseline_metadata": {
+    "max_objects": 8
+  },
+  "config": {
+    "epochs": 12,
+    "eval_scenes": 8,
+    "hidden_dim": 48,
+    "lr": 0.01,
+    "quick": true,
+    "seed": 8700,
+    "train_scenes": 16
+  },
+  "deepsets": {
+    "branching_ood": {
+      "accuracy": 0.7314814814814815,
+      "correct": 79,
+      "total": 108
+    },
+    "counterfactual": {
+      "accuracy": 0.8125,
+      "correct": 143,
+      "total": 176
+    },
+    "deeper_ood": {
+      "accuracy": 0.6160714285714286,
+      "correct": 69,
+      "total": 112
+    },
+    "id": {
+      "accuracy": 0.8888888888888888,
+      "correct": 32,
+      "total": 36
+    },
+    "larger_ood": {
+      "accuracy": 0.7916666666666666,
+      "correct": 76,
+      "total": 96
+    },
+    "loss_end": 0.21457967162132263,
+    "loss_start": 0.678230881690979
+  },
+  "experiment": "exp87_support_eval",
+  "gates": {
+    "tl_counterfactual_retraction_accuracy_100": {
+      "accuracy": 1.0,
+      "correct": 176,
+      "passed": true,
+      "threshold": 1.0,
+      "total": 176
+    },
+    "tl_deterministic_label_accuracy_100": {
+      "accuracy": 1.0,
+      "correct": 352,
+      "passed": true,
+      "threshold": 1.0,
+      "total": 352
+    },
+    "tl_ood_margin_vs_best_neural_at_least_10pp": {
+      "passed": true,
+      "splits": {
+        "deeper_ood": {
+          "best_neural": "deepsets",
+          "best_neural_accuracy": 0.6160714285714286,
+          "margin": 0.3839285714285714,
+          "passed": true,
+          "tl_accuracy": 1.0
+        },
+        "larger_ood": {
+          "best_neural": "deepsets",
+          "best_neural_accuracy": 0.7916666666666666,
+          "margin": 0.20833333333333337,
+          "passed": true,
+          "tl_accuracy": 1.0
+        }
+      },
+      "threshold": 0.1
+    },
+    "v1_passed": true
+  },
+  "mlp": {
+    "branching_ood": {
+      "accuracy": 0.6111111111111112,
+      "correct": 66,
+      "total": 108
+    },
+    "counterfactual": {
+      "accuracy": 0.42613636363636365,
+      "correct": 75,
+      "total": 176
+    },
+    "deeper_ood": {
+      "accuracy": 0.5446428571428571,
+      "correct": 61,
+      "total": 112
+    },
+    "id": {
+      "accuracy": 0.8055555555555556,
+      "correct": 29,
+      "total": 36
+    },
+    "larger_ood": {
+      "accuracy": 0.5,
+      "correct": 48,
+      "total": 96
+    },
+    "loss_end": 0.5377631187438965,
+    "loss_start": 0.7002215385437012
+  },
+  "quick": true,
+  "results_path": "experiments/exp87_support_data/results_quick.json",
+  "splits": {
+    "branching_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "object_count_range": [
+        5,
+        8
+      ],
+      "objects": 108,
+      "scene_splits": [
+        "branching_ood"
+      ],
+      "scenes": 16
+    },
+    "counterfactual": {
+      "interventions": [
+        "remove"
+      ],
+      "object_count_range": [
+        2,
+        8
+      ],
+      "objects": 176,
+      "scene_splits": [
+        "branching_counterfactual",
+        "deeper_counterfactual",
+        "id",
+        "ood"
+      ],
+      "scenes": 32
+    },
+    "deeper_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "object_count_range": [
+        6,
+        8
+      ],
+      "objects": 112,
+      "scene_splits": [
+        "deeper_ood"
+      ],
+      "scenes": 16
+    },
+    "id": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "object_count_range": [
+        2,
+        3
+      ],
+      "objects": 36,
+      "scene_splits": [
+        "id"
+      ],
+      "scenes": 16
+    },
+    "larger_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "object_count_range": [
+        4,
+        8
+      ],
+      "objects": 96,
+      "scene_splits": [
+        "ood"
+      ],
+      "scenes": 16
+    },
+    "train": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "object_count_range": [
+        2,
+        3
+      ],
+      "objects": 68,
+      "scene_splits": [
+        "id"
+      ],
+      "scenes": 32
+    }
+  },
+  "thesis": "passed",
+  "tl": {
+    "branching_ood": {
+      "accuracy": 1.0,
+      "correct": 108,
+      "proofs": {
+        "complete": true,
+        "falls": 41,
+        "missing": 0,
+        "stable": 67,
+        "support_facts": 49
+      },
+      "total": 108
+    },
+    "counterfactual": {
+      "accuracy": 1.0,
+      "correct": 176,
+      "proofs": {
+        "complete": true,
+        "falls": 145,
+        "missing": 0,
+        "stable": 31,
+        "support_facts": 15
+      },
+      "total": 176
+    },
+    "deeper_ood": {
+      "accuracy": 1.0,
+      "correct": 112,
+      "proofs": {
+        "complete": true,
+        "falls": 53,
+        "missing": 0,
+        "stable": 59,
+        "support_facts": 49
+      },
+      "total": 112
+    },
+    "id": {
+      "accuracy": 1.0,
+      "correct": 36,
+      "proofs": {
+        "complete": true,
+        "falls": 13,
+        "missing": 0,
+        "stable": 23,
+        "support_facts": 11
+      },
+      "total": 36
+    },
+    "larger_ood": {
+      "accuracy": 1.0,
+      "correct": 96,
+      "proofs": {
+        "complete": true,
+        "falls": 41,
+        "missing": 0,
+        "stable": 55,
+        "support_facts": 50
+      },
+      "total": 96
+    }
+  }
+}
