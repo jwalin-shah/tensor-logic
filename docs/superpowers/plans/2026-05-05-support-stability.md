@@ -118,6 +118,85 @@ V1 passes only if:
 
 If TL cannot beat the best baseline with perfect object state, stop before adding pixels or learned rule induction.
 
+## Testing Contract
+
+The tests should catch contract bugs, not just exercise functions. Every layer needs an oracle or invariant that is independent of the code path under test.
+
+### Generator Invariants
+
+The generator tests must prove scenes are valid before any model consumes them:
+
+- Same seed produces the same scene and labels.
+- Different seeds produce varied scenes.
+- Rectangles stay in bounds.
+- Rectangles do not accidentally overlap.
+- Contact boundaries exist only where intended.
+- Interventions remove exactly one object and recompute labels.
+- Labels match an independent oracle that is not the same function used by the generator internals.
+
+### Relation Extractor Tests
+
+Use hand-built object tables with obvious geometry, and assert primitive facts directly:
+
+- `touching(X, Y)`.
+- `above(X, Y)`.
+- `horiz_overlap(X, Y)`.
+- `on_ground(X)`.
+- `removed(X)`.
+
+These tests should include near-miss cases: almost touching, vertically aligned without horizontal overlap, horizontal overlap without contact, and removed objects.
+
+### TL Rule Tests
+
+Use fixed scenes with exact expected outcomes:
+
+- Single block on ground is stable.
+- Block on a stable block is stable.
+- Floating block falls.
+- Deeper support chain remains stable.
+- Removing the bottom support causes dependent blocks to fall.
+- Branching support retracts only affected facts.
+- Object order and object id renaming do not change structural labels.
+
+### Property Tests
+
+Generated/property-style tests should cover:
+
+- Removing an unrelated object does not change an independent tower.
+- Increasing support depth does not break TL.
+- Permuting object order does not change labels.
+- Renaming object IDs does not change labels.
+- TL reaches 100% against generator labels on deterministic generated samples.
+
+### Baseline Sanity Tests
+
+Neural baseline unit tests should not require a high research accuracy, but they must verify:
+
+- Tensorization shape.
+- Padding/masking correctness.
+- Variable object-count batching.
+- Metrics ignore padded objects.
+- `--quick` training reduces loss on a tiny overfit set or at least runs deterministically and emits metrics.
+
+### Evaluation Gate Tests
+
+The final evaluation script should fail loudly if:
+
+- TL deterministic accuracy is below 100%.
+- TL counterfactual accuracy is below 100%.
+- Results JSON is missing required fields.
+- ID and OOD splits accidentally use the same distribution.
+- The best neural baseline is absent.
+- The 10 percentage-point OOD gate is not computed.
+
+Fast CI should run deterministic tests only:
+
+```bash
+pytest tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v
+```
+
+Keep full neural runs out of CI. Use `--quick` modes for smoke checks.
+
 ## Vertical Slices
 
 ### 1. Stack Generator
@@ -239,4 +318,3 @@ Each Linear issue should include:
 - Acceptance criteria.
 - Validation command.
 - No edits outside owned files unless the worker records the reason in `CODEX_WORKPAD.md`.
-
