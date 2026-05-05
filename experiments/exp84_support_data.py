@@ -60,8 +60,10 @@ def compute_labels(objects: Sequence[Dict[str, float]], intervention: Optional[D
     removed = intervention and intervention.get("type") == "remove"
     removed_id = intervention.get("object_id") if removed else None
 
+    if removed_id is not None and removed_id not in {o.id for o in objs}:
+        raise ValueError(f"unknown remove target: {removed_id}")
+
     active = [o for o in objs if o.id != removed_id]
-    by_id = {o.id: o for o in active}
     stable: Dict[str, bool] = {o.id: False for o in active}
 
     changed = True
@@ -151,6 +153,7 @@ def generate_dataset(num_scenes: int, split: str, seed: int, interventions: Sequ
                 intervention = {"type": "remove", "object_id": victim}
             else:
                 raise ValueError(f"unknown intervention mode: {mode}")
-            labels = compute_labels(objects, intervention)
-            scenes.append({"objects": objects, "split": split, "intervention": intervention, "labels": labels})
+            scene_objects = [dict(obj) for obj in objects]
+            labels = compute_labels(scene_objects, intervention)
+            scenes.append({"objects": scene_objects, "split": split, "intervention": dict(intervention), "labels": labels})
     return scenes
