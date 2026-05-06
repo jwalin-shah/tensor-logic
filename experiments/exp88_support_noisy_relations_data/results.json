@@ -1,0 +1,1214 @@
+{
+  "config": {
+    "eval_scenes": 80,
+    "geometry_deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.005,
+      0.01,
+      0.05
+    ],
+    "quick": false,
+    "relation_flip_probabilities": [
+      0.0,
+      0.001,
+      0.005,
+      0.01,
+      0.02,
+      0.05,
+      0.1
+    ],
+    "seed": 8800
+  },
+  "experiment": "exp88_support_noisy_relations",
+  "geometry_noise": {
+    "deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.005,
+      0.01,
+      0.05
+    ],
+    "modes": {
+      "x_only": {
+        "axes": [
+          "x"
+        ],
+        "by_split": {
+          "all": [
+            {
+              "accuracy": 1.0,
+              "correct": 5156,
+              "delta": 0.0,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.858611326609775,
+              "correct": 4427,
+              "delta": 0.0001,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.858611326609775,
+              "correct": 4427,
+              "delta": 0.001,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.858611326609775,
+              "correct": 4427,
+              "delta": 0.005,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.858611326609775,
+              "correct": 4427,
+              "delta": 0.01,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.8560899922420481,
+              "correct": 4414,
+              "delta": 0.05,
+              "total": 5156
+            }
+          ],
+          "branching_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 1032,
+              "delta": 0.0,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.6550387596899225,
+              "correct": 676,
+              "delta": 0.0001,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.6550387596899225,
+              "correct": 676,
+              "delta": 0.001,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.6550387596899225,
+              "correct": 676,
+              "delta": 0.005,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.6550387596899225,
+              "correct": 676,
+              "delta": 0.01,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.6550387596899225,
+              "correct": 676,
+              "delta": 0.05,
+              "total": 1032
+            }
+          ],
+          "counterfactual": [
+            {
+              "accuracy": 1.0,
+              "correct": 1712,
+              "delta": 0.0,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.9573598130841121,
+              "correct": 1639,
+              "delta": 0.0001,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.9573598130841121,
+              "correct": 1639,
+              "delta": 0.001,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.9573598130841121,
+              "correct": 1639,
+              "delta": 0.005,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.9573598130841121,
+              "correct": 1639,
+              "delta": 0.01,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.9573598130841121,
+              "correct": 1639,
+              "delta": 0.05,
+              "total": 1712
+            }
+          ],
+          "deeper_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.0,
+              "total": 1016
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.0001,
+              "total": 1016
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.001,
+              "total": 1016
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.005,
+              "total": 1016
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.01,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.9872047244094488,
+              "correct": 1003,
+              "delta": 0.05,
+              "total": 1016
+            }
+          ],
+          "id": [
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.0,
+              "total": 408
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.0001,
+              "total": 408
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.001,
+              "total": 408
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.005,
+              "total": 408
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.01,
+              "total": 408
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.05,
+              "total": 408
+            }
+          ],
+          "larger_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 988,
+              "delta": 0.0,
+              "total": 988
+            },
+            {
+              "accuracy": 0.6963562753036437,
+              "correct": 688,
+              "delta": 0.0001,
+              "total": 988
+            },
+            {
+              "accuracy": 0.6963562753036437,
+              "correct": 688,
+              "delta": 0.001,
+              "total": 988
+            },
+            {
+              "accuracy": 0.6963562753036437,
+              "correct": 688,
+              "delta": 0.005,
+              "total": 988
+            },
+            {
+              "accuracy": 0.6963562753036437,
+              "correct": 688,
+              "delta": 0.01,
+              "total": 988
+            },
+            {
+              "accuracy": 0.6963562753036437,
+              "correct": 688,
+              "delta": 0.05,
+              "total": 988
+            }
+          ]
+        },
+        "first_below_100": {
+          "all": {
+            "accuracy": 0.858611326609775,
+            "correct": 4427,
+            "delta": 0.0001,
+            "total": 5156
+          },
+          "branching_ood": {
+            "accuracy": 0.6550387596899225,
+            "correct": 676,
+            "delta": 0.0001,
+            "total": 1032
+          },
+          "counterfactual": {
+            "accuracy": 0.9573598130841121,
+            "correct": 1639,
+            "delta": 0.0001,
+            "total": 1712
+          },
+          "deeper_ood": {
+            "accuracy": 0.9872047244094488,
+            "correct": 1003,
+            "delta": 0.05,
+            "total": 1016
+          },
+          "id": null,
+          "larger_ood": {
+            "accuracy": 0.6963562753036437,
+            "correct": 688,
+            "delta": 0.0001,
+            "total": 988
+          }
+        }
+      },
+      "xy": {
+        "axes": [
+          "x",
+          "y"
+        ],
+        "by_split": {
+          "all": [
+            {
+              "accuracy": 1.0,
+              "correct": 5156,
+              "delta": 0.0,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.0001,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.001,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.005,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.01,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.05,
+              "total": 5156
+            }
+          ],
+          "branching_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 1032,
+              "delta": 0.0,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.0001,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.001,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.005,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.01,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.05,
+              "total": 1032
+            }
+          ],
+          "counterfactual": [
+            {
+              "accuracy": 1.0,
+              "correct": 1712,
+              "delta": 0.0,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.0001,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.001,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.005,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.01,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.05,
+              "total": 1712
+            }
+          ],
+          "deeper_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.0,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.0001,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.001,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.005,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.01,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.05,
+              "total": 1016
+            }
+          ],
+          "id": [
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.0,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.0001,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.001,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.005,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.01,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.05,
+              "total": 408
+            }
+          ],
+          "larger_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 988,
+              "delta": 0.0,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.0001,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.001,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.005,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.01,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.05,
+              "total": 988
+            }
+          ]
+        },
+        "first_below_100": {
+          "all": {
+            "accuracy": 0.5271528316524438,
+            "correct": 2718,
+            "delta": 0.0001,
+            "total": 5156
+          },
+          "branching_ood": {
+            "accuracy": 0.3943798449612403,
+            "correct": 407,
+            "delta": 0.0001,
+            "total": 1032
+          },
+          "counterfactual": {
+            "accuracy": 0.7850467289719626,
+            "correct": 1344,
+            "delta": 0.0001,
+            "total": 1712
+          },
+          "deeper_ood": {
+            "accuracy": 0.42913385826771655,
+            "correct": 436,
+            "delta": 0.0001,
+            "total": 1016
+          },
+          "id": {
+            "accuracy": 0.34558823529411764,
+            "correct": 141,
+            "delta": 0.0001,
+            "total": 408
+          },
+          "larger_ood": {
+            "accuracy": 0.39473684210526316,
+            "correct": 390,
+            "delta": 0.0001,
+            "total": 988
+          }
+        }
+      },
+      "y_only": {
+        "axes": [
+          "y"
+        ],
+        "by_split": {
+          "all": [
+            {
+              "accuracy": 1.0,
+              "correct": 5156,
+              "delta": 0.0,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.0001,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.001,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.005,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.01,
+              "total": 5156
+            },
+            {
+              "accuracy": 0.5271528316524438,
+              "correct": 2718,
+              "delta": 0.05,
+              "total": 5156
+            }
+          ],
+          "branching_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 1032,
+              "delta": 0.0,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.0001,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.001,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.005,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.01,
+              "total": 1032
+            },
+            {
+              "accuracy": 0.3943798449612403,
+              "correct": 407,
+              "delta": 0.05,
+              "total": 1032
+            }
+          ],
+          "counterfactual": [
+            {
+              "accuracy": 1.0,
+              "correct": 1712,
+              "delta": 0.0,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.0001,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.001,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.005,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.01,
+              "total": 1712
+            },
+            {
+              "accuracy": 0.7850467289719626,
+              "correct": 1344,
+              "delta": 0.05,
+              "total": 1712
+            }
+          ],
+          "deeper_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 1016,
+              "delta": 0.0,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.0001,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.001,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.005,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.01,
+              "total": 1016
+            },
+            {
+              "accuracy": 0.42913385826771655,
+              "correct": 436,
+              "delta": 0.05,
+              "total": 1016
+            }
+          ],
+          "id": [
+            {
+              "accuracy": 1.0,
+              "correct": 408,
+              "delta": 0.0,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.0001,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.001,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.005,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.01,
+              "total": 408
+            },
+            {
+              "accuracy": 0.34558823529411764,
+              "correct": 141,
+              "delta": 0.05,
+              "total": 408
+            }
+          ],
+          "larger_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 988,
+              "delta": 0.0,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.0001,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.001,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.005,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.01,
+              "total": 988
+            },
+            {
+              "accuracy": 0.39473684210526316,
+              "correct": 390,
+              "delta": 0.05,
+              "total": 988
+            }
+          ]
+        },
+        "first_below_100": {
+          "all": {
+            "accuracy": 0.5271528316524438,
+            "correct": 2718,
+            "delta": 0.0001,
+            "total": 5156
+          },
+          "branching_ood": {
+            "accuracy": 0.3943798449612403,
+            "correct": 407,
+            "delta": 0.0001,
+            "total": 1032
+          },
+          "counterfactual": {
+            "accuracy": 0.7850467289719626,
+            "correct": 1344,
+            "delta": 0.0001,
+            "total": 1712
+          },
+          "deeper_ood": {
+            "accuracy": 0.42913385826771655,
+            "correct": 436,
+            "delta": 0.0001,
+            "total": 1016
+          },
+          "id": {
+            "accuracy": 0.34558823529411764,
+            "correct": 141,
+            "delta": 0.0001,
+            "total": 408
+          },
+          "larger_ood": {
+            "accuracy": 0.39473684210526316,
+            "correct": 390,
+            "delta": 0.0001,
+            "total": 988
+          }
+        }
+      }
+    }
+  },
+  "interpretation": {
+    "geometry": "strict primitive extraction is brittle to non-zero y jitter and x jitter that opens microscopic support-width gaps",
+    "relations": "relation flips measure discrete primitive extraction errors after object geometry is otherwise perfect"
+  },
+  "quick": false,
+  "relation_flip_noise": {
+    "by_split": {
+      "all": [
+        {
+          "accuracy": 1.0,
+          "correct": 5156,
+          "probability": 0.0,
+          "total": 5156
+        },
+        {
+          "accuracy": 0.9972847168347556,
+          "correct": 5142,
+          "probability": 0.001,
+          "total": 5156
+        },
+        {
+          "accuracy": 0.9794414274631498,
+          "correct": 5050,
+          "probability": 0.005,
+          "total": 5156
+        },
+        {
+          "accuracy": 0.9612102404965089,
+          "correct": 4956,
+          "probability": 0.01,
+          "total": 5156
+        },
+        {
+          "accuracy": 0.9276570985259891,
+          "correct": 4783,
+          "probability": 0.02,
+          "total": 5156
+        },
+        {
+          "accuracy": 0.8427075252133437,
+          "correct": 4345,
+          "probability": 0.05,
+          "total": 5156
+        },
+        {
+          "accuracy": 0.7684251357641583,
+          "correct": 3962,
+          "probability": 0.1,
+          "total": 5156
+        }
+      ],
+      "branching_ood": [
+        {
+          "accuracy": 1.0,
+          "correct": 1032,
+          "probability": 0.0,
+          "total": 1032
+        },
+        {
+          "accuracy": 0.9961240310077519,
+          "correct": 1028,
+          "probability": 0.001,
+          "total": 1032
+        },
+        {
+          "accuracy": 0.9864341085271318,
+          "correct": 1018,
+          "probability": 0.005,
+          "total": 1032
+        },
+        {
+          "accuracy": 0.9602713178294574,
+          "correct": 991,
+          "probability": 0.01,
+          "total": 1032
+        },
+        {
+          "accuracy": 0.9205426356589147,
+          "correct": 950,
+          "probability": 0.02,
+          "total": 1032
+        },
+        {
+          "accuracy": 0.7751937984496124,
+          "correct": 800,
+          "probability": 0.05,
+          "total": 1032
+        },
+        {
+          "accuracy": 0.7403100775193798,
+          "correct": 764,
+          "probability": 0.1,
+          "total": 1032
+        }
+      ],
+      "counterfactual": [
+        {
+          "accuracy": 1.0,
+          "correct": 1712,
+          "probability": 0.0,
+          "total": 1712
+        },
+        {
+          "accuracy": 1.0,
+          "correct": 1712,
+          "probability": 0.001,
+          "total": 1712
+        },
+        {
+          "accuracy": 0.9889018691588785,
+          "correct": 1693,
+          "probability": 0.005,
+          "total": 1712
+        },
+        {
+          "accuracy": 0.9760514018691588,
+          "correct": 1671,
+          "probability": 0.01,
+          "total": 1712
+        },
+        {
+          "accuracy": 0.9643691588785047,
+          "correct": 1651,
+          "probability": 0.02,
+          "total": 1712
+        },
+        {
+          "accuracy": 0.9007009345794392,
+          "correct": 1542,
+          "probability": 0.05,
+          "total": 1712
+        },
+        {
+          "accuracy": 0.8247663551401869,
+          "correct": 1412,
+          "probability": 0.1,
+          "total": 1712
+        }
+      ],
+      "deeper_ood": [
+        {
+          "accuracy": 1.0,
+          "correct": 1016,
+          "probability": 0.0,
+          "total": 1016
+        },
+        {
+          "accuracy": 0.9960629921259843,
+          "correct": 1012,
+          "probability": 0.001,
+          "total": 1016
+        },
+        {
+          "accuracy": 0.9547244094488189,
+          "correct": 970,
+          "probability": 0.005,
+          "total": 1016
+        },
+        {
+          "accuracy": 0.9212598425196851,
+          "correct": 936,
+          "probability": 0.01,
+          "total": 1016
+        },
+        {
+          "accuracy": 0.8651574803149606,
+          "correct": 879,
+          "probability": 0.02,
+          "total": 1016
+        },
+        {
+          "accuracy": 0.8228346456692913,
+          "correct": 836,
+          "probability": 0.05,
+          "total": 1016
+        },
+        {
+          "accuracy": 0.7116141732283464,
+          "correct": 723,
+          "probability": 0.1,
+          "total": 1016
+        }
+      ],
+      "id": [
+        {
+          "accuracy": 1.0,
+          "correct": 408,
+          "probability": 0.0,
+          "total": 408
+        },
+        {
+          "accuracy": 0.9975490196078431,
+          "correct": 407,
+          "probability": 0.001,
+          "total": 408
+        },
+        {
+          "accuracy": 0.9926470588235294,
+          "correct": 405,
+          "probability": 0.005,
+          "total": 408
+        },
+        {
+          "accuracy": 0.9705882352941176,
+          "correct": 396,
+          "probability": 0.01,
+          "total": 408
+        },
+        {
+          "accuracy": 0.9607843137254902,
+          "correct": 392,
+          "probability": 0.02,
+          "total": 408
+        },
+        {
+          "accuracy": 0.9068627450980392,
+          "correct": 370,
+          "probability": 0.05,
+          "total": 408
+        },
+        {
+          "accuracy": 0.8063725490196079,
+          "correct": 329,
+          "probability": 0.1,
+          "total": 408
+        }
+      ],
+      "larger_ood": [
+        {
+          "accuracy": 1.0,
+          "correct": 988,
+          "probability": 0.0,
+          "total": 988
+        },
+        {
+          "accuracy": 0.9949392712550608,
+          "correct": 983,
+          "probability": 0.001,
+          "total": 988
+        },
+        {
+          "accuracy": 0.9757085020242915,
+          "correct": 964,
+          "probability": 0.005,
+          "total": 988
+        },
+        {
+          "accuracy": 0.9736842105263158,
+          "correct": 962,
+          "probability": 0.01,
+          "total": 988
+        },
+        {
+          "accuracy": 0.9220647773279352,
+          "correct": 911,
+          "probability": 0.02,
+          "total": 988
+        },
+        {
+          "accuracy": 0.8066801619433198,
+          "correct": 797,
+          "probability": 0.05,
+          "total": 988
+        },
+        {
+          "accuracy": 0.742914979757085,
+          "correct": 734,
+          "probability": 0.1,
+          "total": 988
+        }
+      ]
+    },
+    "first_below_100": {
+      "all": {
+        "accuracy": 0.9972847168347556,
+        "correct": 5142,
+        "probability": 0.001,
+        "total": 5156
+      },
+      "branching_ood": {
+        "accuracy": 0.9961240310077519,
+        "correct": 1028,
+        "probability": 0.001,
+        "total": 1032
+      },
+      "counterfactual": {
+        "accuracy": 0.9889018691588785,
+        "correct": 1693,
+        "probability": 0.005,
+        "total": 1712
+      },
+      "deeper_ood": {
+        "accuracy": 0.9960629921259843,
+        "correct": 1012,
+        "probability": 0.001,
+        "total": 1016
+      },
+      "id": {
+        "accuracy": 0.9975490196078431,
+        "correct": 407,
+        "probability": 0.001,
+        "total": 408
+      },
+      "larger_ood": {
+        "accuracy": 0.9949392712550608,
+        "correct": 983,
+        "probability": 0.001,
+        "total": 988
+      }
+    },
+    "probabilities": [
+      0.0,
+      0.001,
+      0.005,
+      0.01,
+      0.02,
+      0.05,
+      0.1
+    ]
+  },
+  "results_path": "experiments/exp88_support_noisy_relations_data/results.json",
+  "splits": {
+    "branching_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 1032,
+      "scenes": 160
+    },
+    "counterfactual": {
+      "interventions": [
+        "remove"
+      ],
+      "objects": 1712,
+      "scenes": 320
+    },
+    "deeper_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 1016,
+      "scenes": 160
+    },
+    "id": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 408,
+      "scenes": 160
+    },
+    "larger_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 988,
+      "scenes": 160
+    }
+  }
+}

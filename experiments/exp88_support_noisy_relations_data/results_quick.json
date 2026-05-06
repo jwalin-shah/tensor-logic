@@ -1,0 +1,875 @@
+{
+  "config": {
+    "eval_scenes": 6,
+    "geometry_deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "quick": true,
+    "relation_flip_probabilities": [
+      0.0,
+      0.01,
+      0.05,
+      0.1
+    ],
+    "seed": 8800
+  },
+  "experiment": "exp88_support_noisy_relations",
+  "geometry_noise": {
+    "deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "modes": {
+      "x_only": {
+        "axes": [
+          "x"
+        ],
+        "by_split": {
+          "all": [
+            {
+              "accuracy": 1.0,
+              "correct": 405,
+              "delta": 0.0,
+              "total": 405
+            },
+            {
+              "accuracy": 0.8641975308641975,
+              "correct": 350,
+              "delta": 0.0001,
+              "total": 405
+            },
+            {
+              "accuracy": 0.8641975308641975,
+              "correct": 350,
+              "delta": 0.001,
+              "total": 405
+            },
+            {
+              "accuracy": 0.8641975308641975,
+              "correct": 350,
+              "delta": 0.01,
+              "total": 405
+            }
+          ],
+          "branching_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 74,
+              "delta": 0.0,
+              "total": 74
+            },
+            {
+              "accuracy": 0.6621621621621622,
+              "correct": 49,
+              "delta": 0.0001,
+              "total": 74
+            },
+            {
+              "accuracy": 0.6621621621621622,
+              "correct": 49,
+              "delta": 0.001,
+              "total": 74
+            },
+            {
+              "accuracy": 0.6621621621621622,
+              "correct": 49,
+              "delta": 0.01,
+              "total": 74
+            }
+          ],
+          "counterfactual": [
+            {
+              "accuracy": 1.0,
+              "correct": 135,
+              "delta": 0.0,
+              "total": 135
+            },
+            {
+              "accuracy": 0.9555555555555556,
+              "correct": 129,
+              "delta": 0.0001,
+              "total": 135
+            },
+            {
+              "accuracy": 0.9555555555555556,
+              "correct": 129,
+              "delta": 0.001,
+              "total": 135
+            },
+            {
+              "accuracy": 0.9555555555555556,
+              "correct": 129,
+              "delta": 0.01,
+              "total": 135
+            }
+          ],
+          "deeper_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0,
+              "total": 82
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0001,
+              "total": 82
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.001,
+              "total": 82
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.01,
+              "total": 82
+            }
+          ],
+          "id": [
+            {
+              "accuracy": 1.0,
+              "correct": 32,
+              "delta": 0.0,
+              "total": 32
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 32,
+              "delta": 0.0001,
+              "total": 32
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 32,
+              "delta": 0.001,
+              "total": 32
+            },
+            {
+              "accuracy": 1.0,
+              "correct": 32,
+              "delta": 0.01,
+              "total": 32
+            }
+          ],
+          "larger_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0,
+              "total": 82
+            },
+            {
+              "accuracy": 0.7073170731707317,
+              "correct": 58,
+              "delta": 0.0001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.7073170731707317,
+              "correct": 58,
+              "delta": 0.001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.7073170731707317,
+              "correct": 58,
+              "delta": 0.01,
+              "total": 82
+            }
+          ]
+        },
+        "first_below_100": {
+          "all": {
+            "accuracy": 0.8641975308641975,
+            "correct": 350,
+            "delta": 0.0001,
+            "total": 405
+          },
+          "branching_ood": {
+            "accuracy": 0.6621621621621622,
+            "correct": 49,
+            "delta": 0.0001,
+            "total": 74
+          },
+          "counterfactual": {
+            "accuracy": 0.9555555555555556,
+            "correct": 129,
+            "delta": 0.0001,
+            "total": 135
+          },
+          "deeper_ood": null,
+          "id": null,
+          "larger_ood": {
+            "accuracy": 0.7073170731707317,
+            "correct": 58,
+            "delta": 0.0001,
+            "total": 82
+          }
+        }
+      },
+      "xy": {
+        "axes": [
+          "x",
+          "y"
+        ],
+        "by_split": {
+          "all": [
+            {
+              "accuracy": 1.0,
+              "correct": 405,
+              "delta": 0.0,
+              "total": 405
+            },
+            {
+              "accuracy": 0.5382716049382716,
+              "correct": 218,
+              "delta": 0.0001,
+              "total": 405
+            },
+            {
+              "accuracy": 0.5382716049382716,
+              "correct": 218,
+              "delta": 0.001,
+              "total": 405
+            },
+            {
+              "accuracy": 0.5382716049382716,
+              "correct": 218,
+              "delta": 0.01,
+              "total": 405
+            }
+          ],
+          "branching_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 74,
+              "delta": 0.0,
+              "total": 74
+            },
+            {
+              "accuracy": 0.3918918918918919,
+              "correct": 29,
+              "delta": 0.0001,
+              "total": 74
+            },
+            {
+              "accuracy": 0.3918918918918919,
+              "correct": 29,
+              "delta": 0.001,
+              "total": 74
+            },
+            {
+              "accuracy": 0.3918918918918919,
+              "correct": 29,
+              "delta": 0.01,
+              "total": 74
+            }
+          ],
+          "counterfactual": [
+            {
+              "accuracy": 1.0,
+              "correct": 135,
+              "delta": 0.0,
+              "total": 135
+            },
+            {
+              "accuracy": 0.7925925925925926,
+              "correct": 107,
+              "delta": 0.0001,
+              "total": 135
+            },
+            {
+              "accuracy": 0.7925925925925926,
+              "correct": 107,
+              "delta": 0.001,
+              "total": 135
+            },
+            {
+              "accuracy": 0.7925925925925926,
+              "correct": 107,
+              "delta": 0.01,
+              "total": 135
+            }
+          ],
+          "deeper_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0,
+              "total": 82
+            },
+            {
+              "accuracy": 0.43902439024390244,
+              "correct": 36,
+              "delta": 0.0001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.43902439024390244,
+              "correct": 36,
+              "delta": 0.001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.43902439024390244,
+              "correct": 36,
+              "delta": 0.01,
+              "total": 82
+            }
+          ],
+          "id": [
+            {
+              "accuracy": 1.0,
+              "correct": 32,
+              "delta": 0.0,
+              "total": 32
+            },
+            {
+              "accuracy": 0.34375,
+              "correct": 11,
+              "delta": 0.0001,
+              "total": 32
+            },
+            {
+              "accuracy": 0.34375,
+              "correct": 11,
+              "delta": 0.001,
+              "total": 32
+            },
+            {
+              "accuracy": 0.34375,
+              "correct": 11,
+              "delta": 0.01,
+              "total": 32
+            }
+          ],
+          "larger_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0,
+              "total": 82
+            },
+            {
+              "accuracy": 0.4268292682926829,
+              "correct": 35,
+              "delta": 0.0001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.4268292682926829,
+              "correct": 35,
+              "delta": 0.001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.4268292682926829,
+              "correct": 35,
+              "delta": 0.01,
+              "total": 82
+            }
+          ]
+        },
+        "first_below_100": {
+          "all": {
+            "accuracy": 0.5382716049382716,
+            "correct": 218,
+            "delta": 0.0001,
+            "total": 405
+          },
+          "branching_ood": {
+            "accuracy": 0.3918918918918919,
+            "correct": 29,
+            "delta": 0.0001,
+            "total": 74
+          },
+          "counterfactual": {
+            "accuracy": 0.7925925925925926,
+            "correct": 107,
+            "delta": 0.0001,
+            "total": 135
+          },
+          "deeper_ood": {
+            "accuracy": 0.43902439024390244,
+            "correct": 36,
+            "delta": 0.0001,
+            "total": 82
+          },
+          "id": {
+            "accuracy": 0.34375,
+            "correct": 11,
+            "delta": 0.0001,
+            "total": 32
+          },
+          "larger_ood": {
+            "accuracy": 0.4268292682926829,
+            "correct": 35,
+            "delta": 0.0001,
+            "total": 82
+          }
+        }
+      },
+      "y_only": {
+        "axes": [
+          "y"
+        ],
+        "by_split": {
+          "all": [
+            {
+              "accuracy": 1.0,
+              "correct": 405,
+              "delta": 0.0,
+              "total": 405
+            },
+            {
+              "accuracy": 0.5382716049382716,
+              "correct": 218,
+              "delta": 0.0001,
+              "total": 405
+            },
+            {
+              "accuracy": 0.5382716049382716,
+              "correct": 218,
+              "delta": 0.001,
+              "total": 405
+            },
+            {
+              "accuracy": 0.5382716049382716,
+              "correct": 218,
+              "delta": 0.01,
+              "total": 405
+            }
+          ],
+          "branching_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 74,
+              "delta": 0.0,
+              "total": 74
+            },
+            {
+              "accuracy": 0.3918918918918919,
+              "correct": 29,
+              "delta": 0.0001,
+              "total": 74
+            },
+            {
+              "accuracy": 0.3918918918918919,
+              "correct": 29,
+              "delta": 0.001,
+              "total": 74
+            },
+            {
+              "accuracy": 0.3918918918918919,
+              "correct": 29,
+              "delta": 0.01,
+              "total": 74
+            }
+          ],
+          "counterfactual": [
+            {
+              "accuracy": 1.0,
+              "correct": 135,
+              "delta": 0.0,
+              "total": 135
+            },
+            {
+              "accuracy": 0.7925925925925926,
+              "correct": 107,
+              "delta": 0.0001,
+              "total": 135
+            },
+            {
+              "accuracy": 0.7925925925925926,
+              "correct": 107,
+              "delta": 0.001,
+              "total": 135
+            },
+            {
+              "accuracy": 0.7925925925925926,
+              "correct": 107,
+              "delta": 0.01,
+              "total": 135
+            }
+          ],
+          "deeper_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0,
+              "total": 82
+            },
+            {
+              "accuracy": 0.43902439024390244,
+              "correct": 36,
+              "delta": 0.0001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.43902439024390244,
+              "correct": 36,
+              "delta": 0.001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.43902439024390244,
+              "correct": 36,
+              "delta": 0.01,
+              "total": 82
+            }
+          ],
+          "id": [
+            {
+              "accuracy": 1.0,
+              "correct": 32,
+              "delta": 0.0,
+              "total": 32
+            },
+            {
+              "accuracy": 0.34375,
+              "correct": 11,
+              "delta": 0.0001,
+              "total": 32
+            },
+            {
+              "accuracy": 0.34375,
+              "correct": 11,
+              "delta": 0.001,
+              "total": 32
+            },
+            {
+              "accuracy": 0.34375,
+              "correct": 11,
+              "delta": 0.01,
+              "total": 32
+            }
+          ],
+          "larger_ood": [
+            {
+              "accuracy": 1.0,
+              "correct": 82,
+              "delta": 0.0,
+              "total": 82
+            },
+            {
+              "accuracy": 0.4268292682926829,
+              "correct": 35,
+              "delta": 0.0001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.4268292682926829,
+              "correct": 35,
+              "delta": 0.001,
+              "total": 82
+            },
+            {
+              "accuracy": 0.4268292682926829,
+              "correct": 35,
+              "delta": 0.01,
+              "total": 82
+            }
+          ]
+        },
+        "first_below_100": {
+          "all": {
+            "accuracy": 0.5382716049382716,
+            "correct": 218,
+            "delta": 0.0001,
+            "total": 405
+          },
+          "branching_ood": {
+            "accuracy": 0.3918918918918919,
+            "correct": 29,
+            "delta": 0.0001,
+            "total": 74
+          },
+          "counterfactual": {
+            "accuracy": 0.7925925925925926,
+            "correct": 107,
+            "delta": 0.0001,
+            "total": 135
+          },
+          "deeper_ood": {
+            "accuracy": 0.43902439024390244,
+            "correct": 36,
+            "delta": 0.0001,
+            "total": 82
+          },
+          "id": {
+            "accuracy": 0.34375,
+            "correct": 11,
+            "delta": 0.0001,
+            "total": 32
+          },
+          "larger_ood": {
+            "accuracy": 0.4268292682926829,
+            "correct": 35,
+            "delta": 0.0001,
+            "total": 82
+          }
+        }
+      }
+    }
+  },
+  "interpretation": {
+    "geometry": "strict primitive extraction is brittle to non-zero y jitter and x jitter that opens microscopic support-width gaps",
+    "relations": "relation flips measure discrete primitive extraction errors after object geometry is otherwise perfect"
+  },
+  "quick": true,
+  "relation_flip_noise": {
+    "by_split": {
+      "all": [
+        {
+          "accuracy": 1.0,
+          "correct": 405,
+          "probability": 0.0,
+          "total": 405
+        },
+        {
+          "accuracy": 0.9654320987654321,
+          "correct": 391,
+          "probability": 0.01,
+          "total": 405
+        },
+        {
+          "accuracy": 0.8444444444444444,
+          "correct": 342,
+          "probability": 0.05,
+          "total": 405
+        },
+        {
+          "accuracy": 0.7975308641975308,
+          "correct": 323,
+          "probability": 0.1,
+          "total": 405
+        }
+      ],
+      "branching_ood": [
+        {
+          "accuracy": 1.0,
+          "correct": 74,
+          "probability": 0.0,
+          "total": 74
+        },
+        {
+          "accuracy": 0.9594594594594594,
+          "correct": 71,
+          "probability": 0.01,
+          "total": 74
+        },
+        {
+          "accuracy": 0.7837837837837838,
+          "correct": 58,
+          "probability": 0.05,
+          "total": 74
+        },
+        {
+          "accuracy": 0.7837837837837838,
+          "correct": 58,
+          "probability": 0.1,
+          "total": 74
+        }
+      ],
+      "counterfactual": [
+        {
+          "accuracy": 1.0,
+          "correct": 135,
+          "probability": 0.0,
+          "total": 135
+        },
+        {
+          "accuracy": 1.0,
+          "correct": 135,
+          "probability": 0.01,
+          "total": 135
+        },
+        {
+          "accuracy": 0.9037037037037037,
+          "correct": 122,
+          "probability": 0.05,
+          "total": 135
+        },
+        {
+          "accuracy": 0.7925925925925926,
+          "correct": 107,
+          "probability": 0.1,
+          "total": 135
+        }
+      ],
+      "deeper_ood": [
+        {
+          "accuracy": 1.0,
+          "correct": 82,
+          "probability": 0.0,
+          "total": 82
+        },
+        {
+          "accuracy": 0.926829268292683,
+          "correct": 76,
+          "probability": 0.01,
+          "total": 82
+        },
+        {
+          "accuracy": 0.8658536585365854,
+          "correct": 71,
+          "probability": 0.05,
+          "total": 82
+        },
+        {
+          "accuracy": 0.7317073170731707,
+          "correct": 60,
+          "probability": 0.1,
+          "total": 82
+        }
+      ],
+      "id": [
+        {
+          "accuracy": 1.0,
+          "correct": 32,
+          "probability": 0.0,
+          "total": 32
+        },
+        {
+          "accuracy": 1.0,
+          "correct": 32,
+          "probability": 0.01,
+          "total": 32
+        },
+        {
+          "accuracy": 0.90625,
+          "correct": 29,
+          "probability": 0.05,
+          "total": 32
+        },
+        {
+          "accuracy": 0.90625,
+          "correct": 29,
+          "probability": 0.1,
+          "total": 32
+        }
+      ],
+      "larger_ood": [
+        {
+          "accuracy": 1.0,
+          "correct": 82,
+          "probability": 0.0,
+          "total": 82
+        },
+        {
+          "accuracy": 0.9390243902439024,
+          "correct": 77,
+          "probability": 0.01,
+          "total": 82
+        },
+        {
+          "accuracy": 0.7560975609756098,
+          "correct": 62,
+          "probability": 0.05,
+          "total": 82
+        },
+        {
+          "accuracy": 0.8414634146341463,
+          "correct": 69,
+          "probability": 0.1,
+          "total": 82
+        }
+      ]
+    },
+    "first_below_100": {
+      "all": {
+        "accuracy": 0.9654320987654321,
+        "correct": 391,
+        "probability": 0.01,
+        "total": 405
+      },
+      "branching_ood": {
+        "accuracy": 0.9594594594594594,
+        "correct": 71,
+        "probability": 0.01,
+        "total": 74
+      },
+      "counterfactual": {
+        "accuracy": 0.9037037037037037,
+        "correct": 122,
+        "probability": 0.05,
+        "total": 135
+      },
+      "deeper_ood": {
+        "accuracy": 0.926829268292683,
+        "correct": 76,
+        "probability": 0.01,
+        "total": 82
+      },
+      "id": {
+        "accuracy": 0.90625,
+        "correct": 29,
+        "probability": 0.05,
+        "total": 32
+      },
+      "larger_ood": {
+        "accuracy": 0.9390243902439024,
+        "correct": 77,
+        "probability": 0.01,
+        "total": 82
+      }
+    },
+    "probabilities": [
+      0.0,
+      0.01,
+      0.05,
+      0.1
+    ]
+  },
+  "results_path": "experiments/exp88_support_noisy_relations_data/results_quick.json",
+  "splits": {
+    "branching_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 74,
+      "scenes": 12
+    },
+    "counterfactual": {
+      "interventions": [
+        "remove"
+      ],
+      "objects": 135,
+      "scenes": 24
+    },
+    "deeper_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 82,
+      "scenes": 12
+    },
+    "id": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 32,
+      "scenes": 12
+    },
+    "larger_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 82,
+      "scenes": 12
+    }
+  }
+}
