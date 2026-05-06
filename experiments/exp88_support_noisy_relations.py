@@ -19,7 +19,7 @@ from typing import Iterable, Sequence
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from experiments.exp85_support_tl import PrimitiveRelations, extract_primitives, infer_stability
+from experiments.exp85_support_tl import PrimitiveRelations, SupportTolerance, extract_primitives, infer_stability
 from experiments.exp87_support_eval import EvalConfig, make_splits
 
 
@@ -39,6 +39,8 @@ class NoiseConfig:
     eval_scenes: int = 80
     geometry_deltas: tuple[float, ...] = (0.0, 0.0001, 0.001, 0.005, 0.01, 0.05)
     relation_flip_probabilities: tuple[float, ...] = (0.0, 0.001, 0.005, 0.01, 0.02, 0.05, 0.1)
+    tolerant_contact_tolerance: float = 0.001
+    tolerant_horizontal_tolerance: float = 0.001
 
     @classmethod
     def for_mode(cls, quick: bool) -> "NoiseConfig":
@@ -256,6 +258,7 @@ def _geometry_noise_mode(
     axes: Sequence[str],
     seed: int,
     mode_name: str,
+    tolerance: SupportTolerance | None = None,
 ) -> dict[str, object]:
     by_split: dict[str, list[dict[str, float | int]]] = {}
     for split, scenes in eval_splits.items():
@@ -269,7 +272,7 @@ def _geometry_noise_mode(
                     seed=_seed_for(seed, f"geometry:{mode_name}", split, index, delta),
                     axes=axes,
                 )
-                predictions.append(infer_stability(noisy_objects, scene["intervention"]).labels)
+                predictions.append(infer_stability(noisy_objects, scene["intervention"], tolerance=tolerance).labels)
             rows.append({"delta": delta, **object_accuracy(scenes, predictions)})
         by_split[split] = rows
 
@@ -285,11 +288,12 @@ def evaluate_geometry_noise(
     eval_splits: dict[str, list[dict[str, object]]],
     deltas: Sequence[float],
     seed: int,
+    tolerance: SupportTolerance | None = None,
 ) -> dict[str, object]:
     return {
         "deltas": list(deltas),
         "modes": {
-            mode_name: _geometry_noise_mode(eval_splits, deltas, axes, seed, mode_name)
+            mode_name: _geometry_noise_mode(eval_splits, deltas, axes, seed, mode_name, tolerance=tolerance)
             for mode_name, axes in GEOMETRY_MODES.items()
         },
     }
@@ -336,6 +340,15 @@ def _eval_splits(config: NoiseConfig) -> dict[str, list[dict[str, object]]]:
 def run_noise_evaluation(config: NoiseConfig, output_path: Path | None = None) -> dict[str, object]:
     eval_splits = _eval_splits(config)
     geometry = evaluate_geometry_noise(eval_splits, config.geometry_deltas, config.seed)
+    tolerant_geometry = evaluate_geometry_noise(
+        eval_splits,
+        config.geometry_deltas,
+        config.seed,
+        tolerance=SupportTolerance(
+            contact=config.tolerant_contact_tolerance,
+            horizontal=config.tolerant_horizontal_tolerance,
+        ),
+    )
     relation_flips = evaluate_relation_flip_noise(eval_splits, config.relation_flip_probabilities, config.seed + 1000)
 
     results = {
@@ -351,6 +364,13 @@ def run_noise_evaluation(config: NoiseConfig, output_path: Path | None = None) -
             for split, scenes in eval_splits.items()
         },
         "geometry_noise": geometry,
+        "tolerant_geometry_noise": {
+            "tolerance": {
+                "contact": config.tolerant_contact_tolerance,
+                "horizontal": config.tolerant_horizontal_tolerance,
+            },
+            **tolerant_geometry,
+        },
         "relation_flip_noise": relation_flips,
         "interpretation": {
             "geometry": "strict primitive extraction is brittle to non-zero y jitter and x jitter that opens microscopic support-width gaps",

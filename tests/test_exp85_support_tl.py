@@ -1,5 +1,5 @@
 from experiments.exp84_support_data import compute_labels, generate_dataset
-from experiments.exp85_support_tl import extract_primitives, infer_stability
+from experiments.exp85_support_tl import SupportTolerance, extract_primitives, infer_stability
 
 
 def test_relation_extractor_hand_built_near_misses():
@@ -8,6 +8,7 @@ def test_relation_extractor_hand_built_near_misses():
         {"id": "top", "x": 0.0, "y": 1.0, "w": 2.0, "h": 1.0},
         {"id": "gap", "x": 0.0, "y": 2.1, "w": 2.0, "h": 1.0},
         {"id": "side", "x": 3.0, "y": 1.0, "w": 1.0, "h": 1.0},
+        {"id": "edge", "x": 2.0, "y": 1.0, "w": 1.0, "h": 1.0},
     ]
 
     rels = extract_primitives(objects)
@@ -19,6 +20,8 @@ def test_relation_extractor_hand_built_near_misses():
     assert ("gap", "top") not in rels.touching
     assert ("side", "ground") not in rels.horiz_overlap
     assert ("side", "ground") not in rels.touching
+    assert ("edge", "ground") not in rels.horiz_overlap
+    assert ("edge", "ground") not in rels.touching
 
 
 def test_single_block_on_ground_is_stable():
@@ -87,3 +90,44 @@ def test_generator_parity_on_removal_retraction_samples():
         removed_id = scene["intervention"]["object_id"]
         assert removed_id in result.primitives.removed
         assert result.labels[removed_id] == "falls"
+
+
+def test_tolerant_extraction_recovers_tiny_vertical_contact_jitter():
+    objects = [
+        {"id": "o0", "x": 0.0, "y": 0.00005, "w": 2.0, "h": 1.0},
+        {"id": "o1", "x": 0.0, "y": 1.00010, "w": 2.0, "h": 1.0},
+    ]
+
+    strict = infer_stability(objects)
+    tolerant = infer_stability(objects, tolerance=SupportTolerance(contact=0.001, horizontal=0.001))
+
+    assert strict.labels == {"o0": "falls", "o1": "falls"}
+    assert tolerant.labels == {"o0": "stable", "o1": "stable"}
+    assert ("o1", "o0") in tolerant.primitives.touching
+
+
+def test_tolerant_extraction_recovers_tiny_horizontal_support_gap():
+    objects = [
+        {"id": "o0", "x": 0.0, "y": 0.0, "w": 0.9999, "h": 1.0},
+        {"id": "o1", "x": 1.0001, "y": 0.0, "w": 0.9999, "h": 1.0},
+        {"id": "o2", "x": 0.0, "y": 1.0, "w": 2.0, "h": 1.0},
+    ]
+
+    strict = infer_stability(objects)
+    tolerant = infer_stability(objects, tolerance=SupportTolerance(contact=0.001, horizontal=0.001))
+
+    assert strict.labels["o2"] == "falls"
+    assert tolerant.labels["o2"] == "stable"
+    assert {("o0", "o2"), ("o1", "o2")} <= tolerant.supports
+
+
+def test_tolerant_extraction_rejects_obvious_gap():
+    objects = [
+        {"id": "o0", "x": 0.0, "y": 0.0, "w": 0.8, "h": 1.0},
+        {"id": "o1", "x": 1.2, "y": 0.0, "w": 0.8, "h": 1.0},
+        {"id": "o2", "x": 0.0, "y": 1.0, "w": 2.0, "h": 1.0},
+    ]
+
+    result = infer_stability(objects, tolerance=SupportTolerance(contact=0.001, horizontal=0.05))
+
+    assert result.labels["o2"] == "falls"
