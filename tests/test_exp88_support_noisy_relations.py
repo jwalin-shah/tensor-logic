@@ -73,7 +73,7 @@ def test_run_noise_evaluation_schema_and_first_drop(tmp_path):
         quick=True,
         seed=123,
         eval_scenes=2,
-        geometry_deltas=(0.0, 0.001),
+        geometry_deltas=(0.0, 0.0001),
         relation_flip_probabilities=(0.0, 1.0),
     )
 
@@ -82,5 +82,8 @@ def test_run_noise_evaluation_schema_and_first_drop(tmp_path):
     assert output.exists()
     assert results["experiment"] == "exp88_support_noisy_relations"
     assert set(results["geometry_noise"]["modes"]) == {"x_only", "y_only", "xy"}
-    assert results["geometry_noise"]["modes"]["y_only"]["first_below_100"]["all"]["delta"] == 0.001
+    assert set(results["tolerant_geometry_noise"]["modes"]) == {"x_only", "y_only", "xy"}
+    assert results["tolerant_geometry_noise"]["tolerance"] == {"contact": 0.001, "horizontal": 0.001}
+    assert results["geometry_noise"]["modes"]["y_only"]["first_below_100"]["all"]["delta"] == 0.0001
+    assert results["tolerant_geometry_noise"]["modes"]["y_only"]["first_below_100"]["all"] is None
     assert results["relation_flip_noise"]["first_below_100"]["all"]["probability"] == 1.0

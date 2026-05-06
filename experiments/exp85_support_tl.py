@@ -16,6 +16,18 @@ Fact = Tuple[str, ...]
 
 
 @dataclass(frozen=True)
+class SupportTolerance:
+    contact: float = EPS
+    horizontal: float = 0.0
+
+    def __post_init__(self) -> None:
+        if self.contact < 0:
+            raise ValueError("contact tolerance must be non-negative")
+        if self.horizontal < 0:
+            raise ValueError("horizontal tolerance must be non-negative")
+
+
+@dataclass(frozen=True)
 class ProofTrace:
     fact: Fact
     rule: str
@@ -60,13 +72,23 @@ def _interval(obj: dict[str, object]) -> tuple[float, float]:
     return x, x + float(obj["w"])
 
 
-def _overlap_interval(a: dict[str, object], b: dict[str, object]) -> tuple[float, float] | None:
+def _as_tolerance(tolerance: SupportTolerance | None) -> SupportTolerance:
+    return tolerance if tolerance is not None else SupportTolerance()
+
+
+def _overlap_interval(
+    a: dict[str, object],
+    b: dict[str, object],
+    tolerance: float = 0.0,
+) -> tuple[float, float] | None:
     a0, a1 = _interval(a)
     b0, b1 = _interval(b)
     lo = max(a0, b0)
     hi = min(a1, b1)
     if hi <= lo:
-        return None
+        if tolerance <= 0.0 or lo - hi > tolerance:
+            return None
+        return lo, lo
     return lo, hi
 
 
@@ -84,15 +106,15 @@ def _merge_intervals(intervals: Iterable[tuple[float, float]]) -> list[tuple[flo
     return merged
 
 
-def _covers_width(intervals: Iterable[tuple[float, float]], left: float, right: float) -> bool:
+def _covers_width(intervals: Iterable[tuple[float, float]], left: float, right: float, tolerance: float = EPS) -> bool:
     pos = left
     for lo, hi in _merge_intervals(intervals):
-        if lo > pos + EPS:
+        if lo > pos + tolerance:
             return False
         pos = max(pos, hi)
-        if pos >= right - EPS:
+        if pos >= right - tolerance:
             return True
-    return pos >= right - EPS
+    return pos >= right - tolerance
 
 
 def _removed_id(intervention: Optional[dict[str, str]]) -> str | None:
@@ -116,6 +138,7 @@ def _objects_by_id(objects: Sequence[dict[str, object]]) -> dict[str, dict[str, 
 def extract_primitives(
     objects: Sequence[dict[str, object]],
     intervention: Optional[dict[str, str]] = None,
+    tolerance: SupportTolerance | None = None,
 ) -> PrimitiveRelations:
     """Extract primitive relations from perfect object geometry.
 
@@ -123,6 +146,7 @@ def extract_primitives(
     `touching(upper, lower)` and `above(upper, lower)`.
     """
 
+    tol = _as_tolerance(tolerance)
     by_id = _objects_by_id(objects)
     removed = _removed_id(intervention)
     if removed is not None and removed not in by_id:
@@ -136,7 +160,7 @@ def extract_primitives(
 
     for obj in active:
         oid = str(obj["id"])
-        if abs(float(obj["y"])) <= EPS:
+        if abs(float(obj["y"])) <= tol.contact:
             on_ground.add(oid)
 
     for upper in active:
@@ -145,12 +169,12 @@ def extract_primitives(
             lower_id = str(lower["id"])
             if upper_id == lower_id:
                 continue
-            if _overlap_interval(upper, lower) is not None:
+            if _overlap_interval(upper, lower, tol.horizontal) is not None:
                 horiz_overlap.add((upper_id, lower_id))
-            if float(upper["y"]) >= float(lower["y"]) + float(lower["h"]) - EPS:
+            if float(upper["y"]) >= float(lower["y"]) + float(lower["h"]) - tol.contact:
                 above.add((upper_id, lower_id))
             lower_top = float(lower["y"]) + float(lower["h"])
-            if abs(float(upper["y"]) - lower_top) <= EPS and _overlap_interval(upper, lower) is not None:
+            if abs(float(upper["y"]) - lower_top) <= tol.contact and _overlap_interval(upper, lower, tol.horizontal) is not None:
                 touching.add((upper_id, lower_id))
 
     return PrimitiveRelations(
@@ -165,13 +189,15 @@ def extract_primitives(
 def infer_stability(
     objects: Sequence[dict[str, object]],
     intervention: Optional[dict[str, str]] = None,
+    tolerance: SupportTolerance | None = None,
 ) -> StabilityResult:
+    tol = _as_tolerance(tolerance)
     by_id = _objects_by_id(objects)
     removed = _removed_id(intervention)
     if removed is not None and removed not in by_id:
         raise ValueError(f"unknown remove target: {removed}")
 
-    primitives = extract_primitives(objects, intervention)
+    primitives = extract_primitives(objects, intervention, tolerance=tol)
     active_ids = [oid for oid in by_id if oid not in primitives.removed]
     stable: set[str] = set()
     supports: set[tuple[str, str]] = set()
@@ -204,7 +230,7 @@ def infer_stability(
                     continue
                 if (oid, sid) not in primitives.horiz_overlap:
                     continue
-                overlap = _overlap_interval(obj, supporter)
+                overlap = _overlap_interval(obj, supporter, tol.horizontal)
                 if overlap is None:
                     continue
                 intervals.append(overlap)
@@ -223,7 +249,7 @@ def infer_stability(
                 support_children.append(support_proof)
 
             left, right = _interval(obj)
-            if _covers_width(intervals, left, right):
+            if _covers_width(intervals, left, right, max(EPS, tol.horizontal)):
                 stable.add(oid)
                 proofs[("stable", oid)] = ProofTrace(
                     ("stable", oid),
