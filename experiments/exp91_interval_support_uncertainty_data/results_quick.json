@@ -1,0 +1,5109 @@
+{
+  "config": {
+    "band_multipliers": [
+      1.0,
+      2.0
+    ],
+    "confidence_threshold": 0.6666666666666666,
+    "contact_tolerance": 0.001,
+    "eval_scenes": 6,
+    "geometry_deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "horizontal_tolerance": 0.001,
+    "near_multiplier": 20.0,
+    "quick": true,
+    "seed": 9100
+  },
+  "experiment": "exp91_interval_support_uncertainty",
+  "interpretation": {
+    "accepted_prediction": "a point fall is accepted only when no stable proof is feasible inside the interval band",
+    "interval_feasibility": "coordinate bands are used as an abstain/recover signal around the unchanged hard TL point prediction"
+  },
+  "interval_noise": {
+    "band_multipliers": [
+      1.0,
+      2.0
+    ],
+    "deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "modes": {
+      "x_only": {
+        "all": [
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              }
+            ],
+            "delta": 0.0
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              }
+            ],
+            "delta": 0.0001
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 349,
+                  "coverage": 0.94579945799458,
+                  "total": 349
+                },
+                "point": {
+                  "accuracy": 0.94579945799458,
+                  "correct": 349,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 325,
+                  "coverage": 0.8807588075880759,
+                  "total": 325
+                },
+                "triage": {
+                  "false_falls": 20,
+                  "false_falls_interval_flagged": 20,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 20,
+                  "interval_abstained_wrong": 20,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 44,
+                  "primitive_abstained_wrong": 20,
+                  "wrong_before": 20
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 349,
+                  "coverage": 0.94579945799458,
+                  "total": 349
+                },
+                "point": {
+                  "accuracy": 0.94579945799458,
+                  "correct": 349,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 325,
+                  "coverage": 0.8807588075880759,
+                  "total": 325
+                },
+                "triage": {
+                  "false_falls": 20,
+                  "false_falls_interval_flagged": 20,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 20,
+                  "interval_abstained_wrong": 20,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 44,
+                  "primitive_abstained_wrong": 20,
+                  "wrong_before": 20
+                }
+              }
+            ],
+            "delta": 0.001
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 315,
+                  "coverage": 0.8536585365853658,
+                  "total": 315
+                },
+                "point": {
+                  "accuracy": 0.8536585365853658,
+                  "correct": 315,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 0.9752321981424149,
+                  "correct": 315,
+                  "coverage": 0.8753387533875339,
+                  "total": 323
+                },
+                "triage": {
+                  "false_falls": 54,
+                  "false_falls_interval_flagged": 54,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 54,
+                  "interval_abstained_wrong": 54,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 46,
+                  "primitive_abstained_wrong": 46,
+                  "wrong_before": 54
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 315,
+                  "coverage": 0.8536585365853658,
+                  "total": 315
+                },
+                "point": {
+                  "accuracy": 0.8536585365853658,
+                  "correct": 315,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 0.9752321981424149,
+                  "correct": 315,
+                  "coverage": 0.8753387533875339,
+                  "total": 323
+                },
+                "triage": {
+                  "false_falls": 54,
+                  "false_falls_interval_flagged": 54,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 54,
+                  "interval_abstained_wrong": 54,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 46,
+                  "primitive_abstained_wrong": 46,
+                  "wrong_before": 54
+                }
+              }
+            ],
+            "delta": 0.01
+          }
+        ],
+        "axes": [
+          "x"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 68,
+                    "coverage": 0.8292682926829268,
+                    "total": 68
+                  },
+                  "point": {
+                    "accuracy": 0.8292682926829268,
+                    "correct": 68,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 59,
+                    "coverage": 0.7195121951219512,
+                    "total": 59
+                  },
+                  "triage": {
+                    "false_falls": 14,
+                    "false_falls_interval_flagged": 14,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 14,
+                    "interval_abstained_wrong": 14,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 23,
+                    "primitive_abstained_wrong": 14,
+                    "wrong_before": 14
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 68,
+                    "coverage": 0.8292682926829268,
+                    "total": 68
+                  },
+                  "point": {
+                    "accuracy": 0.8292682926829268,
+                    "correct": 68,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 59,
+                    "coverage": 0.7195121951219512,
+                    "total": 59
+                  },
+                  "triage": {
+                    "false_falls": 14,
+                    "false_falls_interval_flagged": 14,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 14,
+                    "interval_abstained_wrong": 14,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 23,
+                    "primitive_abstained_wrong": 14,
+                    "wrong_before": 14
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 53,
+                    "coverage": 0.6463414634146342,
+                    "total": 53
+                  },
+                  "point": {
+                    "accuracy": 0.6463414634146342,
+                    "correct": 53,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.8983050847457628,
+                    "correct": 53,
+                    "coverage": 0.7195121951219512,
+                    "total": 59
+                  },
+                  "triage": {
+                    "false_falls": 29,
+                    "false_falls_interval_flagged": 29,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 29,
+                    "interval_abstained_wrong": 29,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 23,
+                    "primitive_abstained_wrong": 23,
+                    "wrong_before": 29
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 53,
+                    "coverage": 0.6463414634146342,
+                    "total": 53
+                  },
+                  "point": {
+                    "accuracy": 0.6463414634146342,
+                    "correct": 53,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.8983050847457628,
+                    "correct": 53,
+                    "coverage": 0.7195121951219512,
+                    "total": 59
+                  },
+                  "triage": {
+                    "false_falls": 29,
+                    "false_falls_interval_flagged": 29,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 29,
+                    "interval_abstained_wrong": 29,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 23,
+                    "primitive_abstained_wrong": 23,
+                    "wrong_before": 29
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "counterfactual": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 123,
+                    "coverage": 0.984,
+                    "total": 123
+                  },
+                  "point": {
+                    "accuracy": 0.984,
+                    "correct": 123,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 122,
+                    "coverage": 0.976,
+                    "total": 122
+                  },
+                  "triage": {
+                    "false_falls": 2,
+                    "false_falls_interval_flagged": 2,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 2,
+                    "interval_abstained_wrong": 2,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 3,
+                    "primitive_abstained_wrong": 2,
+                    "wrong_before": 2
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 123,
+                    "coverage": 0.984,
+                    "total": 123
+                  },
+                  "point": {
+                    "accuracy": 0.984,
+                    "correct": 123,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 122,
+                    "coverage": 0.976,
+                    "total": 122
+                  },
+                  "triage": {
+                    "false_falls": 2,
+                    "false_falls_interval_flagged": 2,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 2,
+                    "interval_abstained_wrong": 2,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 3,
+                    "primitive_abstained_wrong": 2,
+                    "wrong_before": 2
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 120,
+                    "coverage": 0.96,
+                    "total": 120
+                  },
+                  "point": {
+                    "accuracy": 0.96,
+                    "correct": 120,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9836065573770492,
+                    "correct": 120,
+                    "coverage": 0.976,
+                    "total": 122
+                  },
+                  "triage": {
+                    "false_falls": 5,
+                    "false_falls_interval_flagged": 5,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 5,
+                    "interval_abstained_wrong": 5,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 3,
+                    "primitive_abstained_wrong": 3,
+                    "wrong_before": 5
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 120,
+                    "coverage": 0.96,
+                    "total": 120
+                  },
+                  "point": {
+                    "accuracy": 0.96,
+                    "correct": 120,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9836065573770492,
+                    "correct": 120,
+                    "coverage": 0.976,
+                    "total": 122
+                  },
+                  "triage": {
+                    "false_falls": 5,
+                    "false_falls_interval_flagged": 5,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 5,
+                    "interval_abstained_wrong": 5,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 3,
+                    "primitive_abstained_wrong": 3,
+                    "wrong_before": 5
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "deeper_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "id": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "larger_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 68,
+                    "coverage": 0.9444444444444444,
+                    "total": 68
+                  },
+                  "point": {
+                    "accuracy": 0.9444444444444444,
+                    "correct": 68,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 54,
+                    "coverage": 0.75,
+                    "total": 54
+                  },
+                  "triage": {
+                    "false_falls": 4,
+                    "false_falls_interval_flagged": 4,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 4,
+                    "interval_abstained_wrong": 4,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 18,
+                    "primitive_abstained_wrong": 4,
+                    "wrong_before": 4
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 68,
+                    "coverage": 0.9444444444444444,
+                    "total": 68
+                  },
+                  "point": {
+                    "accuracy": 0.9444444444444444,
+                    "correct": 68,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 54,
+                    "coverage": 0.75,
+                    "total": 54
+                  },
+                  "triage": {
+                    "false_falls": 4,
+                    "false_falls_interval_flagged": 4,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 4,
+                    "interval_abstained_wrong": 4,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 18,
+                    "primitive_abstained_wrong": 4,
+                    "wrong_before": 4
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 52,
+                    "coverage": 0.7222222222222222,
+                    "total": 52
+                  },
+                  "point": {
+                    "accuracy": 0.7222222222222222,
+                    "correct": 52,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 52,
+                    "coverage": 0.7222222222222222,
+                    "total": 52
+                  },
+                  "triage": {
+                    "false_falls": 20,
+                    "false_falls_interval_flagged": 20,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 20,
+                    "interval_abstained_wrong": 20,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 20,
+                    "primitive_abstained_wrong": 20,
+                    "wrong_before": 20
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 52,
+                    "coverage": 0.7222222222222222,
+                    "total": 52
+                  },
+                  "point": {
+                    "accuracy": 0.7222222222222222,
+                    "correct": 52,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 52,
+                    "coverage": 0.7222222222222222,
+                    "total": 52
+                  },
+                  "triage": {
+                    "false_falls": 20,
+                    "false_falls_interval_flagged": 20,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 20,
+                    "interval_abstained_wrong": 20,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 20,
+                    "primitive_abstained_wrong": 20,
+                    "wrong_before": 20
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ]
+        }
+      },
+      "xy": {
+        "all": [
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              }
+            ],
+            "delta": 0.0
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              }
+            ],
+            "delta": 0.0001
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 311,
+                  "coverage": 0.8428184281842819,
+                  "total": 311
+                },
+                "point": {
+                  "accuracy": 0.8428184281842819,
+                  "correct": 311,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 225,
+                  "coverage": 0.6097560975609756,
+                  "total": 225
+                },
+                "triage": {
+                  "false_falls": 58,
+                  "false_falls_interval_flagged": 58,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 58,
+                  "interval_abstained_wrong": 58,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 144,
+                  "primitive_abstained_wrong": 58,
+                  "wrong_before": 58
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 311,
+                  "coverage": 0.8428184281842819,
+                  "total": 311
+                },
+                "point": {
+                  "accuracy": 0.8428184281842819,
+                  "correct": 311,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 225,
+                  "coverage": 0.6097560975609756,
+                  "total": 225
+                },
+                "triage": {
+                  "false_falls": 58,
+                  "false_falls_interval_flagged": 58,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 58,
+                  "interval_abstained_wrong": 58,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 144,
+                  "primitive_abstained_wrong": 58,
+                  "wrong_before": 58
+                }
+              }
+            ],
+            "delta": 0.001
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 204,
+                  "coverage": 0.5528455284552846,
+                  "total": 204
+                },
+                "point": {
+                  "accuracy": 0.5528455284552846,
+                  "correct": 204,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 0.9090909090909091,
+                  "correct": 200,
+                  "coverage": 0.5962059620596206,
+                  "total": 220
+                },
+                "triage": {
+                  "false_falls": 165,
+                  "false_falls_interval_flagged": 165,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 165,
+                  "interval_abstained_wrong": 165,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 149,
+                  "primitive_abstained_wrong": 145,
+                  "wrong_before": 165
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 204,
+                  "coverage": 0.5528455284552846,
+                  "total": 204
+                },
+                "point": {
+                  "accuracy": 0.5528455284552846,
+                  "correct": 204,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 0.9090909090909091,
+                  "correct": 200,
+                  "coverage": 0.5962059620596206,
+                  "total": 220
+                },
+                "triage": {
+                  "false_falls": 165,
+                  "false_falls_interval_flagged": 165,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 165,
+                  "interval_abstained_wrong": 165,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 149,
+                  "primitive_abstained_wrong": 145,
+                  "wrong_before": 165
+                }
+              }
+            ],
+            "delta": 0.01
+          }
+        ],
+        "axes": [
+          "x",
+          "y"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 0.7804878048780488,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 0.7804878048780488,
+                    "correct": 64,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 40,
+                    "coverage": 0.4878048780487805,
+                    "total": 40
+                  },
+                  "triage": {
+                    "false_falls": 18,
+                    "false_falls_interval_flagged": 18,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 18,
+                    "interval_abstained_wrong": 18,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 42,
+                    "primitive_abstained_wrong": 18,
+                    "wrong_before": 18
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 0.7804878048780488,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 0.7804878048780488,
+                    "correct": 64,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 40,
+                    "coverage": 0.4878048780487805,
+                    "total": 40
+                  },
+                  "triage": {
+                    "false_falls": 18,
+                    "false_falls_interval_flagged": 18,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 18,
+                    "interval_abstained_wrong": 18,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 42,
+                    "primitive_abstained_wrong": 18,
+                    "wrong_before": 18
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 33,
+                    "coverage": 0.4024390243902439,
+                    "total": 33
+                  },
+                  "point": {
+                    "accuracy": 0.4024390243902439,
+                    "correct": 33,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.8461538461538461,
+                    "correct": 33,
+                    "coverage": 0.47560975609756095,
+                    "total": 39
+                  },
+                  "triage": {
+                    "false_falls": 49,
+                    "false_falls_interval_flagged": 49,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 49,
+                    "interval_abstained_wrong": 49,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 43,
+                    "primitive_abstained_wrong": 43,
+                    "wrong_before": 49
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 33,
+                    "coverage": 0.4024390243902439,
+                    "total": 33
+                  },
+                  "point": {
+                    "accuracy": 0.4024390243902439,
+                    "correct": 33,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.8461538461538461,
+                    "correct": 33,
+                    "coverage": 0.47560975609756095,
+                    "total": 39
+                  },
+                  "triage": {
+                    "false_falls": 49,
+                    "false_falls_interval_flagged": 49,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 49,
+                    "interval_abstained_wrong": 49,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 43,
+                    "primitive_abstained_wrong": 43,
+                    "wrong_before": 49
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "counterfactual": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 119,
+                    "coverage": 0.952,
+                    "total": 119
+                  },
+                  "point": {
+                    "accuracy": 0.952,
+                    "correct": 119,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 105,
+                    "coverage": 0.84,
+                    "total": 105
+                  },
+                  "triage": {
+                    "false_falls": 6,
+                    "false_falls_interval_flagged": 6,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 6,
+                    "interval_abstained_wrong": 6,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 20,
+                    "primitive_abstained_wrong": 6,
+                    "wrong_before": 6
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 119,
+                    "coverage": 0.952,
+                    "total": 119
+                  },
+                  "point": {
+                    "accuracy": 0.952,
+                    "correct": 119,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 105,
+                    "coverage": 0.84,
+                    "total": 105
+                  },
+                  "triage": {
+                    "false_falls": 6,
+                    "false_falls_interval_flagged": 6,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 6,
+                    "interval_abstained_wrong": 6,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 20,
+                    "primitive_abstained_wrong": 6,
+                    "wrong_before": 6
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 99,
+                    "coverage": 0.792,
+                    "total": 99
+                  },
+                  "point": {
+                    "accuracy": 0.792,
+                    "correct": 99,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.98,
+                    "correct": 98,
+                    "coverage": 0.8,
+                    "total": 100
+                  },
+                  "triage": {
+                    "false_falls": 26,
+                    "false_falls_interval_flagged": 26,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 26,
+                    "interval_abstained_wrong": 26,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 25,
+                    "primitive_abstained_wrong": 24,
+                    "wrong_before": 26
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 99,
+                    "coverage": 0.792,
+                    "total": 99
+                  },
+                  "point": {
+                    "accuracy": 0.792,
+                    "correct": 99,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.98,
+                    "correct": 98,
+                    "coverage": 0.8,
+                    "total": 100
+                  },
+                  "triage": {
+                    "false_falls": 26,
+                    "false_falls_interval_flagged": 26,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 26,
+                    "interval_abstained_wrong": 26,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 25,
+                    "primitive_abstained_wrong": 24,
+                    "wrong_before": 26
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "deeper_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "point": {
+                    "accuracy": 0.734375,
+                    "correct": 47,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 29,
+                    "coverage": 0.453125,
+                    "total": 29
+                  },
+                  "triage": {
+                    "false_falls": 17,
+                    "false_falls_interval_flagged": 17,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 17,
+                    "interval_abstained_wrong": 17,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 35,
+                    "primitive_abstained_wrong": 17,
+                    "wrong_before": 17
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "point": {
+                    "accuracy": 0.734375,
+                    "correct": 47,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 29,
+                    "coverage": 0.453125,
+                    "total": 29
+                  },
+                  "triage": {
+                    "false_falls": 17,
+                    "false_falls_interval_flagged": 17,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 17,
+                    "interval_abstained_wrong": 17,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 35,
+                    "primitive_abstained_wrong": 17,
+                    "wrong_before": 17
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 27,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "point": {
+                    "accuracy": 0.421875,
+                    "correct": 27,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9629629629629629,
+                    "correct": 26,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "triage": {
+                    "false_falls": 37,
+                    "false_falls_interval_flagged": 37,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 37,
+                    "interval_abstained_wrong": 37,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 37,
+                    "primitive_abstained_wrong": 36,
+                    "wrong_before": 37
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 27,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "point": {
+                    "accuracy": 0.421875,
+                    "correct": 27,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9629629629629629,
+                    "correct": 26,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "triage": {
+                    "false_falls": 37,
+                    "false_falls_interval_flagged": 37,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 37,
+                    "interval_abstained_wrong": 37,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 37,
+                    "primitive_abstained_wrong": 36,
+                    "wrong_before": 37
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "id": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 25,
+                    "coverage": 0.9615384615384616,
+                    "total": 25
+                  },
+                  "point": {
+                    "accuracy": 0.9615384615384616,
+                    "correct": 25,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 14,
+                    "coverage": 0.5384615384615384,
+                    "total": 14
+                  },
+                  "triage": {
+                    "false_falls": 1,
+                    "false_falls_interval_flagged": 1,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 1,
+                    "interval_abstained_wrong": 1,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 12,
+                    "primitive_abstained_wrong": 1,
+                    "wrong_before": 1
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 25,
+                    "coverage": 0.9615384615384616,
+                    "total": 25
+                  },
+                  "point": {
+                    "accuracy": 0.9615384615384616,
+                    "correct": 25,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 14,
+                    "coverage": 0.5384615384615384,
+                    "total": 14
+                  },
+                  "triage": {
+                    "false_falls": 1,
+                    "false_falls_interval_flagged": 1,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 1,
+                    "interval_abstained_wrong": 1,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 12,
+                    "primitive_abstained_wrong": 1,
+                    "wrong_before": 1
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 11,
+                    "coverage": 0.4230769230769231,
+                    "total": 11
+                  },
+                  "point": {
+                    "accuracy": 0.4230769230769231,
+                    "correct": 11,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9166666666666666,
+                    "correct": 11,
+                    "coverage": 0.46153846153846156,
+                    "total": 12
+                  },
+                  "triage": {
+                    "false_falls": 15,
+                    "false_falls_interval_flagged": 15,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 15,
+                    "interval_abstained_wrong": 15,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 14,
+                    "primitive_abstained_wrong": 14,
+                    "wrong_before": 15
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 11,
+                    "coverage": 0.4230769230769231,
+                    "total": 11
+                  },
+                  "point": {
+                    "accuracy": 0.4230769230769231,
+                    "correct": 11,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9166666666666666,
+                    "correct": 11,
+                    "coverage": 0.46153846153846156,
+                    "total": 12
+                  },
+                  "triage": {
+                    "false_falls": 15,
+                    "false_falls_interval_flagged": 15,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 15,
+                    "interval_abstained_wrong": 15,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 14,
+                    "primitive_abstained_wrong": 14,
+                    "wrong_before": 15
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "larger_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 56,
+                    "coverage": 0.7777777777777778,
+                    "total": 56
+                  },
+                  "point": {
+                    "accuracy": 0.7777777777777778,
+                    "correct": 56,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 37,
+                    "coverage": 0.5138888888888888,
+                    "total": 37
+                  },
+                  "triage": {
+                    "false_falls": 16,
+                    "false_falls_interval_flagged": 16,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 16,
+                    "interval_abstained_wrong": 16,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 35,
+                    "primitive_abstained_wrong": 16,
+                    "wrong_before": 16
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 56,
+                    "coverage": 0.7777777777777778,
+                    "total": 56
+                  },
+                  "point": {
+                    "accuracy": 0.7777777777777778,
+                    "correct": 56,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 37,
+                    "coverage": 0.5138888888888888,
+                    "total": 37
+                  },
+                  "triage": {
+                    "false_falls": 16,
+                    "false_falls_interval_flagged": 16,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 16,
+                    "interval_abstained_wrong": 16,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 35,
+                    "primitive_abstained_wrong": 16,
+                    "wrong_before": 16
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 34,
+                    "coverage": 0.4722222222222222,
+                    "total": 34
+                  },
+                  "point": {
+                    "accuracy": 0.4722222222222222,
+                    "correct": 34,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.7619047619047619,
+                    "correct": 32,
+                    "coverage": 0.5833333333333334,
+                    "total": 42
+                  },
+                  "triage": {
+                    "false_falls": 38,
+                    "false_falls_interval_flagged": 38,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 38,
+                    "interval_abstained_wrong": 38,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 30,
+                    "primitive_abstained_wrong": 28,
+                    "wrong_before": 38
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 34,
+                    "coverage": 0.4722222222222222,
+                    "total": 34
+                  },
+                  "point": {
+                    "accuracy": 0.4722222222222222,
+                    "correct": 34,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.7619047619047619,
+                    "correct": 32,
+                    "coverage": 0.5833333333333334,
+                    "total": 42
+                  },
+                  "triage": {
+                    "false_falls": 38,
+                    "false_falls_interval_flagged": 38,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 38,
+                    "interval_abstained_wrong": 38,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 30,
+                    "primitive_abstained_wrong": 28,
+                    "wrong_before": 38
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ]
+        }
+      },
+      "y_only": {
+        "all": [
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              }
+            ],
+            "delta": 0.0
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "point": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 369,
+                  "coverage": 1.0,
+                  "total": 369
+                },
+                "triage": {
+                  "false_falls": 0,
+                  "false_falls_interval_flagged": 0,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 0,
+                  "interval_abstained_wrong": 0,
+                  "interval_wrong_coverage": 0.0,
+                  "primitive_abstained": 0,
+                  "primitive_abstained_wrong": 0,
+                  "wrong_before": 0
+                }
+              }
+            ],
+            "delta": 0.0001
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 328,
+                  "coverage": 0.8888888888888888,
+                  "total": 328
+                },
+                "point": {
+                  "accuracy": 0.8888888888888888,
+                  "correct": 328,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 233,
+                  "coverage": 0.6314363143631436,
+                  "total": 233
+                },
+                "triage": {
+                  "false_falls": 41,
+                  "false_falls_interval_flagged": 41,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 41,
+                  "interval_abstained_wrong": 41,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 136,
+                  "primitive_abstained_wrong": 41,
+                  "wrong_before": 41
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 328,
+                  "coverage": 0.8888888888888888,
+                  "total": 328
+                },
+                "point": {
+                  "accuracy": 0.8888888888888888,
+                  "correct": 328,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 233,
+                  "coverage": 0.6314363143631436,
+                  "total": 233
+                },
+                "triage": {
+                  "false_falls": 41,
+                  "false_falls_interval_flagged": 41,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 41,
+                  "interval_abstained_wrong": 41,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 136,
+                  "primitive_abstained_wrong": 41,
+                  "wrong_before": 41
+                }
+              }
+            ],
+            "delta": 0.001
+          },
+          {
+            "bands": [
+              {
+                "band_multiplier": 1.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 206,
+                  "coverage": 0.5582655826558266,
+                  "total": 206
+                },
+                "point": {
+                  "accuracy": 0.5582655826558266,
+                  "correct": 206,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 0.8620689655172413,
+                  "correct": 200,
+                  "coverage": 0.6287262872628726,
+                  "total": 232
+                },
+                "triage": {
+                  "false_falls": 163,
+                  "false_falls_interval_flagged": 163,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 163,
+                  "interval_abstained_wrong": 163,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 137,
+                  "primitive_abstained_wrong": 131,
+                  "wrong_before": 163
+                }
+              },
+              {
+                "band_multiplier": 2.0,
+                "interval_feasibility": {
+                  "accuracy": 1.0,
+                  "correct": 206,
+                  "coverage": 0.5582655826558266,
+                  "total": 206
+                },
+                "point": {
+                  "accuracy": 0.5582655826558266,
+                  "correct": 206,
+                  "total": 369
+                },
+                "primitive_confidence": {
+                  "accuracy": 0.8620689655172413,
+                  "correct": 200,
+                  "coverage": 0.6287262872628726,
+                  "total": 232
+                },
+                "triage": {
+                  "false_falls": 163,
+                  "false_falls_interval_flagged": 163,
+                  "false_supports": 0,
+                  "false_supports_interval_flagged": 0,
+                  "interval_abstained": 163,
+                  "interval_abstained_wrong": 163,
+                  "interval_wrong_coverage": 1.0,
+                  "primitive_abstained": 137,
+                  "primitive_abstained_wrong": 131,
+                  "wrong_before": 163
+                }
+              }
+            ],
+            "delta": 0.01
+          }
+        ],
+        "axes": [
+          "y"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 82,
+                    "coverage": 1.0,
+                    "total": 82
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 67,
+                    "coverage": 0.8170731707317073,
+                    "total": 67
+                  },
+                  "point": {
+                    "accuracy": 0.8170731707317073,
+                    "correct": 67,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 38,
+                    "coverage": 0.4634146341463415,
+                    "total": 38
+                  },
+                  "triage": {
+                    "false_falls": 15,
+                    "false_falls_interval_flagged": 15,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 15,
+                    "interval_abstained_wrong": 15,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 44,
+                    "primitive_abstained_wrong": 15,
+                    "wrong_before": 15
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 67,
+                    "coverage": 0.8170731707317073,
+                    "total": 67
+                  },
+                  "point": {
+                    "accuracy": 0.8170731707317073,
+                    "correct": 67,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 38,
+                    "coverage": 0.4634146341463415,
+                    "total": 38
+                  },
+                  "triage": {
+                    "false_falls": 15,
+                    "false_falls_interval_flagged": 15,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 15,
+                    "interval_abstained_wrong": 15,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 44,
+                    "primitive_abstained_wrong": 15,
+                    "wrong_before": 15
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 34,
+                    "coverage": 0.4146341463414634,
+                    "total": 34
+                  },
+                  "point": {
+                    "accuracy": 0.4146341463414634,
+                    "correct": 34,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.5689655172413793,
+                    "correct": 33,
+                    "coverage": 0.7073170731707317,
+                    "total": 58
+                  },
+                  "triage": {
+                    "false_falls": 48,
+                    "false_falls_interval_flagged": 48,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 48,
+                    "interval_abstained_wrong": 48,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 24,
+                    "primitive_abstained_wrong": 23,
+                    "wrong_before": 48
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 34,
+                    "coverage": 0.4146341463414634,
+                    "total": 34
+                  },
+                  "point": {
+                    "accuracy": 0.4146341463414634,
+                    "correct": 34,
+                    "total": 82
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.5689655172413793,
+                    "correct": 33,
+                    "coverage": 0.7073170731707317,
+                    "total": 58
+                  },
+                  "triage": {
+                    "false_falls": 48,
+                    "false_falls_interval_flagged": 48,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 48,
+                    "interval_abstained_wrong": 48,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 24,
+                    "primitive_abstained_wrong": 23,
+                    "wrong_before": 48
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "counterfactual": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 125,
+                    "coverage": 1.0,
+                    "total": 125
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 121,
+                    "coverage": 0.968,
+                    "total": 121
+                  },
+                  "point": {
+                    "accuracy": 0.968,
+                    "correct": 121,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.832,
+                    "total": 104
+                  },
+                  "triage": {
+                    "false_falls": 4,
+                    "false_falls_interval_flagged": 4,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 4,
+                    "interval_abstained_wrong": 4,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 21,
+                    "primitive_abstained_wrong": 4,
+                    "wrong_before": 4
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 121,
+                    "coverage": 0.968,
+                    "total": 121
+                  },
+                  "point": {
+                    "accuracy": 0.968,
+                    "correct": 121,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.832,
+                    "total": 104
+                  },
+                  "triage": {
+                    "false_falls": 4,
+                    "false_falls_interval_flagged": 4,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 4,
+                    "interval_abstained_wrong": 4,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 21,
+                    "primitive_abstained_wrong": 4,
+                    "wrong_before": 4
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 100,
+                    "coverage": 0.8,
+                    "total": 100
+                  },
+                  "point": {
+                    "accuracy": 0.8,
+                    "correct": 100,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.98,
+                    "correct": 98,
+                    "coverage": 0.8,
+                    "total": 100
+                  },
+                  "triage": {
+                    "false_falls": 25,
+                    "false_falls_interval_flagged": 25,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 25,
+                    "interval_abstained_wrong": 25,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 25,
+                    "primitive_abstained_wrong": 23,
+                    "wrong_before": 25
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 100,
+                    "coverage": 0.8,
+                    "total": 100
+                  },
+                  "point": {
+                    "accuracy": 0.8,
+                    "correct": 100,
+                    "total": 125
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.98,
+                    "correct": 98,
+                    "coverage": 0.8,
+                    "total": 100
+                  },
+                  "triage": {
+                    "false_falls": 25,
+                    "false_falls_interval_flagged": 25,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 25,
+                    "interval_abstained_wrong": 25,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 25,
+                    "primitive_abstained_wrong": 23,
+                    "wrong_before": 25
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "deeper_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 64,
+                    "coverage": 1.0,
+                    "total": 64
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 53,
+                    "coverage": 0.828125,
+                    "total": 53
+                  },
+                  "point": {
+                    "accuracy": 0.828125,
+                    "correct": 53,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.609375,
+                    "total": 39
+                  },
+                  "triage": {
+                    "false_falls": 11,
+                    "false_falls_interval_flagged": 11,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 11,
+                    "interval_abstained_wrong": 11,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 25,
+                    "primitive_abstained_wrong": 11,
+                    "wrong_before": 11
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 53,
+                    "coverage": 0.828125,
+                    "total": 53
+                  },
+                  "point": {
+                    "accuracy": 0.828125,
+                    "correct": 53,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.609375,
+                    "total": 39
+                  },
+                  "triage": {
+                    "false_falls": 11,
+                    "false_falls_interval_flagged": 11,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 11,
+                    "interval_abstained_wrong": 11,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 25,
+                    "primitive_abstained_wrong": 11,
+                    "wrong_before": 11
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 27,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "point": {
+                    "accuracy": 0.421875,
+                    "correct": 27,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9629629629629629,
+                    "correct": 26,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "triage": {
+                    "false_falls": 37,
+                    "false_falls_interval_flagged": 37,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 37,
+                    "interval_abstained_wrong": 37,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 37,
+                    "primitive_abstained_wrong": 36,
+                    "wrong_before": 37
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 27,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "point": {
+                    "accuracy": 0.421875,
+                    "correct": 27,
+                    "total": 64
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.9629629629629629,
+                    "correct": 26,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "triage": {
+                    "false_falls": 37,
+                    "false_falls_interval_flagged": 37,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 37,
+                    "interval_abstained_wrong": 37,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 37,
+                    "primitive_abstained_wrong": 36,
+                    "wrong_before": 37
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "id": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 26,
+                    "coverage": 1.0,
+                    "total": 26
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 0.9230769230769231,
+                    "total": 24
+                  },
+                  "point": {
+                    "accuracy": 0.9230769230769231,
+                    "correct": 24,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 15,
+                    "coverage": 0.5769230769230769,
+                    "total": 15
+                  },
+                  "triage": {
+                    "false_falls": 2,
+                    "false_falls_interval_flagged": 2,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 2,
+                    "interval_abstained_wrong": 2,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 11,
+                    "primitive_abstained_wrong": 2,
+                    "wrong_before": 2
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 0.9230769230769231,
+                    "total": 24
+                  },
+                  "point": {
+                    "accuracy": 0.9230769230769231,
+                    "correct": 24,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 15,
+                    "coverage": 0.5769230769230769,
+                    "total": 15
+                  },
+                  "triage": {
+                    "false_falls": 2,
+                    "false_falls_interval_flagged": 2,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 2,
+                    "interval_abstained_wrong": 2,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 11,
+                    "primitive_abstained_wrong": 2,
+                    "wrong_before": 2
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 12,
+                    "coverage": 0.46153846153846156,
+                    "total": 12
+                  },
+                  "point": {
+                    "accuracy": 0.46153846153846156,
+                    "correct": 12,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 11,
+                    "coverage": 0.4230769230769231,
+                    "total": 11
+                  },
+                  "triage": {
+                    "false_falls": 14,
+                    "false_falls_interval_flagged": 14,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 14,
+                    "interval_abstained_wrong": 14,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 15,
+                    "primitive_abstained_wrong": 14,
+                    "wrong_before": 14
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 12,
+                    "coverage": 0.46153846153846156,
+                    "total": 12
+                  },
+                  "point": {
+                    "accuracy": 0.46153846153846156,
+                    "correct": 12,
+                    "total": 26
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 11,
+                    "coverage": 0.4230769230769231,
+                    "total": 11
+                  },
+                  "triage": {
+                    "false_falls": 14,
+                    "false_falls_interval_flagged": 14,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 14,
+                    "interval_abstained_wrong": 14,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 15,
+                    "primitive_abstained_wrong": 14,
+                    "wrong_before": 14
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ],
+          "larger_ood": [
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "point": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 72,
+                    "coverage": 1.0,
+                    "total": 72
+                  },
+                  "triage": {
+                    "false_falls": 0,
+                    "false_falls_interval_flagged": 0,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 0,
+                    "interval_abstained_wrong": 0,
+                    "interval_wrong_coverage": 0.0,
+                    "primitive_abstained": 0,
+                    "primitive_abstained_wrong": 0,
+                    "wrong_before": 0
+                  }
+                }
+              ],
+              "delta": 0.0001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 63,
+                    "coverage": 0.875,
+                    "total": 63
+                  },
+                  "point": {
+                    "accuracy": 0.875,
+                    "correct": 63,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 37,
+                    "coverage": 0.5138888888888888,
+                    "total": 37
+                  },
+                  "triage": {
+                    "false_falls": 9,
+                    "false_falls_interval_flagged": 9,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 9,
+                    "interval_abstained_wrong": 9,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 35,
+                    "primitive_abstained_wrong": 9,
+                    "wrong_before": 9
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 63,
+                    "coverage": 0.875,
+                    "total": 63
+                  },
+                  "point": {
+                    "accuracy": 0.875,
+                    "correct": 63,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 1.0,
+                    "correct": 37,
+                    "coverage": 0.5138888888888888,
+                    "total": 37
+                  },
+                  "triage": {
+                    "false_falls": 9,
+                    "false_falls_interval_flagged": 9,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 9,
+                    "interval_abstained_wrong": 9,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 35,
+                    "primitive_abstained_wrong": 9,
+                    "wrong_before": 9
+                  }
+                }
+              ],
+              "delta": 0.001
+            },
+            {
+              "bands": [
+                {
+                  "band_multiplier": 1.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 33,
+                    "coverage": 0.4583333333333333,
+                    "total": 33
+                  },
+                  "point": {
+                    "accuracy": 0.4583333333333333,
+                    "correct": 33,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.8888888888888888,
+                    "correct": 32,
+                    "coverage": 0.5,
+                    "total": 36
+                  },
+                  "triage": {
+                    "false_falls": 39,
+                    "false_falls_interval_flagged": 39,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 39,
+                    "interval_abstained_wrong": 39,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 36,
+                    "primitive_abstained_wrong": 35,
+                    "wrong_before": 39
+                  }
+                },
+                {
+                  "band_multiplier": 2.0,
+                  "interval_feasibility": {
+                    "accuracy": 1.0,
+                    "correct": 33,
+                    "coverage": 0.4583333333333333,
+                    "total": 33
+                  },
+                  "point": {
+                    "accuracy": 0.4583333333333333,
+                    "correct": 33,
+                    "total": 72
+                  },
+                  "primitive_confidence": {
+                    "accuracy": 0.8888888888888888,
+                    "correct": 32,
+                    "coverage": 0.5,
+                    "total": 36
+                  },
+                  "triage": {
+                    "false_falls": 39,
+                    "false_falls_interval_flagged": 39,
+                    "false_supports": 0,
+                    "false_supports_interval_flagged": 0,
+                    "interval_abstained": 39,
+                    "interval_abstained_wrong": 39,
+                    "interval_wrong_coverage": 1.0,
+                    "primitive_abstained": 36,
+                    "primitive_abstained_wrong": 35,
+                    "wrong_before": 39
+                  }
+                }
+              ],
+              "delta": 0.01
+            }
+          ]
+        }
+      }
+    }
+  },
+  "quick": true,
+  "results_path": "experiments/exp91_interval_support_uncertainty_data/results_quick.json",
+  "splits": {
+    "branching_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 82,
+      "scenes": 12
+    },
+    "counterfactual": {
+      "interventions": [
+        "remove"
+      ],
+      "objects": 125,
+      "scenes": 24
+    },
+    "deeper_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 64,
+      "scenes": 12
+    },
+    "id": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 26,
+      "scenes": 12
+    },
+    "larger_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 72,
+      "scenes": 12
+    }
+  }
+}
