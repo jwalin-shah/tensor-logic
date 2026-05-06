@@ -1,0 +1,5165 @@
+{
+  "config": {
+    "contact_tolerance": 0.001,
+    "eval_scenes": 5,
+    "failure_modes": [
+      "missing",
+      "merge",
+      "false_positive"
+    ],
+    "horizontal_tolerance": 0.001,
+    "localization_deltas": [
+      0.0,
+      0.01
+    ],
+    "quick": true,
+    "render_padding": 0.5,
+    "render_scale": 64,
+    "seed": 9400,
+    "uncertainty_multipliers": [
+      1.0
+    ]
+  },
+  "experiment": "exp94_object_hypothesis_layer",
+  "interpretation": {
+    "guarded_structural_abstain": "matches exp93's safe route: abstain structural detector failures",
+    "object_hypothesis": "uses simulated structural anomaly metadata to select a corrected object-table candidate before running the same TL interval+repair route",
+    "observed_naive": "runs interval+repair on the detector table exactly as emitted"
+  },
+  "object_hypothesis_layer": {
+    "failure_modes": [
+      "missing",
+      "merge",
+      "false_positive"
+    ],
+    "localization_deltas": [
+      0.0,
+      0.01
+    ],
+    "modes": {
+      "x_only": {
+        "all": [
+          {
+            "delta": 0.0,
+            "failure_mode": "missing",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 291,
+                  "coverage": 0.9326923076923077,
+                  "total": 291
+                },
+                "observed_naive": {
+                  "accuracy": 0.7018867924528301,
+                  "correct": 186,
+                  "coverage": 0.8493589743589743,
+                  "total": 265
+                },
+                "repair_actions": {
+                  "snap_to_support_top": 53
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 291,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 291,
+                  "observed_accepted_wrong": 79,
+                  "observed_false_stable": 0,
+                  "selected_hypotheses": {
+                    "observed": 64,
+                    "restore_missing": 248
+                  },
+                  "source_status": {
+                    "detected": 265,
+                    "missing_detector": 47
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "missing",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 262,
+                  "coverage": 0.8397435897435898,
+                  "total": 262
+                },
+                "observed_naive": {
+                  "accuracy": 0.7018867924528301,
+                  "correct": 186,
+                  "coverage": 0.8493589743589743,
+                  "total": 265
+                },
+                "repair_actions": {
+                  "bridge_support_gap": 13,
+                  "snap_horizontal_edge": 5,
+                  "snap_to_support_top": 53
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 262,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 262,
+                  "observed_accepted_wrong": 79,
+                  "observed_false_stable": 0,
+                  "selected_hypotheses": {
+                    "observed": 64,
+                    "restore_missing": 248
+                  },
+                  "source_status": {
+                    "detected": 265,
+                    "missing_detector": 47
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.0,
+            "failure_mode": "merge",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 291,
+                  "coverage": 0.9326923076923077,
+                  "total": 291
+                },
+                "observed_naive": {
+                  "accuracy": 0.8439306358381503,
+                  "correct": 146,
+                  "coverage": 0.5544871794871795,
+                  "total": 173
+                },
+                "repair_actions": {
+                  "snap_to_support_top": 38
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 291,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 291,
+                  "observed_accepted_wrong": 27,
+                  "observed_false_stable": 27,
+                  "selected_hypotheses": {
+                    "observed": 6,
+                    "split_merge": 306
+                  },
+                  "source_status": {
+                    "detected": 198,
+                    "merged_source": 114
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "merge",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 276,
+                  "coverage": 0.8846153846153846,
+                  "total": 276
+                },
+                "observed_naive": {
+                  "accuracy": 0.8470588235294118,
+                  "correct": 144,
+                  "coverage": 0.5448717948717948,
+                  "total": 170
+                },
+                "repair_actions": {
+                  "bridge_support_gap": 13,
+                  "snap_to_support_top": 38
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 276,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 276,
+                  "observed_accepted_wrong": 26,
+                  "observed_false_stable": 26,
+                  "selected_hypotheses": {
+                    "observed": 6,
+                    "split_merge": 306
+                  },
+                  "source_status": {
+                    "detected": 198,
+                    "merged_source": 114
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.0,
+            "failure_mode": "false_positive",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 283,
+                  "coverage": 0.907051282051282,
+                  "total": 283
+                },
+                "observed_naive": {
+                  "accuracy": 0.6518218623481782,
+                  "correct": 161,
+                  "coverage": 0.7916666666666666,
+                  "total": 247
+                },
+                "repair_actions": {},
+                "triage": {
+                  "guarded_abstained_recoverable": 283,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 283,
+                  "observed_accepted_wrong": 86,
+                  "observed_false_stable": 86,
+                  "selected_hypotheses": {
+                    "drop_false_positive": 312
+                  },
+                  "source_status": {
+                    "detected": 312
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "false_positive",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 252,
+                  "coverage": 0.8076923076923077,
+                  "total": 252
+                },
+                "observed_naive": {
+                  "accuracy": 0.6046511627906976,
+                  "correct": 130,
+                  "coverage": 0.6891025641025641,
+                  "total": 215
+                },
+                "repair_actions": {
+                  "bridge_support_gap": 21
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 252,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 252,
+                  "observed_accepted_wrong": 85,
+                  "observed_false_stable": 85,
+                  "selected_hypotheses": {
+                    "drop_false_positive": 312
+                  },
+                  "source_status": {
+                    "detected": 312
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          }
+        ],
+        "axes": [
+          "x"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6,
+                    "correct": 30,
+                    "coverage": 0.8333333333333334,
+                    "total": 50
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 20,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 60
+                    },
+                    "source_status": {
+                      "detected": 50,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 48,
+                    "coverage": 0.8,
+                    "total": 48
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6,
+                    "correct": 30,
+                    "coverage": 0.8333333333333334,
+                    "total": 50
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 48,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 48,
+                    "observed_accepted_wrong": 20,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 60
+                    },
+                    "source_status": {
+                      "detected": 50,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.75,
+                    "correct": 30,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "split_merge": 60
+                    },
+                    "source_status": {
+                      "detected": 40,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.75,
+                    "correct": 30,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "split_merge": 60
+                    },
+                    "source_status": {
+                      "detected": 40,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7,
+                    "correct": 42,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 18,
+                    "observed_false_stable": 18,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 60
+                    },
+                    "source_status": {
+                      "detected": 60
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 48,
+                    "coverage": 0.8,
+                    "total": 48
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.625,
+                    "correct": 30,
+                    "coverage": 0.8,
+                    "total": 48
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 48,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 48,
+                    "observed_accepted_wrong": 18,
+                    "observed_false_stable": 18,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 60
+                    },
+                    "source_status": {
+                      "detected": 60
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "counterfactual": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9387755102040817,
+                    "correct": 92,
+                    "coverage": 0.8909090909090909,
+                    "total": 98
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 6,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 42,
+                      "restore_missing": 68
+                    },
+                    "source_status": {
+                      "detected": 98,
+                      "missing_detector": 12
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.9454545454545454,
+                    "total": 104
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9387755102040817,
+                    "correct": 92,
+                    "coverage": 0.8909090909090909,
+                    "total": 98
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 104,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 104,
+                    "observed_accepted_wrong": 6,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 42,
+                      "restore_missing": 68
+                    },
+                    "source_status": {
+                      "detected": 98,
+                      "missing_detector": 12
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7941176470588235,
+                    "correct": 54,
+                    "coverage": 0.6181818181818182,
+                    "total": 68
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 14,
+                    "observed_false_stable": 14,
+                    "selected_hypotheses": {
+                      "split_merge": 110
+                    },
+                    "source_status": {
+                      "detected": 70,
+                      "merged_source": 40
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.9454545454545454,
+                    "total": 104
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7910447761194029,
+                    "correct": 53,
+                    "coverage": 0.6090909090909091,
+                    "total": 67
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 104,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 104,
+                    "observed_accepted_wrong": 14,
+                    "observed_false_stable": 14,
+                    "selected_hypotheses": {
+                      "split_merge": 110
+                    },
+                    "source_status": {
+                      "detected": 70,
+                      "merged_source": 40
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5,
+                    "correct": 45,
+                    "coverage": 0.8181818181818182,
+                    "total": 90
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 45,
+                    "observed_false_stable": 45,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 110
+                    },
+                    "source_status": {
+                      "detected": 110
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.9454545454545454,
+                    "total": 104
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.4642857142857143,
+                    "correct": 39,
+                    "coverage": 0.7636363636363637,
+                    "total": 84
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 104,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 104,
+                    "observed_accepted_wrong": 45,
+                    "observed_false_stable": 45,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 110
+                    },
+                    "source_status": {
+                      "detected": 110
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "deeper_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.48214285714285715,
+                    "correct": 27,
+                    "coverage": 0.875,
+                    "total": 56
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 53
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 29,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 15,
+                      "restore_missing": 49
+                    },
+                    "source_status": {
+                      "detected": 56,
+                      "missing_detector": 8
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.48214285714285715,
+                    "correct": 27,
+                    "coverage": 0.875,
+                    "total": 56
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 53
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 29,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 15,
+                      "restore_missing": 49
+                    },
+                    "source_status": {
+                      "detected": 56,
+                      "missing_detector": 8
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 25,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 38
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 64
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 25,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 38
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 64
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.609375,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.68,
+                    "correct": 17,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 8,
+                    "observed_false_stable": 8,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 64
+                    },
+                    "source_status": {
+                      "detected": 64
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.609375,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.68,
+                    "correct": 17,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 8,
+                    "observed_false_stable": 8,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 64
+                    },
+                    "source_status": {
+                      "detected": 64
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "id": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5882352941176471,
+                    "correct": 10,
+                    "coverage": 0.7083333333333334,
+                    "total": 17
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 7,
+                      "restore_missing": 17
+                    },
+                    "source_status": {
+                      "detected": 17,
+                      "missing_detector": 7
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5882352941176471,
+                    "correct": 10,
+                    "coverage": 0.7083333333333334,
+                    "total": 17
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 7,
+                      "restore_missing": 17
+                    },
+                    "source_status": {
+                      "detected": 17,
+                      "missing_detector": 7
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 10,
+                    "coverage": 0.4166666666666667,
+                    "total": 10
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 6,
+                      "split_merge": 18
+                    },
+                    "source_status": {
+                      "detected": 10,
+                      "merged_source": 14
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 10,
+                    "coverage": 0.4166666666666667,
+                    "total": 10
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 6,
+                      "split_merge": 18
+                    },
+                    "source_status": {
+                      "detected": 10,
+                      "merged_source": 14
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 19,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 5,
+                    "observed_false_stable": 5,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 24
+                    },
+                    "source_status": {
+                      "detected": 24
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 19,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 5,
+                    "observed_false_stable": 5,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 24
+                    },
+                    "source_status": {
+                      "detected": 24
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "larger_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6136363636363636,
+                    "correct": 27,
+                    "coverage": 0.8148148148148148,
+                    "total": 44
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 17,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 54
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.7222222222222222,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6136363636363636,
+                    "correct": 27,
+                    "coverage": 0.8148148148148148,
+                    "total": 44
+                  },
+                  "repair_actions": {
+                    "bridge_support_gap": 13,
+                    "snap_horizontal_edge": 5
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 17,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 54
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9,
+                    "correct": 27,
+                    "coverage": 0.5555555555555556,
+                    "total": 30
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 3,
+                    "observed_false_stable": 3,
+                    "selected_hypotheses": {
+                      "split_merge": 54
+                    },
+                    "source_status": {
+                      "detected": 34,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 41,
+                    "coverage": 0.7592592592592593,
+                    "total": 41
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9285714285714286,
+                    "correct": 26,
+                    "coverage": 0.5185185185185185,
+                    "total": 28
+                  },
+                  "repair_actions": {
+                    "bridge_support_gap": 13
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 41,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 41,
+                    "observed_accepted_wrong": 2,
+                    "observed_false_stable": 2,
+                    "selected_hypotheses": {
+                      "split_merge": 54
+                    },
+                    "source_status": {
+                      "detected": 34,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 38,
+                    "coverage": 0.8888888888888888,
+                    "total": 48
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 54
+                    },
+                    "source_status": {
+                      "detected": 54
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 37,
+                    "coverage": 0.6851851851851852,
+                    "total": 37
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7352941176470589,
+                    "correct": 25,
+                    "coverage": 0.6296296296296297,
+                    "total": 34
+                  },
+                  "repair_actions": {
+                    "bridge_support_gap": 21
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 37,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 37,
+                    "observed_accepted_wrong": 9,
+                    "observed_false_stable": 9,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 54
+                    },
+                    "source_status": {
+                      "detected": 54
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "xy": {
+        "all": [
+          {
+            "delta": 0.0,
+            "failure_mode": "missing",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 291,
+                  "coverage": 0.9326923076923077,
+                  "total": 291
+                },
+                "observed_naive": {
+                  "accuracy": 0.7018867924528301,
+                  "correct": 186,
+                  "coverage": 0.8493589743589743,
+                  "total": 265
+                },
+                "repair_actions": {
+                  "snap_to_support_top": 53
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 291,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 291,
+                  "observed_accepted_wrong": 79,
+                  "observed_false_stable": 0,
+                  "selected_hypotheses": {
+                    "observed": 64,
+                    "restore_missing": 248
+                  },
+                  "source_status": {
+                    "detected": 265,
+                    "missing_detector": 47
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "missing",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 250,
+                  "coverage": 0.8012820512820513,
+                  "total": 250
+                },
+                "observed_naive": {
+                  "accuracy": 0.7018867924528301,
+                  "correct": 186,
+                  "coverage": 0.8493589743589743,
+                  "total": 265
+                },
+                "repair_actions": {
+                  "bridge_support_gap": 21,
+                  "snap_horizontal_edge": 8,
+                  "snap_to_ground": 97,
+                  "snap_to_support_top": 142
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 250,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 250,
+                  "observed_accepted_wrong": 79,
+                  "observed_false_stable": 0,
+                  "selected_hypotheses": {
+                    "observed": 64,
+                    "restore_missing": 248
+                  },
+                  "source_status": {
+                    "detected": 265,
+                    "missing_detector": 47
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.0,
+            "failure_mode": "merge",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 291,
+                  "coverage": 0.9326923076923077,
+                  "total": 291
+                },
+                "observed_naive": {
+                  "accuracy": 0.8439306358381503,
+                  "correct": 146,
+                  "coverage": 0.5544871794871795,
+                  "total": 173
+                },
+                "repair_actions": {
+                  "snap_to_support_top": 38
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 291,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 291,
+                  "observed_accepted_wrong": 27,
+                  "observed_false_stable": 27,
+                  "selected_hypotheses": {
+                    "observed": 6,
+                    "split_merge": 306
+                  },
+                  "source_status": {
+                    "detected": 198,
+                    "merged_source": 114
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "merge",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 262,
+                  "coverage": 0.8397435897435898,
+                  "total": 262
+                },
+                "observed_naive": {
+                  "accuracy": 0.9814814814814815,
+                  "correct": 159,
+                  "coverage": 0.5192307692307693,
+                  "total": 162
+                },
+                "repair_actions": {
+                  "bridge_support_gap": 18,
+                  "snap_horizontal_edge": 5,
+                  "snap_to_ground": 256,
+                  "snap_to_support_top": 107
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 262,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 262,
+                  "observed_accepted_wrong": 3,
+                  "observed_false_stable": 3,
+                  "selected_hypotheses": {
+                    "observed": 6,
+                    "split_merge": 306
+                  },
+                  "source_status": {
+                    "detected": 198,
+                    "merged_source": 114
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.0,
+            "failure_mode": "false_positive",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 283,
+                  "coverage": 0.907051282051282,
+                  "total": 283
+                },
+                "observed_naive": {
+                  "accuracy": 0.6518218623481782,
+                  "correct": 161,
+                  "coverage": 0.7916666666666666,
+                  "total": 247
+                },
+                "repair_actions": {},
+                "triage": {
+                  "guarded_abstained_recoverable": 283,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 283,
+                  "observed_accepted_wrong": 86,
+                  "observed_false_stable": 86,
+                  "selected_hypotheses": {
+                    "drop_false_positive": 312
+                  },
+                  "source_status": {
+                    "detected": 312
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "false_positive",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 250,
+                  "coverage": 0.8012820512820513,
+                  "total": 250
+                },
+                "observed_naive": {
+                  "accuracy": 0.6066350710900474,
+                  "correct": 128,
+                  "coverage": 0.6762820512820513,
+                  "total": 211
+                },
+                "repair_actions": {
+                  "bridge_support_gap": 18,
+                  "snap_horizontal_edge": 8,
+                  "snap_to_ground": 328,
+                  "snap_to_support_top": 139
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 250,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 250,
+                  "observed_accepted_wrong": 83,
+                  "observed_false_stable": 83,
+                  "selected_hypotheses": {
+                    "drop_false_positive": 312
+                  },
+                  "source_status": {
+                    "detected": 312
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          }
+        ],
+        "axes": [
+          "x",
+          "y"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6,
+                    "correct": 30,
+                    "coverage": 0.8333333333333334,
+                    "total": 50
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 20,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 60
+                    },
+                    "source_status": {
+                      "detected": 50,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 40,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6,
+                    "correct": 30,
+                    "coverage": 0.8333333333333334,
+                    "total": 50
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 41,
+                    "snap_to_support_top": 30
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 40,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 40,
+                    "observed_accepted_wrong": 20,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 60
+                    },
+                    "source_status": {
+                      "detected": 50,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.75,
+                    "correct": 30,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "split_merge": 60
+                    },
+                    "source_status": {
+                      "detected": 40,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 44,
+                    "coverage": 0.7333333333333333,
+                    "total": 44
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 29,
+                    "coverage": 0.48333333333333334,
+                    "total": 29
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 90,
+                    "snap_to_support_top": 31
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 44,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 44,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 60
+                    },
+                    "source_status": {
+                      "detected": 40,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7,
+                    "correct": 42,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 18,
+                    "observed_false_stable": 18,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 60
+                    },
+                    "source_status": {
+                      "detected": 60
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 40,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5945945945945946,
+                    "correct": 22,
+                    "coverage": 0.6166666666666667,
+                    "total": 37
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 95,
+                    "snap_to_support_top": 30
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 40,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 40,
+                    "observed_accepted_wrong": 15,
+                    "observed_false_stable": 15,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 60
+                    },
+                    "source_status": {
+                      "detected": 60
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "counterfactual": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9387755102040817,
+                    "correct": 92,
+                    "coverage": 0.8909090909090909,
+                    "total": 98
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 6,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 42,
+                      "restore_missing": 68
+                    },
+                    "source_status": {
+                      "detected": 98,
+                      "missing_detector": 12
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.9454545454545454,
+                    "total": 104
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9387755102040817,
+                    "correct": 92,
+                    "coverage": 0.8909090909090909,
+                    "total": 98
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 22,
+                    "snap_to_support_top": 13
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 104,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 104,
+                    "observed_accepted_wrong": 6,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 42,
+                      "restore_missing": 68
+                    },
+                    "source_status": {
+                      "detected": 98,
+                      "missing_detector": 12
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7941176470588235,
+                    "correct": 54,
+                    "coverage": 0.6181818181818182,
+                    "total": 68
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 14,
+                    "observed_false_stable": 14,
+                    "selected_hypotheses": {
+                      "split_merge": 110
+                    },
+                    "source_status": {
+                      "detected": 70,
+                      "merged_source": 40
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.9454545454545454,
+                    "total": 104
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9558823529411765,
+                    "correct": 65,
+                    "coverage": 0.6181818181818182,
+                    "total": 68
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 73,
+                    "snap_to_support_top": 8
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 104,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 104,
+                    "observed_accepted_wrong": 3,
+                    "observed_false_stable": 3,
+                    "selected_hypotheses": {
+                      "split_merge": 110
+                    },
+                    "source_status": {
+                      "detected": 70,
+                      "merged_source": 40
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5,
+                    "correct": 45,
+                    "coverage": 0.8181818181818182,
+                    "total": 90
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 45,
+                    "observed_false_stable": 45,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 110
+                    },
+                    "source_status": {
+                      "detected": 110
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 104,
+                    "coverage": 0.9454545454545454,
+                    "total": 104
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.4482758620689655,
+                    "correct": 39,
+                    "coverage": 0.7909090909090909,
+                    "total": 87
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 90,
+                    "snap_to_support_top": 13
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 104,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 104,
+                    "observed_accepted_wrong": 48,
+                    "observed_false_stable": 48,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 110
+                    },
+                    "source_status": {
+                      "detected": 110
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "deeper_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.48214285714285715,
+                    "correct": 27,
+                    "coverage": 0.875,
+                    "total": 56
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 53
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 29,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 15,
+                      "restore_missing": 49
+                    },
+                    "source_status": {
+                      "detected": 56,
+                      "missing_detector": 8
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 43,
+                    "coverage": 0.671875,
+                    "total": 43
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.48214285714285715,
+                    "correct": 27,
+                    "coverage": 0.875,
+                    "total": 56
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 38
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 43,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 43,
+                    "observed_accepted_wrong": 29,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 15,
+                      "restore_missing": 49
+                    },
+                    "source_status": {
+                      "detected": 56,
+                      "missing_detector": 8
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 25,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 38
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 64
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 27,
+                    "coverage": 0.421875,
+                    "total": 27
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 32,
+                    "snap_to_support_top": 52
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 64
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.609375,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.68,
+                    "correct": 17,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 8,
+                    "observed_false_stable": 8,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 64
+                    },
+                    "source_status": {
+                      "detected": 64
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 43,
+                    "coverage": 0.671875,
+                    "total": 43
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.75,
+                    "correct": 21,
+                    "coverage": 0.4375,
+                    "total": 28
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 49,
+                    "snap_to_support_top": 43
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 43,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 43,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 7,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 64
+                    },
+                    "source_status": {
+                      "detected": 64
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "id": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5882352941176471,
+                    "correct": 10,
+                    "coverage": 0.7083333333333334,
+                    "total": 17
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 7,
+                      "restore_missing": 17
+                    },
+                    "source_status": {
+                      "detected": 17,
+                      "missing_detector": 7
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5882352941176471,
+                    "correct": 10,
+                    "coverage": 0.7083333333333334,
+                    "total": 17
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 18
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 7,
+                      "restore_missing": 17
+                    },
+                    "source_status": {
+                      "detected": 17,
+                      "missing_detector": 7
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 10,
+                    "coverage": 0.4166666666666667,
+                    "total": 10
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 6,
+                      "split_merge": 18
+                    },
+                    "source_status": {
+                      "detected": 10,
+                      "merged_source": 14
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 10,
+                    "coverage": 0.4166666666666667,
+                    "total": 10
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 2,
+                    "snap_to_support_top": 6
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 6,
+                      "split_merge": 18
+                    },
+                    "source_status": {
+                      "detected": 10,
+                      "merged_source": 14
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 19,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 5,
+                    "observed_false_stable": 5,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 24
+                    },
+                    "source_status": {
+                      "detected": 24
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 19,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 14,
+                    "snap_to_support_top": 18
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 5,
+                    "observed_false_stable": 5,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 24
+                    },
+                    "source_status": {
+                      "detected": 24
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "larger_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6136363636363636,
+                    "correct": 27,
+                    "coverage": 0.8148148148148148,
+                    "total": 44
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 17,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 54
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.7222222222222222,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6136363636363636,
+                    "correct": 27,
+                    "coverage": 0.8148148148148148,
+                    "total": 44
+                  },
+                  "repair_actions": {
+                    "bridge_support_gap": 21,
+                    "snap_horizontal_edge": 8,
+                    "snap_to_ground": 34,
+                    "snap_to_support_top": 43
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 17,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 54
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9,
+                    "correct": 27,
+                    "coverage": 0.5555555555555556,
+                    "total": 30
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 3,
+                    "observed_false_stable": 3,
+                    "selected_hypotheses": {
+                      "split_merge": 54
+                    },
+                    "source_status": {
+                      "detected": 34,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 43,
+                    "coverage": 0.7962962962962963,
+                    "total": 43
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 28,
+                    "coverage": 0.5185185185185185,
+                    "total": 28
+                  },
+                  "repair_actions": {
+                    "bridge_support_gap": 18,
+                    "snap_horizontal_edge": 5,
+                    "snap_to_ground": 59,
+                    "snap_to_support_top": 10
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 43,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 43,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 54
+                    },
+                    "source_status": {
+                      "detected": 34,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 38,
+                    "coverage": 0.8888888888888888,
+                    "total": 48
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 54
+                    },
+                    "source_status": {
+                      "detected": 54
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.7222222222222222,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7714285714285715,
+                    "correct": 27,
+                    "coverage": 0.6481481481481481,
+                    "total": 35
+                  },
+                  "repair_actions": {
+                    "bridge_support_gap": 18,
+                    "snap_horizontal_edge": 8,
+                    "snap_to_ground": 80,
+                    "snap_to_support_top": 35
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 8,
+                    "observed_false_stable": 8,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 54
+                    },
+                    "source_status": {
+                      "detected": 54
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "y_only": {
+        "all": [
+          {
+            "delta": 0.0,
+            "failure_mode": "missing",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 291,
+                  "coverage": 0.9326923076923077,
+                  "total": 291
+                },
+                "observed_naive": {
+                  "accuracy": 0.7018867924528301,
+                  "correct": 186,
+                  "coverage": 0.8493589743589743,
+                  "total": 265
+                },
+                "repair_actions": {
+                  "snap_to_support_top": 53
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 291,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 291,
+                  "observed_accepted_wrong": 79,
+                  "observed_false_stable": 0,
+                  "selected_hypotheses": {
+                    "observed": 64,
+                    "restore_missing": 248
+                  },
+                  "source_status": {
+                    "detected": 265,
+                    "missing_detector": 47
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "missing",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 275,
+                  "coverage": 0.8814102564102564,
+                  "total": 275
+                },
+                "observed_naive": {
+                  "accuracy": 0.7018867924528301,
+                  "correct": 186,
+                  "coverage": 0.8493589743589743,
+                  "total": 265
+                },
+                "repair_actions": {
+                  "snap_to_ground": 99,
+                  "snap_to_support_top": 244
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 275,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 275,
+                  "observed_accepted_wrong": 79,
+                  "observed_false_stable": 0,
+                  "selected_hypotheses": {
+                    "observed": 64,
+                    "restore_missing": 248
+                  },
+                  "source_status": {
+                    "detected": 265,
+                    "missing_detector": 47
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.0,
+            "failure_mode": "merge",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 291,
+                  "coverage": 0.9326923076923077,
+                  "total": 291
+                },
+                "observed_naive": {
+                  "accuracy": 0.8439306358381503,
+                  "correct": 146,
+                  "coverage": 0.5544871794871795,
+                  "total": 173
+                },
+                "repair_actions": {
+                  "snap_to_support_top": 38
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 291,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 291,
+                  "observed_accepted_wrong": 27,
+                  "observed_false_stable": 27,
+                  "selected_hypotheses": {
+                    "observed": 6,
+                    "split_merge": 306
+                  },
+                  "source_status": {
+                    "detected": 198,
+                    "merged_source": 114
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "merge",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 292,
+                  "coverage": 0.9358974358974359,
+                  "total": 292
+                },
+                "observed_naive": {
+                  "accuracy": 0.9608938547486033,
+                  "correct": 172,
+                  "coverage": 0.5737179487179487,
+                  "total": 179
+                },
+                "repair_actions": {
+                  "snap_to_ground": 232,
+                  "snap_to_support_top": 193
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 292,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 292,
+                  "observed_accepted_wrong": 7,
+                  "observed_false_stable": 7,
+                  "selected_hypotheses": {
+                    "observed": 6,
+                    "split_merge": 306
+                  },
+                  "source_status": {
+                    "detected": 198,
+                    "merged_source": 114
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.0,
+            "failure_mode": "false_positive",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 283,
+                  "coverage": 0.907051282051282,
+                  "total": 283
+                },
+                "observed_naive": {
+                  "accuracy": 0.6518218623481782,
+                  "correct": 161,
+                  "coverage": 0.7916666666666666,
+                  "total": 247
+                },
+                "repair_actions": {},
+                "triage": {
+                  "guarded_abstained_recoverable": 283,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 283,
+                  "observed_accepted_wrong": 86,
+                  "observed_false_stable": 86,
+                  "selected_hypotheses": {
+                    "drop_false_positive": 312
+                  },
+                  "source_status": {
+                    "detected": 312
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          },
+          {
+            "delta": 0.01,
+            "failure_mode": "false_positive",
+            "uncertainty": [
+              {
+                "guarded_structural_abstain": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "coverage": 0.0,
+                  "total": 0
+                },
+                "object_hypothesis": {
+                  "accuracy": 1.0,
+                  "correct": 280,
+                  "coverage": 0.8974358974358975,
+                  "total": 280
+                },
+                "observed_naive": {
+                  "accuracy": 0.6810344827586207,
+                  "correct": 158,
+                  "coverage": 0.7435897435897436,
+                  "total": 232
+                },
+                "repair_actions": {
+                  "snap_to_ground": 306,
+                  "snap_to_support_top": 253
+                },
+                "triage": {
+                  "guarded_abstained_recoverable": 280,
+                  "guarded_accepted_wrong": 0,
+                  "guarded_false_stable": 0,
+                  "hypothesis_accepted_wrong": 0,
+                  "hypothesis_false_stable": 0,
+                  "hypothesis_recovered_structural": 280,
+                  "observed_accepted_wrong": 74,
+                  "observed_false_stable": 74,
+                  "selected_hypotheses": {
+                    "drop_false_positive": 312
+                  },
+                  "source_status": {
+                    "detected": 312
+                  }
+                },
+                "uncertainty_multiplier": 1.0
+              }
+            ]
+          }
+        ],
+        "axes": [
+          "y"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6,
+                    "correct": 30,
+                    "coverage": 0.8333333333333334,
+                    "total": 50
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 20,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 60
+                    },
+                    "source_status": {
+                      "detected": 50,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.7833333333333333,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6,
+                    "correct": 30,
+                    "coverage": 0.8333333333333334,
+                    "total": 50
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 41,
+                    "snap_to_support_top": 56
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 20,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 60
+                    },
+                    "source_status": {
+                      "detected": 50,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.75,
+                    "correct": 30,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "split_merge": 60
+                    },
+                    "source_status": {
+                      "detected": 40,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.925,
+                    "correct": 37,
+                    "coverage": 0.6666666666666666,
+                    "total": 40
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 84,
+                    "snap_to_support_top": 67
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 3,
+                    "observed_false_stable": 3,
+                    "selected_hypotheses": {
+                      "split_merge": 60
+                    },
+                    "source_status": {
+                      "detected": 40,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 60,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7,
+                    "correct": 42,
+                    "coverage": 1.0,
+                    "total": 60
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 60,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 60,
+                    "observed_accepted_wrong": 18,
+                    "observed_false_stable": 18,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 60
+                    },
+                    "source_status": {
+                      "detected": 60
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 56,
+                    "coverage": 0.9333333333333333,
+                    "total": 56
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7169811320754716,
+                    "correct": 38,
+                    "coverage": 0.8833333333333333,
+                    "total": 53
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 89,
+                    "snap_to_support_top": 90
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 56,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 56,
+                    "observed_accepted_wrong": 15,
+                    "observed_false_stable": 15,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 60
+                    },
+                    "source_status": {
+                      "detected": 60
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "counterfactual": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9387755102040817,
+                    "correct": 92,
+                    "coverage": 0.8909090909090909,
+                    "total": 98
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 6,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 42,
+                      "restore_missing": 68
+                    },
+                    "source_status": {
+                      "detected": 98,
+                      "missing_detector": 12
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9387755102040817,
+                    "correct": 92,
+                    "coverage": 0.8909090909090909,
+                    "total": 98
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 19,
+                    "snap_to_support_top": 42
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 6,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 42,
+                      "restore_missing": 68
+                    },
+                    "source_status": {
+                      "detected": 98,
+                      "missing_detector": 12
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7941176470588235,
+                    "correct": 54,
+                    "coverage": 0.6181818181818182,
+                    "total": 68
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 14,
+                    "observed_false_stable": 14,
+                    "selected_hypotheses": {
+                      "split_merge": 110
+                    },
+                    "source_status": {
+                      "detected": 70,
+                      "merged_source": 40
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9571428571428572,
+                    "correct": 67,
+                    "coverage": 0.6363636363636364,
+                    "total": 70
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 55,
+                    "snap_to_support_top": 29
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 3,
+                    "observed_false_stable": 3,
+                    "selected_hypotheses": {
+                      "split_merge": 110
+                    },
+                    "source_status": {
+                      "detected": 70,
+                      "merged_source": 40
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 110,
+                    "coverage": 1.0,
+                    "total": 110
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5,
+                    "correct": 45,
+                    "coverage": 0.8181818181818182,
+                    "total": 90
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 110,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 110,
+                    "observed_accepted_wrong": 45,
+                    "observed_false_stable": 45,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 110
+                    },
+                    "source_status": {
+                      "detected": 110
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 109,
+                    "coverage": 0.990909090909091,
+                    "total": 109
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5365853658536586,
+                    "correct": 44,
+                    "coverage": 0.7454545454545455,
+                    "total": 82
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 75,
+                    "snap_to_support_top": 34
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 109,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 109,
+                    "observed_accepted_wrong": 38,
+                    "observed_false_stable": 38,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 110
+                    },
+                    "source_status": {
+                      "detected": 110
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "deeper_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.48214285714285715,
+                    "correct": 27,
+                    "coverage": 0.875,
+                    "total": 56
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 53
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 29,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 15,
+                      "restore_missing": 49
+                    },
+                    "source_status": {
+                      "detected": 56,
+                      "missing_detector": 8
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 43,
+                    "coverage": 0.671875,
+                    "total": 43
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.48214285714285715,
+                    "correct": 27,
+                    "coverage": 0.875,
+                    "total": 56
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 51
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 43,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 43,
+                    "observed_accepted_wrong": 29,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 15,
+                      "restore_missing": 49
+                    },
+                    "source_status": {
+                      "detected": 56,
+                      "missing_detector": 8
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 25,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 38
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 64
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 47,
+                    "coverage": 0.734375,
+                    "total": 47
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 28,
+                    "coverage": 0.4375,
+                    "total": 28
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 32,
+                    "snap_to_support_top": 53
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 47,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 47,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "split_merge": 64
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 39,
+                    "coverage": 0.609375,
+                    "total": 39
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.68,
+                    "correct": 17,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 39,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 39,
+                    "observed_accepted_wrong": 8,
+                    "observed_false_stable": 8,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 64
+                    },
+                    "source_status": {
+                      "detected": 64
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 40,
+                    "coverage": 0.625,
+                    "total": 40
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.72,
+                    "correct": 18,
+                    "coverage": 0.390625,
+                    "total": 25
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 44,
+                    "snap_to_support_top": 34
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 40,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 40,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 7,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 64
+                    },
+                    "source_status": {
+                      "detected": 64
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "id": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5882352941176471,
+                    "correct": 10,
+                    "coverage": 0.7083333333333334,
+                    "total": 17
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 7,
+                      "restore_missing": 17
+                    },
+                    "source_status": {
+                      "detected": 17,
+                      "missing_detector": 7
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.5882352941176471,
+                    "correct": 10,
+                    "coverage": 0.7083333333333334,
+                    "total": 17
+                  },
+                  "repair_actions": {
+                    "snap_to_support_top": 16
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 7,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 7,
+                      "restore_missing": 17
+                    },
+                    "source_status": {
+                      "detected": 17,
+                      "missing_detector": 7
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 10,
+                    "coverage": 0.4166666666666667,
+                    "total": 10
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 6,
+                      "split_merge": 18
+                    },
+                    "source_status": {
+                      "detected": 10,
+                      "merged_source": 14
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 1.0,
+                    "correct": 10,
+                    "coverage": 0.4166666666666667,
+                    "total": 10
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 6
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 0,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "observed": 6,
+                      "split_merge": 18
+                    },
+                    "source_status": {
+                      "detected": 10,
+                      "merged_source": 14
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 19,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 5,
+                    "observed_false_stable": 5,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 24
+                    },
+                    "source_status": {
+                      "detected": 24
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 24,
+                    "coverage": 1.0,
+                    "total": 24
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.8260869565217391,
+                    "correct": 19,
+                    "coverage": 0.9583333333333334,
+                    "total": 23
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 13,
+                    "snap_to_support_top": 16
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 24,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 24,
+                    "observed_accepted_wrong": 4,
+                    "observed_false_stable": 4,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 24
+                    },
+                    "source_status": {
+                      "detected": 24
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ],
+          "larger_ood": [
+            {
+              "delta": 0.0,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6136363636363636,
+                    "correct": 27,
+                    "coverage": 0.8148148148148148,
+                    "total": 44
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 17,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 54
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "missing",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 51,
+                    "coverage": 0.9444444444444444,
+                    "total": 51
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.6136363636363636,
+                    "correct": 27,
+                    "coverage": 0.8148148148148148,
+                    "total": 44
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 39,
+                    "snap_to_support_top": 79
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 51,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 51,
+                    "observed_accepted_wrong": 17,
+                    "observed_false_stable": 0,
+                    "selected_hypotheses": {
+                      "restore_missing": 54
+                    },
+                    "source_status": {
+                      "detected": 44,
+                      "missing_detector": 10
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.9,
+                    "correct": 27,
+                    "coverage": 0.5555555555555556,
+                    "total": 30
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 3,
+                    "observed_false_stable": 3,
+                    "selected_hypotheses": {
+                      "split_merge": 54
+                    },
+                    "source_status": {
+                      "detected": 34,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "merge",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 51,
+                    "coverage": 0.9444444444444444,
+                    "total": 51
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.967741935483871,
+                    "correct": 30,
+                    "coverage": 0.5740740740740741,
+                    "total": 31
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 55,
+                    "snap_to_support_top": 44
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 51,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 51,
+                    "observed_accepted_wrong": 1,
+                    "observed_false_stable": 1,
+                    "selected_hypotheses": {
+                      "split_merge": 54
+                    },
+                    "source_status": {
+                      "detected": 34,
+                      "merged_source": 20
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.0,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 50,
+                    "coverage": 0.9259259259259259,
+                    "total": 50
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7916666666666666,
+                    "correct": 38,
+                    "coverage": 0.8888888888888888,
+                    "total": 48
+                  },
+                  "repair_actions": {},
+                  "triage": {
+                    "guarded_abstained_recoverable": 50,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 50,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 54
+                    },
+                    "source_status": {
+                      "detected": 54
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            },
+            {
+              "delta": 0.01,
+              "failure_mode": "false_positive",
+              "uncertainty": [
+                {
+                  "guarded_structural_abstain": {
+                    "accuracy": 0.0,
+                    "correct": 0,
+                    "coverage": 0.0,
+                    "total": 0
+                  },
+                  "object_hypothesis": {
+                    "accuracy": 1.0,
+                    "correct": 51,
+                    "coverage": 0.9444444444444444,
+                    "total": 51
+                  },
+                  "observed_naive": {
+                    "accuracy": 0.7959183673469388,
+                    "correct": 39,
+                    "coverage": 0.9074074074074074,
+                    "total": 49
+                  },
+                  "repair_actions": {
+                    "snap_to_ground": 85,
+                    "snap_to_support_top": 79
+                  },
+                  "triage": {
+                    "guarded_abstained_recoverable": 51,
+                    "guarded_accepted_wrong": 0,
+                    "guarded_false_stable": 0,
+                    "hypothesis_accepted_wrong": 0,
+                    "hypothesis_false_stable": 0,
+                    "hypothesis_recovered_structural": 51,
+                    "observed_accepted_wrong": 10,
+                    "observed_false_stable": 10,
+                    "selected_hypotheses": {
+                      "drop_false_positive": 54
+                    },
+                    "source_status": {
+                      "detected": 54
+                    }
+                  },
+                  "uncertainty_multiplier": 1.0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "uncertainty_multipliers": [
+      1.0
+    ]
+  },
+  "quick": true,
+  "results_path": "experiments/exp94_object_hypothesis_layer_data/results_quick.json",
+  "splits": {
+    "branching_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 60,
+      "scenes": 10
+    },
+    "counterfactual": {
+      "interventions": [
+        "remove"
+      ],
+      "objects": 110,
+      "scenes": 20
+    },
+    "deeper_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 64,
+      "scenes": 10
+    },
+    "id": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 24,
+      "scenes": 10
+    },
+    "larger_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 54,
+      "scenes": 10
+    }
+  }
+}
