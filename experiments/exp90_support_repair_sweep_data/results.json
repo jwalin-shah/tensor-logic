@@ -1,0 +1,4798 @@
+{
+  "config": {
+    "confidence_threshold": 0.6666666666666666,
+    "contact_tolerance": 0.001,
+    "eval_scenes": 80,
+    "geometry_deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.005,
+      0.01,
+      0.05
+    ],
+    "horizontal_tolerance": 0.001,
+    "near_multiplier": 20.0,
+    "quick": false,
+    "repair_contact_radius": 0.02,
+    "repair_horizontal_radius": 0.02,
+    "seed": 9000
+  },
+  "experiment": "exp90_support_repair_sweep",
+  "interpretation": {
+    "repair": "deterministic object-table repair is a low-confidence recovery path, not a replacement for perception uncertainty"
+  },
+  "quick": false,
+  "repair_noise": {
+    "deltas": [
+      0.0,
+      0.0001,
+      0.001,
+      0.005,
+      0.01,
+      0.05
+    ],
+    "modes": {
+      "x_only": {
+        "all": [
+          {
+            "baseline": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "delta": 0.0,
+            "recovered_by_category": {},
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 0,
+              "recovery_rate": 0.0,
+              "regressions": 0,
+              "wrong_before": 0
+            },
+            "repair_actions": {},
+            "repaired": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "taxonomy": {},
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 5116,
+                "total": 5116
+              },
+              "high_confidence_coverage": 1.0,
+              "low_confidence": {
+                "accuracy": 0.0,
+                "correct": 0,
+                "total": 0
+              },
+              "low_confidence_coverage": 0.0
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "delta": 0.0001,
+            "recovered_by_category": {},
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 0,
+              "recovery_rate": 0.0,
+              "regressions": 0,
+              "wrong_before": 0
+            },
+            "repair_actions": {},
+            "repaired": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "taxonomy": {},
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 5116,
+                "total": 5116
+              },
+              "high_confidence_coverage": 1.0,
+              "low_confidence": {
+                "accuracy": 0.0,
+                "correct": 0,
+                "total": 0
+              },
+              "low_confidence_coverage": 0.0
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.9427286942924159,
+              "correct": 4823,
+              "total": 5116
+            },
+            "delta": 0.001,
+            "recovered_by_category": {
+              "false_fall_other": 39,
+              "false_fall_support_gap": 18
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 57,
+              "recovery_rate": 0.1945392491467577,
+              "regressions": 0,
+              "wrong_before": 293
+            },
+            "repair_actions": {
+              "bridge_support_gap": 26,
+              "snap_horizontal_edge": 18
+            },
+            "repaired": {
+              "accuracy": 0.9538702111024238,
+              "correct": 4880,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_other": 193,
+              "false_fall_support_gap": 100
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 4462,
+                "total": 4462
+              },
+              "high_confidence_coverage": 0.8721657544956998,
+              "low_confidence": {
+                "accuracy": 0.5519877675840978,
+                "correct": 361,
+                "total": 654
+              },
+              "low_confidence_coverage": 0.12783424550430023
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.8680609851446442,
+              "correct": 4441,
+              "total": 5116
+            },
+            "delta": 0.005,
+            "recovered_by_category": {
+              "false_fall_other": 30,
+              "false_fall_support_gap": 21
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 51,
+              "recovery_rate": 0.07555555555555556,
+              "regressions": 0,
+              "wrong_before": 675
+            },
+            "repair_actions": {
+              "bridge_support_gap": 106,
+              "snap_horizontal_edge": 21
+            },
+            "repaired": {
+              "accuracy": 0.8780297107114934,
+              "correct": 4492,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_other": 424,
+              "false_fall_support_gap": 251
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 4407,
+                "total": 4407
+              },
+              "high_confidence_coverage": 0.8614151681000782,
+              "low_confidence": {
+                "accuracy": 0.047954866008462625,
+                "correct": 34,
+                "total": 709
+              },
+              "low_confidence_coverage": 0.13858483189992182
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.8616106333072713,
+              "correct": 4408,
+              "total": 5116
+            },
+            "delta": 0.01,
+            "recovered_by_category": {
+              "false_fall_other": 25,
+              "false_fall_support_gap": 13
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 38,
+              "recovery_rate": 0.05367231638418079,
+              "regressions": 0,
+              "wrong_before": 708
+            },
+            "repair_actions": {
+              "bridge_support_gap": 83,
+              "snap_horizontal_edge": 13
+            },
+            "repaired": {
+              "accuracy": 0.8690383111806098,
+              "correct": 4446,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_other": 440,
+              "false_fall_support_gap": 268
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 0.9721792890262752,
+                "correct": 4403,
+                "total": 4529
+              },
+              "high_confidence_coverage": 0.8852619233776388,
+              "low_confidence": {
+                "accuracy": 0.008517887563884156,
+                "correct": 5,
+                "total": 587
+              },
+              "low_confidence_coverage": 0.11473807662236123
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.8573103987490227,
+              "correct": 4386,
+              "total": 5116
+            },
+            "delta": 0.05,
+            "recovered_by_category": {
+              "false_fall_other": 5,
+              "false_fall_support_gap": 1
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 6,
+              "recovery_rate": 0.00821917808219178,
+              "regressions": 0,
+              "wrong_before": 730
+            },
+            "repair_actions": {
+              "bridge_support_gap": 8,
+              "snap_horizontal_edge": 1
+            },
+            "repaired": {
+              "accuracy": 0.8584831899921814,
+              "correct": 4392,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_other": 646,
+              "false_fall_support_gap": 84
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 0.8672863924050633,
+                "correct": 4385,
+                "total": 5056
+              },
+              "high_confidence_coverage": 0.9882720875684128,
+              "low_confidence": {
+                "accuracy": 0.016666666666666666,
+                "correct": 1,
+                "total": 60
+              },
+              "low_confidence_coverage": 0.011727912431587178
+            }
+          }
+        ],
+        "axes": [
+          "x"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1040,
+                  "total": 1040
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1040,
+                  "total": 1040
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.8490384615384615,
+                "correct": 883,
+                "total": 1040
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_other": 29,
+                "false_fall_support_gap": 8
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 37,
+                "recovery_rate": 0.2356687898089172,
+                "regressions": 0,
+                "wrong_before": 157
+              },
+              "repair_actions": {
+                "bridge_support_gap": 12,
+                "snap_horizontal_edge": 8
+              },
+              "repaired": {
+                "accuracy": 0.8846153846153846,
+                "correct": 920,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_other": 122,
+                "false_fall_support_gap": 35
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 712,
+                  "total": 712
+                },
+                "high_confidence_coverage": 0.6846153846153846,
+                "low_confidence": {
+                  "accuracy": 0.5213414634146342,
+                  "correct": 171,
+                  "total": 328
+                },
+                "low_confidence_coverage": 0.3153846153846154
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.6682692307692307,
+                "correct": 695,
+                "total": 1040
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_other": 11,
+                "false_fall_support_gap": 4
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 15,
+                "recovery_rate": 0.043478260869565216,
+                "regressions": 0,
+                "wrong_before": 345
+              },
+              "repair_actions": {
+                "bridge_support_gap": 37,
+                "snap_horizontal_edge": 4
+              },
+              "repaired": {
+                "accuracy": 0.6826923076923077,
+                "correct": 710,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_other": 268,
+                "false_fall_support_gap": 77
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 680,
+                  "total": 680
+                },
+                "high_confidence_coverage": 0.6538461538461539,
+                "low_confidence": {
+                  "accuracy": 0.041666666666666664,
+                  "correct": 15,
+                  "total": 360
+                },
+                "low_confidence_coverage": 0.34615384615384615
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.6567307692307692,
+                "correct": 683,
+                "total": 1040
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_other": 14,
+                "false_fall_support_gap": 4
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 18,
+                "recovery_rate": 0.05042016806722689,
+                "regressions": 0,
+                "wrong_before": 357
+              },
+              "repair_actions": {
+                "bridge_support_gap": 28,
+                "snap_horizontal_edge": 4
+              },
+              "repaired": {
+                "accuracy": 0.6740384615384616,
+                "correct": 701,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_other": 278,
+                "false_fall_support_gap": 79
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9340659340659341,
+                  "correct": 680,
+                  "total": 728
+                },
+                "high_confidence_coverage": 0.7,
+                "low_confidence": {
+                  "accuracy": 0.009615384615384616,
+                  "correct": 3,
+                  "total": 312
+                },
+                "low_confidence_coverage": 0.3
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.6538461538461539,
+                "correct": 680,
+                "total": 1040
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_other": 5,
+                "false_fall_support_gap": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 6,
+                "recovery_rate": 0.016666666666666666,
+                "regressions": 0,
+                "wrong_before": 360
+              },
+              "repair_actions": {
+                "bridge_support_gap": 5,
+                "snap_horizontal_edge": 1
+              },
+              "repaired": {
+                "accuracy": 0.6596153846153846,
+                "correct": 686,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_other": 323,
+                "false_fall_support_gap": 37
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.6739345887016849,
+                  "correct": 680,
+                  "total": 1009
+                },
+                "high_confidence_coverage": 0.9701923076923077,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 31
+                },
+                "low_confidence_coverage": 0.02980769230769231
+              }
+            }
+          ],
+          "counterfactual": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1730,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1730,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9867052023121388,
+                "correct": 1707,
+                "total": 1730
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_other": 2,
+                "false_fall_support_gap": 2
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 4,
+                "recovery_rate": 0.17391304347826086,
+                "regressions": 0,
+                "wrong_before": 23
+              },
+              "repair_actions": {
+                "bridge_support_gap": 3,
+                "snap_horizontal_edge": 2
+              },
+              "repaired": {
+                "accuracy": 0.9890173410404625,
+                "correct": 1711,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_other": 9,
+                "false_fall_support_gap": 14
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1669,
+                  "total": 1669
+                },
+                "high_confidence_coverage": 0.9647398843930636,
+                "low_confidence": {
+                  "accuracy": 0.6229508196721312,
+                  "correct": 38,
+                  "total": 61
+                },
+                "low_confidence_coverage": 0.03526011560693642
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9658959537572255,
+                "correct": 1671,
+                "total": 1730
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_other": 2,
+                "false_fall_support_gap": 2
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 4,
+                "recovery_rate": 0.06779661016949153,
+                "regressions": 0,
+                "wrong_before": 59
+              },
+              "repair_actions": {
+                "bridge_support_gap": 12,
+                "snap_horizontal_edge": 2
+              },
+              "repaired": {
+                "accuracy": 0.9682080924855492,
+                "correct": 1675,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_other": 24,
+                "false_fall_support_gap": 35
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1665,
+                  "total": 1665
+                },
+                "high_confidence_coverage": 0.9624277456647399,
+                "low_confidence": {
+                  "accuracy": 0.09230769230769231,
+                  "correct": 6,
+                  "total": 65
+                },
+                "low_confidence_coverage": 0.03757225433526012
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9635838150289018,
+                "correct": 1667,
+                "total": 1730
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_other": 1,
+                "false_fall_support_gap": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 2,
+                "recovery_rate": 0.031746031746031744,
+                "regressions": 0,
+                "wrong_before": 63
+              },
+              "repair_actions": {
+                "bridge_support_gap": 12,
+                "snap_horizontal_edge": 1
+              },
+              "repaired": {
+                "accuracy": 0.9647398843930636,
+                "correct": 1669,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_other": 26,
+                "false_fall_support_gap": 37
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9928443649373881,
+                  "correct": 1665,
+                  "total": 1677
+                },
+                "high_confidence_coverage": 0.969364161849711,
+                "low_confidence": {
+                  "accuracy": 0.03773584905660377,
+                  "correct": 2,
+                  "total": 53
+                },
+                "low_confidence_coverage": 0.030635838150289016
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9624277456647399,
+                "correct": 1665,
+                "total": 1730
+              },
+              "delta": 0.05,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 65
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 0.9624277456647399,
+                "correct": 1665,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_other": 55,
+                "false_fall_support_gap": 10
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9624277456647399,
+                  "correct": 1665,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            }
+          ],
+          "deeper_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.005,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.01,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9833333333333333,
+                "correct": 1003,
+                "total": 1020
+              },
+              "delta": 0.05,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 17
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 0.9833333333333333,
+                "correct": 1003,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_other": 13,
+                "false_fall_support_gap": 4
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1002,
+                  "total": 1002
+                },
+                "high_confidence_coverage": 0.9823529411764705,
+                "low_confidence": {
+                  "accuracy": 0.05555555555555555,
+                  "correct": 1,
+                  "total": 18
+                },
+                "low_confidence_coverage": 0.01764705882352941
+              }
+            }
+          ],
+          "id": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.005,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.01,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.05,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            }
+          ],
+          "larger_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 930,
+                  "total": 930
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 930,
+                  "total": 930
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.878494623655914,
+                "correct": 817,
+                "total": 930
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_other": 8,
+                "false_fall_support_gap": 8
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 16,
+                "recovery_rate": 0.1415929203539823,
+                "regressions": 0,
+                "wrong_before": 113
+              },
+              "repair_actions": {
+                "bridge_support_gap": 11,
+                "snap_horizontal_edge": 8
+              },
+              "repaired": {
+                "accuracy": 0.8956989247311828,
+                "correct": 833,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_other": 62,
+                "false_fall_support_gap": 51
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 665,
+                  "total": 665
+                },
+                "high_confidence_coverage": 0.7150537634408602,
+                "low_confidence": {
+                  "accuracy": 0.5735849056603773,
+                  "correct": 152,
+                  "total": 265
+                },
+                "low_confidence_coverage": 0.2849462365591398
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.7086021505376344,
+                "correct": 659,
+                "total": 930
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_other": 17,
+                "false_fall_support_gap": 15
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 32,
+                "recovery_rate": 0.11808118081180811,
+                "regressions": 0,
+                "wrong_before": 271
+              },
+              "repair_actions": {
+                "bridge_support_gap": 57,
+                "snap_horizontal_edge": 15
+              },
+              "repaired": {
+                "accuracy": 0.7430107526881721,
+                "correct": 691,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_other": 132,
+                "false_fall_support_gap": 139
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 646,
+                  "total": 646
+                },
+                "high_confidence_coverage": 0.6946236559139785,
+                "low_confidence": {
+                  "accuracy": 0.045774647887323945,
+                  "correct": 13,
+                  "total": 284
+                },
+                "low_confidence_coverage": 0.3053763440860215
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.6903225806451613,
+                "correct": 642,
+                "total": 930
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_other": 10,
+                "false_fall_support_gap": 8
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 18,
+                "recovery_rate": 0.0625,
+                "regressions": 0,
+                "wrong_before": 288
+              },
+              "repair_actions": {
+                "bridge_support_gap": 43,
+                "snap_horizontal_edge": 8
+              },
+              "repaired": {
+                "accuracy": 0.7096774193548387,
+                "correct": 660,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_other": 136,
+                "false_fall_support_gap": 152
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9067796610169492,
+                  "correct": 642,
+                  "total": 708
+                },
+                "high_confidence_coverage": 0.7612903225806451,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 222
+                },
+                "low_confidence_coverage": 0.23870967741935484
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.6903225806451613,
+                "correct": 642,
+                "total": 930
+              },
+              "delta": 0.05,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 288
+              },
+              "repair_actions": {
+                "bridge_support_gap": 3
+              },
+              "repaired": {
+                "accuracy": 0.6903225806451613,
+                "correct": 642,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_other": 255,
+                "false_fall_support_gap": 33
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.6985854189336235,
+                  "correct": 642,
+                  "total": 919
+                },
+                "high_confidence_coverage": 0.9881720430107527,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 11
+                },
+                "low_confidence_coverage": 0.011827956989247311
+              }
+            }
+          ]
+        }
+      },
+      "xy": {
+        "all": [
+          {
+            "baseline": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "delta": 0.0,
+            "recovered_by_category": {},
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 0,
+              "recovery_rate": 0.0,
+              "regressions": 0,
+              "wrong_before": 0
+            },
+            "repair_actions": {},
+            "repaired": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "taxonomy": {},
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 5116,
+                "total": 5116
+              },
+              "high_confidence_coverage": 1.0,
+              "low_confidence": {
+                "accuracy": 0.0,
+                "correct": 0,
+                "total": 0
+              },
+              "low_confidence_coverage": 0.0
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "delta": 0.0001,
+            "recovered_by_category": {},
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 0,
+              "recovery_rate": 0.0,
+              "regressions": 0,
+              "wrong_before": 0
+            },
+            "repair_actions": {},
+            "repaired": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "taxonomy": {},
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 5116,
+                "total": 5116
+              },
+              "high_confidence_coverage": 1.0,
+              "low_confidence": {
+                "accuracy": 0.0,
+                "correct": 0,
+                "total": 0
+              },
+              "low_confidence_coverage": 0.0
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.8459734167318217,
+              "correct": 4328,
+              "total": 5116
+            },
+            "delta": 0.001,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 218,
+              "false_fall_other": 201,
+              "false_fall_support_gap": 14
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 433,
+              "recovery_rate": 0.549492385786802,
+              "regressions": 0,
+              "wrong_before": 788
+            },
+            "repair_actions": {
+              "bridge_support_gap": 33,
+              "snap_horizontal_edge": 127,
+              "snap_to_support_top": 226
+            },
+            "repaired": {
+              "accuracy": 0.9306098514464425,
+              "correct": 4761,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 289,
+              "false_fall_other": 407,
+              "false_fall_support_gap": 92
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 3040,
+                "total": 3040
+              },
+              "high_confidence_coverage": 0.5942142298670836,
+              "low_confidence": {
+                "accuracy": 0.6204238921001927,
+                "correct": 1288,
+                "total": 2076
+              },
+              "low_confidence_coverage": 0.40578577013291633
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.5660672400312744,
+              "correct": 2896,
+              "total": 5116
+            },
+            "delta": 0.005,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 438,
+              "false_fall_missed_ground": 908,
+              "false_fall_other": 103,
+              "false_fall_support_gap": 3
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 1452,
+              "recovery_rate": 0.654054054054054,
+              "regressions": 0,
+              "wrong_before": 2220
+            },
+            "repair_actions": {
+              "bridge_support_gap": 109,
+              "snap_horizontal_edge": 18,
+              "snap_to_ground": 908,
+              "snap_to_support_top": 607
+            },
+            "repaired": {
+              "accuracy": 0.8498827208756842,
+              "correct": 4348,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 1034,
+              "false_fall_missed_ground": 908,
+              "false_fall_other": 197,
+              "false_fall_support_gap": 81
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 2754,
+                "total": 2754
+              },
+              "high_confidence_coverage": 0.5383111806098514,
+              "low_confidence": {
+                "accuracy": 0.060118543607112614,
+                "correct": 142,
+                "total": 2362
+              },
+              "low_confidence_coverage": 0.46168881939014855
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.5461297888975762,
+              "correct": 2794,
+              "total": 5116
+            },
+            "delta": 0.01,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 441,
+              "false_fall_missed_ground": 1005,
+              "false_fall_other": 39,
+              "false_fall_support_gap": 2
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 1487,
+              "recovery_rate": 0.640396210163652,
+              "regressions": 0,
+              "wrong_before": 2322
+            },
+            "repair_actions": {
+              "bridge_support_gap": 101,
+              "snap_horizontal_edge": 13,
+              "snap_to_ground": 1005,
+              "snap_to_support_top": 601
+            },
+            "repaired": {
+              "accuracy": 0.8367865519937451,
+              "correct": 4281,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 1154,
+              "false_fall_missed_ground": 1005,
+              "false_fall_other": 99,
+              "false_fall_support_gap": 64
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 0.8627700127064803,
+                "correct": 2716,
+                "total": 3148
+              },
+              "high_confidence_coverage": 0.6153244722439406,
+              "low_confidence": {
+                "accuracy": 0.039634146341463415,
+                "correct": 78,
+                "total": 1968
+              },
+              "low_confidence_coverage": 0.3846755277560594
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.5271696637998436,
+              "correct": 2697,
+              "total": 5116
+            },
+            "delta": 0.05,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 11,
+              "false_fall_missed_ground": 272,
+              "false_fall_other": 2
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 285,
+              "recovery_rate": 0.11781727986771393,
+              "regressions": 0,
+              "wrong_before": 2419
+            },
+            "repair_actions": {
+              "snap_to_ground": 272,
+              "snap_to_support_top": 10
+            },
+            "repaired": {
+              "accuracy": 0.5828772478498827,
+              "correct": 2982,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 503,
+              "false_fall_missed_ground": 418,
+              "false_fall_other": 1496,
+              "false_fall_support_gap": 2
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 0.5567095970087246,
+                "correct": 2680,
+                "total": 4814
+              },
+              "high_confidence_coverage": 0.9409695074276778,
+              "low_confidence": {
+                "accuracy": 0.056291390728476824,
+                "correct": 17,
+                "total": 302
+              },
+              "low_confidence_coverage": 0.059030492572322124
+            }
+          }
+        ],
+        "axes": [
+          "x",
+          "y"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1040,
+                  "total": 1040
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1040,
+                  "total": 1040
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.7490384615384615,
+                "correct": 779,
+                "total": 1040
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 37,
+                "false_fall_other": 53,
+                "false_fall_support_gap": 4
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 94,
+                "recovery_rate": 0.36015325670498083,
+                "regressions": 0,
+                "wrong_before": 261
+              },
+              "repair_actions": {
+                "bridge_support_gap": 11,
+                "snap_horizontal_edge": 36,
+                "snap_to_support_top": 48
+              },
+              "repaired": {
+                "accuracy": 0.8394230769230769,
+                "correct": 873,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 78,
+                "false_fall_other": 159,
+                "false_fall_support_gap": 24
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 501,
+                  "total": 501
+                },
+                "high_confidence_coverage": 0.48173076923076924,
+                "low_confidence": {
+                  "accuracy": 0.5157699443413729,
+                  "correct": 278,
+                  "total": 539
+                },
+                "low_confidence_coverage": 0.5182692307692308
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.43173076923076925,
+                "correct": 449,
+                "total": 1040
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 27,
+                "false_fall_missed_ground": 231,
+                "false_fall_other": 3,
+                "false_fall_support_gap": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 262,
+                "recovery_rate": 0.4433164128595601,
+                "regressions": 0,
+                "wrong_before": 591
+              },
+              "repair_actions": {
+                "bridge_support_gap": 35,
+                "snap_horizontal_edge": 7,
+                "snap_to_ground": 231,
+                "snap_to_support_top": 85
+              },
+              "repaired": {
+                "accuracy": 0.6836538461538462,
+                "correct": 711,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 282,
+                "false_fall_missed_ground": 231,
+                "false_fall_other": 48,
+                "false_fall_support_gap": 30
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 426,
+                  "total": 426
+                },
+                "high_confidence_coverage": 0.4096153846153846,
+                "low_confidence": {
+                  "accuracy": 0.03745928338762215,
+                  "correct": 23,
+                  "total": 614
+                },
+                "low_confidence_coverage": 0.5903846153846154
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4182692307692308,
+                "correct": 435,
+                "total": 1040
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 8,
+                "false_fall_missed_ground": 245,
+                "false_fall_support_gap": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 254,
+                "recovery_rate": 0.41983471074380163,
+                "regressions": 0,
+                "wrong_before": 605
+              },
+              "repair_actions": {
+                "bridge_support_gap": 36,
+                "snap_horizontal_edge": 3,
+                "snap_to_ground": 245,
+                "snap_to_support_top": 56
+              },
+              "repaired": {
+                "accuracy": 0.6625,
+                "correct": 689,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 311,
+                "false_fall_missed_ground": 245,
+                "false_fall_other": 29,
+                "false_fall_support_gap": 20
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.7437275985663082,
+                  "correct": 415,
+                  "total": 558
+                },
+                "high_confidence_coverage": 0.5365384615384615,
+                "low_confidence": {
+                  "accuracy": 0.04149377593360996,
+                  "correct": 20,
+                  "total": 482
+                },
+                "low_confidence_coverage": 0.4634615384615385
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.3971153846153846,
+                "correct": 413,
+                "total": 1040
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_ground": 70
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 70,
+                "recovery_rate": 0.11164274322169059,
+                "regressions": 0,
+                "wrong_before": 627
+              },
+              "repair_actions": {
+                "snap_to_ground": 70
+              },
+              "repaired": {
+                "accuracy": 0.46442307692307694,
+                "correct": 483,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 138,
+                "false_fall_missed_ground": 109,
+                "false_fall_other": 378,
+                "false_fall_support_gap": 2
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.4239917269906929,
+                  "correct": 410,
+                  "total": 967
+                },
+                "high_confidence_coverage": 0.9298076923076923,
+                "low_confidence": {
+                  "accuracy": 0.0410958904109589,
+                  "correct": 3,
+                  "total": 73
+                },
+                "low_confidence_coverage": 0.07019230769230769
+              }
+            }
+          ],
+          "counterfactual": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1730,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1730,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9699421965317919,
+                "correct": 1678,
+                "total": 1730
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 13,
+                "false_fall_other": 3,
+                "false_fall_support_gap": 3
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 19,
+                "recovery_rate": 0.36538461538461536,
+                "regressions": 0,
+                "wrong_before": 52
+              },
+              "repair_actions": {
+                "bridge_support_gap": 6,
+                "snap_horizontal_edge": 19,
+                "snap_to_support_top": 11
+              },
+              "repaired": {
+                "accuracy": 0.9809248554913295,
+                "correct": 1697,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 22,
+                "false_fall_other": 14,
+                "false_fall_support_gap": 16
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1440,
+                  "total": 1440
+                },
+                "high_confidence_coverage": 0.8323699421965318,
+                "low_confidence": {
+                  "accuracy": 0.8206896551724138,
+                  "correct": 238,
+                  "total": 290
+                },
+                "low_confidence_coverage": 0.1676300578034682
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.8294797687861272,
+                "correct": 1435,
+                "total": 1730
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 15,
+                "false_fall_missed_ground": 216,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 232,
+                "recovery_rate": 0.7864406779661017,
+                "regressions": 0,
+                "wrong_before": 295
+              },
+              "repair_actions": {
+                "bridge_support_gap": 15,
+                "snap_horizontal_edge": 3,
+                "snap_to_ground": 216,
+                "snap_to_support_top": 34
+              },
+              "repaired": {
+                "accuracy": 0.9635838150289018,
+                "correct": 1667,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 62,
+                "false_fall_missed_ground": 216,
+                "false_fall_other": 5,
+                "false_fall_support_gap": 12
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1389,
+                  "total": 1389
+                },
+                "high_confidence_coverage": 0.8028901734104046,
+                "low_confidence": {
+                  "accuracy": 0.1348973607038123,
+                  "correct": 46,
+                  "total": 341
+                },
+                "low_confidence_coverage": 0.1971098265895954
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.8063583815028902,
+                "correct": 1395,
+                "total": 1730
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 17,
+                "false_fall_missed_ground": 255,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 273,
+                "recovery_rate": 0.8149253731343283,
+                "regressions": 0,
+                "wrong_before": 335
+              },
+              "repair_actions": {
+                "bridge_support_gap": 11,
+                "snap_horizontal_edge": 2,
+                "snap_to_ground": 255,
+                "snap_to_support_top": 46
+              },
+              "repaired": {
+                "accuracy": 0.9641618497109826,
+                "correct": 1668,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 68,
+                "false_fall_missed_ground": 255,
+                "false_fall_other": 4,
+                "false_fall_support_gap": 8
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9835125448028674,
+                  "correct": 1372,
+                  "total": 1395
+                },
+                "high_confidence_coverage": 0.8063583815028902,
+                "low_confidence": {
+                  "accuracy": 0.06865671641791045,
+                  "correct": 23,
+                  "total": 335
+                },
+                "low_confidence_coverage": 0.1936416184971098
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.791907514450867,
+                "correct": 1370,
+                "total": 1730
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_ground": 75,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 76,
+                "recovery_rate": 0.2111111111111111,
+                "regressions": 0,
+                "wrong_before": 360
+              },
+              "repair_actions": {
+                "snap_to_ground": 75,
+                "snap_to_support_top": 1
+              },
+              "repaired": {
+                "accuracy": 0.8358381502890173,
+                "correct": 1446,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 39,
+                "false_fall_missed_ground": 112,
+                "false_fall_other": 209
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.8271679805942995,
+                  "correct": 1364,
+                  "total": 1649
+                },
+                "high_confidence_coverage": 0.9531791907514451,
+                "low_confidence": {
+                  "accuracy": 0.07407407407407407,
+                  "correct": 6,
+                  "total": 81
+                },
+                "low_confidence_coverage": 0.04682080924855491
+              }
+            }
+          ],
+          "deeper_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.7519607843137255,
+                "correct": 767,
+                "total": 1020
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 125,
+                "false_fall_other": 128
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 253,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 253
+              },
+              "repair_actions": {
+                "snap_to_support_top": 121
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 125,
+                "false_fall_other": 128
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 481,
+                  "total": 481
+                },
+                "high_confidence_coverage": 0.4715686274509804,
+                "low_confidence": {
+                  "accuracy": 0.5306122448979592,
+                  "correct": 286,
+                  "total": 539
+                },
+                "low_confidence_coverage": 0.5284313725490196
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.44803921568627453,
+                "correct": 457,
+                "total": 1020
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 272,
+                "false_fall_missed_ground": 106,
+                "false_fall_other": 79
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 457,
+                "recovery_rate": 0.8117229129662522,
+                "regressions": 0,
+                "wrong_before": 563
+              },
+              "repair_actions": {
+                "snap_to_ground": 106,
+                "snap_to_support_top": 276
+              },
+              "repaired": {
+                "accuracy": 0.8960784313725491,
+                "correct": 914,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 357,
+                "false_fall_missed_ground": 106,
+                "false_fall_other": 100
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 435,
+                  "total": 435
+                },
+                "high_confidence_coverage": 0.4264705882352941,
+                "low_confidence": {
+                  "accuracy": 0.037606837606837605,
+                  "correct": 22,
+                  "total": 585
+                },
+                "low_confidence_coverage": 0.5735294117647058
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.43333333333333335,
+                "correct": 442,
+                "total": 1020
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 282,
+                "false_fall_missed_ground": 120,
+                "false_fall_other": 30
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 432,
+                "recovery_rate": 0.7474048442906575,
+                "regressions": 0,
+                "wrong_before": 578
+              },
+              "repair_actions": {
+                "snap_to_ground": 120,
+                "snap_to_support_top": 276
+              },
+              "repaired": {
+                "accuracy": 0.8568627450980392,
+                "correct": 874,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 413,
+                "false_fall_missed_ground": 120,
+                "false_fall_other": 45
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.7592920353982301,
+                  "correct": 429,
+                  "total": 565
+                },
+                "high_confidence_coverage": 0.553921568627451,
+                "low_confidence": {
+                  "accuracy": 0.02857142857142857,
+                  "correct": 13,
+                  "total": 455
+                },
+                "low_confidence_coverage": 0.44607843137254904
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4235294117647059,
+                "correct": 432,
+                "total": 1020
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 8,
+                "false_fall_missed_ground": 30
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 38,
+                "recovery_rate": 0.06462585034013606,
+                "regressions": 0,
+                "wrong_before": 588
+              },
+              "repair_actions": {
+                "snap_to_ground": 30,
+                "snap_to_support_top": 5
+              },
+              "repaired": {
+                "accuracy": 0.46078431372549017,
+                "correct": 470,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 156,
+                "false_fall_missed_ground": 49,
+                "false_fall_other": 383
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.4376278118609407,
+                  "correct": 428,
+                  "total": 978
+                },
+                "high_confidence_coverage": 0.9588235294117647,
+                "low_confidence": {
+                  "accuracy": 0.09523809523809523,
+                  "correct": 4,
+                  "total": 42
+                },
+                "low_confidence_coverage": 0.041176470588235294
+              }
+            }
+          ],
+          "id": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9318181818181818,
+                "correct": 369,
+                "total": 396
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 24,
+                "false_fall_other": 3
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 27,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 27
+              },
+              "repair_actions": {
+                "snap_to_support_top": 23
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 24,
+                "false_fall_other": 3
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 191,
+                  "total": 191
+                },
+                "high_confidence_coverage": 0.4823232323232323,
+                "low_confidence": {
+                  "accuracy": 0.8682926829268293,
+                  "correct": 178,
+                  "total": 205
+                },
+                "low_confidence_coverage": 0.5176767676767676
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4116161616161616,
+                "correct": 163,
+                "total": 396
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 110,
+                "false_fall_missed_ground": 105,
+                "false_fall_other": 18
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 233,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 233
+              },
+              "repair_actions": {
+                "snap_to_ground": 105,
+                "snap_to_support_top": 105
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 110,
+                "false_fall_missed_ground": 105,
+                "false_fall_other": 18
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 145,
+                  "total": 145
+                },
+                "high_confidence_coverage": 0.3661616161616162,
+                "low_confidence": {
+                  "accuracy": 0.07171314741035857,
+                  "correct": 18,
+                  "total": 251
+                },
+                "low_confidence_coverage": 0.6338383838383839
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.37626262626262624,
+                "correct": 149,
+                "total": 396
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 123,
+                "false_fall_missed_ground": 116,
+                "false_fall_other": 8
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 247,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 247
+              },
+              "repair_actions": {
+                "snap_to_ground": 116,
+                "snap_to_support_top": 115
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 123,
+                "false_fall_missed_ground": 116,
+                "false_fall_other": 8
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9044585987261147,
+                  "correct": 142,
+                  "total": 157
+                },
+                "high_confidence_coverage": 0.39646464646464646,
+                "low_confidence": {
+                  "accuracy": 0.029288702928870293,
+                  "correct": 7,
+                  "total": 239
+                },
+                "low_confidence_coverage": 0.6035353535353535
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.3484848484848485,
+                "correct": 138,
+                "total": 396
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 3,
+                "false_fall_missed_ground": 25,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 29,
+                "recovery_rate": 0.1124031007751938,
+                "regressions": 0,
+                "wrong_before": 258
+              },
+              "repair_actions": {
+                "snap_to_ground": 25,
+                "snap_to_support_top": 4
+              },
+              "repaired": {
+                "accuracy": 0.4217171717171717,
+                "correct": 167,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 43,
+                "false_fall_missed_ground": 37,
+                "false_fall_other": 178
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.37362637362637363,
+                  "correct": 136,
+                  "total": 364
+                },
+                "high_confidence_coverage": 0.9191919191919192,
+                "low_confidence": {
+                  "accuracy": 0.0625,
+                  "correct": 2,
+                  "total": 32
+                },
+                "low_confidence_coverage": 0.08080808080808081
+              }
+            }
+          ],
+          "larger_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 930,
+                  "total": 930
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 930,
+                  "total": 930
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.7903225806451613,
+                "correct": 735,
+                "total": 930
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 19,
+                "false_fall_other": 14,
+                "false_fall_support_gap": 7
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 40,
+                "recovery_rate": 0.20512820512820512,
+                "regressions": 0,
+                "wrong_before": 195
+              },
+              "repair_actions": {
+                "bridge_support_gap": 16,
+                "snap_horizontal_edge": 72,
+                "snap_to_support_top": 23
+              },
+              "repaired": {
+                "accuracy": 0.8333333333333334,
+                "correct": 775,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 40,
+                "false_fall_other": 103,
+                "false_fall_support_gap": 52
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 427,
+                  "total": 427
+                },
+                "high_confidence_coverage": 0.4591397849462366,
+                "low_confidence": {
+                  "accuracy": 0.6123260437375746,
+                  "correct": 308,
+                  "total": 503
+                },
+                "low_confidence_coverage": 0.5408602150537635
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.421505376344086,
+                "correct": 392,
+                "total": 930
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 14,
+                "false_fall_missed_ground": 250,
+                "false_fall_other": 2,
+                "false_fall_support_gap": 2
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 268,
+                "recovery_rate": 0.49814126394052044,
+                "regressions": 0,
+                "wrong_before": 538
+              },
+              "repair_actions": {
+                "bridge_support_gap": 59,
+                "snap_horizontal_edge": 8,
+                "snap_to_ground": 250,
+                "snap_to_support_top": 107
+              },
+              "repaired": {
+                "accuracy": 0.7096774193548387,
+                "correct": 660,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 223,
+                "false_fall_missed_ground": 250,
+                "false_fall_other": 26,
+                "false_fall_support_gap": 39
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 359,
+                  "total": 359
+                },
+                "high_confidence_coverage": 0.3860215053763441,
+                "low_confidence": {
+                  "accuracy": 0.05779334500875657,
+                  "correct": 33,
+                  "total": 571
+                },
+                "low_confidence_coverage": 0.613978494623656
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4010752688172043,
+                "correct": 373,
+                "total": 930
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 11,
+                "false_fall_missed_ground": 269,
+                "false_fall_support_gap": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 281,
+                "recovery_rate": 0.5044883303411131,
+                "regressions": 0,
+                "wrong_before": 557
+              },
+              "repair_actions": {
+                "bridge_support_gap": 54,
+                "snap_horizontal_edge": 8,
+                "snap_to_ground": 269,
+                "snap_to_support_top": 108
+              },
+              "repaired": {
+                "accuracy": 0.7032258064516129,
+                "correct": 654,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 239,
+                "false_fall_missed_ground": 269,
+                "false_fall_other": 13,
+                "false_fall_support_gap": 36
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.7568710359408034,
+                  "correct": 358,
+                  "total": 473
+                },
+                "high_confidence_coverage": 0.5086021505376344,
+                "low_confidence": {
+                  "accuracy": 0.03282275711159737,
+                  "correct": 15,
+                  "total": 457
+                },
+                "low_confidence_coverage": 0.4913978494623656
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.36989247311827955,
+                "correct": 344,
+                "total": 930
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_ground": 72
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 72,
+                "recovery_rate": 0.12286689419795221,
+                "regressions": 0,
+                "wrong_before": 586
+              },
+              "repair_actions": {
+                "snap_to_ground": 72
+              },
+              "repaired": {
+                "accuracy": 0.44731182795698926,
+                "correct": 416,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 127,
+                "false_fall_missed_ground": 111,
+                "false_fall_other": 348
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.39953271028037385,
+                  "correct": 342,
+                  "total": 856
+                },
+                "high_confidence_coverage": 0.9204301075268817,
+                "low_confidence": {
+                  "accuracy": 0.02702702702702703,
+                  "correct": 2,
+                  "total": 74
+                },
+                "low_confidence_coverage": 0.07956989247311828
+              }
+            }
+          ]
+        }
+      },
+      "y_only": {
+        "all": [
+          {
+            "baseline": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "delta": 0.0,
+            "recovered_by_category": {},
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 0,
+              "recovery_rate": 0.0,
+              "regressions": 0,
+              "wrong_before": 0
+            },
+            "repair_actions": {},
+            "repaired": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "taxonomy": {},
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 5116,
+                "total": 5116
+              },
+              "high_confidence_coverage": 1.0,
+              "low_confidence": {
+                "accuracy": 0.0,
+                "correct": 0,
+                "total": 0
+              },
+              "low_confidence_coverage": 0.0
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "delta": 0.0001,
+            "recovered_by_category": {},
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 0,
+              "recovery_rate": 0.0,
+              "regressions": 0,
+              "wrong_before": 0
+            },
+            "repair_actions": {},
+            "repaired": {
+              "accuracy": 1.0,
+              "correct": 5116,
+              "total": 5116
+            },
+            "taxonomy": {},
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 5116,
+                "total": 5116
+              },
+              "high_confidence_coverage": 1.0,
+              "low_confidence": {
+                "accuracy": 0.0,
+                "correct": 0,
+                "total": 0
+              },
+              "low_confidence_coverage": 0.0
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.8653244722439406,
+              "correct": 4427,
+              "total": 5116
+            },
+            "delta": 0.001,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 252,
+              "false_fall_other": 178
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 430,
+              "recovery_rate": 0.6240928882438317,
+              "regressions": 0,
+              "wrong_before": 689
+            },
+            "repair_actions": {
+              "snap_to_support_top": 232
+            },
+            "repaired": {
+              "accuracy": 0.949374511336982,
+              "correct": 4857,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 296,
+              "false_fall_other": 393
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 3070,
+                "total": 3070
+              },
+              "high_confidence_coverage": 0.6000781860828772,
+              "low_confidence": {
+                "accuracy": 0.6632453567937439,
+                "correct": 1357,
+                "total": 2046
+              },
+              "low_confidence_coverage": 0.3999218139171227
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.5709538702111024,
+              "correct": 2921,
+              "total": 5116
+            },
+            "delta": 0.005,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 857,
+              "false_fall_missed_ground": 886,
+              "false_fall_other": 219
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 1962,
+              "recovery_rate": 0.8938496583143508,
+              "regressions": 0,
+              "wrong_before": 2195
+            },
+            "repair_actions": {
+              "snap_to_ground": 886,
+              "snap_to_support_top": 874
+            },
+            "repaired": {
+              "accuracy": 0.9544566067240031,
+              "correct": 4883,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 1042,
+              "false_fall_missed_ground": 886,
+              "false_fall_other": 267
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 1.0,
+                "correct": 2757,
+                "total": 2757
+              },
+              "high_confidence_coverage": 0.5388975762314308,
+              "low_confidence": {
+                "accuracy": 0.069520983467571,
+                "correct": 164,
+                "total": 2359
+              },
+              "low_confidence_coverage": 0.4611024237685692
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.5474980453479281,
+              "correct": 2801,
+              "total": 5116
+            },
+            "delta": 0.01,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 923,
+              "false_fall_missed_ground": 998,
+              "false_fall_other": 134
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 2055,
+              "recovery_rate": 0.8876889848812095,
+              "regressions": 0,
+              "wrong_before": 2315
+            },
+            "repair_actions": {
+              "snap_to_ground": 998,
+              "snap_to_support_top": 949
+            },
+            "repaired": {
+              "accuracy": 0.9491790461297889,
+              "correct": 4856,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 1159,
+              "false_fall_missed_ground": 998,
+              "false_fall_other": 158
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 0.8907121759107318,
+                "correct": 2714,
+                "total": 3047
+              },
+              "high_confidence_coverage": 0.5955824863174355,
+              "low_confidence": {
+                "accuracy": 0.04204929917834703,
+                "correct": 87,
+                "total": 2069
+              },
+              "low_confidence_coverage": 0.4044175136825645
+            }
+          },
+          {
+            "baseline": {
+              "accuracy": 0.5261923377638781,
+              "correct": 2692,
+              "total": 5116
+            },
+            "delta": 0.05,
+            "recovered_by_category": {
+              "false_fall_missed_contact": 21,
+              "false_fall_missed_ground": 295,
+              "false_fall_other": 5
+            },
+            "recovery": {
+              "introduced_false_supports": 0,
+              "recovered": 321,
+              "recovery_rate": 0.13242574257425743,
+              "regressions": 0,
+              "wrong_before": 2424
+            },
+            "repair_actions": {
+              "snap_to_ground": 295,
+              "snap_to_support_top": 25
+            },
+            "repaired": {
+              "accuracy": 0.5889366692728695,
+              "correct": 3013,
+              "total": 5116
+            },
+            "taxonomy": {
+              "false_fall_missed_contact": 480,
+              "false_fall_missed_ground": 443,
+              "false_fall_other": 1501
+            },
+            "triage": {
+              "high_confidence": {
+                "accuracy": 0.5594566353187043,
+                "correct": 2677,
+                "total": 4785
+              },
+              "high_confidence_coverage": 0.9353010164190774,
+              "low_confidence": {
+                "accuracy": 0.045317220543806644,
+                "correct": 15,
+                "total": 331
+              },
+              "low_confidence_coverage": 0.06469898358092259
+            }
+          }
+        ],
+        "axes": [
+          "y"
+        ],
+        "by_split": {
+          "branching_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1040,
+                  "total": 1040
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1040,
+                "total": 1040
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1040,
+                  "total": 1040
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.7740384615384616,
+                "correct": 805,
+                "total": 1040
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 54,
+                "false_fall_other": 43
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 97,
+                "recovery_rate": 0.4127659574468085,
+                "regressions": 0,
+                "wrong_before": 235
+              },
+              "repair_actions": {
+                "snap_to_support_top": 54
+              },
+              "repaired": {
+                "accuracy": 0.8673076923076923,
+                "correct": 902,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 82,
+                "false_fall_other": 153
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 505,
+                  "total": 505
+                },
+                "high_confidence_coverage": 0.4855769230769231,
+                "low_confidence": {
+                  "accuracy": 0.5607476635514018,
+                  "correct": 300,
+                  "total": 535
+                },
+                "low_confidence_coverage": 0.5144230769230769
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4442307692307692,
+                "correct": 462,
+                "total": 1040
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 215,
+                "false_fall_missed_ground": 219,
+                "false_fall_other": 57
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 491,
+                "recovery_rate": 0.8494809688581315,
+                "regressions": 0,
+                "wrong_before": 578
+              },
+              "repair_actions": {
+                "snap_to_ground": 219,
+                "snap_to_support_top": 221
+              },
+              "repaired": {
+                "accuracy": 0.9163461538461538,
+                "correct": 953,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 281,
+                "false_fall_missed_ground": 219,
+                "false_fall_other": 78
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 423,
+                  "total": 423
+                },
+                "high_confidence_coverage": 0.40673076923076923,
+                "low_confidence": {
+                  "accuracy": 0.06320907617504051,
+                  "correct": 39,
+                  "total": 617
+                },
+                "low_confidence_coverage": 0.5932692307692308
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.41634615384615387,
+                "correct": 433,
+                "total": 1040
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 231,
+                "false_fall_missed_ground": 247,
+                "false_fall_other": 30
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 508,
+                "recovery_rate": 0.8369028006589786,
+                "regressions": 0,
+                "wrong_before": 607
+              },
+              "repair_actions": {
+                "snap_to_ground": 247,
+                "snap_to_support_top": 235
+              },
+              "repaired": {
+                "accuracy": 0.9048076923076923,
+                "correct": 941,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 323,
+                "false_fall_missed_ground": 247,
+                "false_fall_other": 37
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.7934990439770554,
+                  "correct": 415,
+                  "total": 523
+                },
+                "high_confidence_coverage": 0.5028846153846154,
+                "low_confidence": {
+                  "accuracy": 0.03481624758220503,
+                  "correct": 18,
+                  "total": 517
+                },
+                "low_confidence_coverage": 0.4971153846153846
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.39807692307692305,
+                "correct": 414,
+                "total": 1040
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_ground": 66
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 66,
+                "recovery_rate": 0.10543130990415335,
+                "regressions": 0,
+                "wrong_before": 626
+              },
+              "repair_actions": {
+                "snap_to_ground": 66
+              },
+              "repaired": {
+                "accuracy": 0.46153846153846156,
+                "correct": 480,
+                "total": 1040
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 142,
+                "false_fall_missed_ground": 107,
+                "false_fall_other": 377
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.4214876033057851,
+                  "correct": 408,
+                  "total": 968
+                },
+                "high_confidence_coverage": 0.9307692307692308,
+                "low_confidence": {
+                  "accuracy": 0.08333333333333333,
+                  "correct": 6,
+                  "total": 72
+                },
+                "low_confidence_coverage": 0.06923076923076923
+              }
+            }
+          ],
+          "counterfactual": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1730,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1730,
+                "total": 1730
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1730,
+                  "total": 1730
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9791907514450867,
+                "correct": 1694,
+                "total": 1730
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 16,
+                "false_fall_other": 2
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 18,
+                "recovery_rate": 0.5,
+                "regressions": 0,
+                "wrong_before": 36
+              },
+              "repair_actions": {
+                "snap_to_support_top": 14
+              },
+              "repaired": {
+                "accuracy": 0.9895953757225433,
+                "correct": 1712,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 17,
+                "false_fall_other": 19
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1458,
+                  "total": 1458
+                },
+                "high_confidence_coverage": 0.8427745664739884,
+                "low_confidence": {
+                  "accuracy": 0.8676470588235294,
+                  "correct": 236,
+                  "total": 272
+                },
+                "low_confidence_coverage": 0.15722543352601157
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.8277456647398844,
+                "correct": 1432,
+                "total": 1730
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 57,
+                "false_fall_missed_ground": 219,
+                "false_fall_other": 15
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 291,
+                "recovery_rate": 0.9765100671140939,
+                "regressions": 0,
+                "wrong_before": 298
+              },
+              "repair_actions": {
+                "snap_to_ground": 219,
+                "snap_to_support_top": 58
+              },
+              "repaired": {
+                "accuracy": 0.9959537572254336,
+                "correct": 1723,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 64,
+                "false_fall_missed_ground": 219,
+                "false_fall_other": 15
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1391,
+                  "total": 1391
+                },
+                "high_confidence_coverage": 0.8040462427745665,
+                "low_confidence": {
+                  "accuracy": 0.12094395280235988,
+                  "correct": 41,
+                  "total": 339
+                },
+                "low_confidence_coverage": 0.19595375722543354
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.8098265895953757,
+                "correct": 1401,
+                "total": 1730
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 64,
+                "false_fall_missed_ground": 249,
+                "false_fall_other": 14
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 327,
+                "recovery_rate": 0.993920972644377,
+                "regressions": 0,
+                "wrong_before": 329
+              },
+              "repair_actions": {
+                "snap_to_ground": 249,
+                "snap_to_support_top": 71
+              },
+              "repaired": {
+                "accuracy": 0.9988439306358381,
+                "correct": 1728,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 66,
+                "false_fall_missed_ground": 249,
+                "false_fall_other": 14
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.9863505747126436,
+                  "correct": 1373,
+                  "total": 1392
+                },
+                "high_confidence_coverage": 0.8046242774566474,
+                "low_confidence": {
+                  "accuracy": 0.08284023668639054,
+                  "correct": 28,
+                  "total": 338
+                },
+                "low_confidence_coverage": 0.19537572254335261
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.791907514450867,
+                "correct": 1370,
+                "total": 1730
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 1,
+                "false_fall_missed_ground": 68,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 70,
+                "recovery_rate": 0.19444444444444445,
+                "regressions": 0,
+                "wrong_before": 360
+              },
+              "repair_actions": {
+                "snap_to_ground": 68,
+                "snap_to_support_top": 2
+              },
+              "repaired": {
+                "accuracy": 0.8323699421965318,
+                "correct": 1440,
+                "total": 1730
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 30,
+                "false_fall_missed_ground": 109,
+                "false_fall_other": 221
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.824773413897281,
+                  "correct": 1365,
+                  "total": 1655
+                },
+                "high_confidence_coverage": 0.9566473988439307,
+                "low_confidence": {
+                  "accuracy": 0.06666666666666667,
+                  "correct": 5,
+                  "total": 75
+                },
+                "low_confidence_coverage": 0.04335260115606936
+              }
+            }
+          ],
+          "deeper_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 1020,
+                "total": 1020
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 1020,
+                  "total": 1020
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.7627450980392156,
+                "correct": 778,
+                "total": 1020
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 120,
+                "false_fall_other": 119
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 239,
+                "recovery_rate": 0.987603305785124,
+                "regressions": 0,
+                "wrong_before": 242
+              },
+              "repair_actions": {
+                "snap_to_support_top": 109
+              },
+              "repaired": {
+                "accuracy": 0.9970588235294118,
+                "correct": 1017,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 121,
+                "false_fall_other": 121
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 480,
+                  "total": 480
+                },
+                "high_confidence_coverage": 0.47058823529411764,
+                "low_confidence": {
+                  "accuracy": 0.5518518518518518,
+                  "correct": 298,
+                  "total": 540
+                },
+                "low_confidence_coverage": 0.5294117647058824
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.44313725490196076,
+                "correct": 452,
+                "total": 1020
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 272,
+                "false_fall_missed_ground": 112,
+                "false_fall_other": 64
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 448,
+                "recovery_rate": 0.7887323943661971,
+                "regressions": 0,
+                "wrong_before": 568
+              },
+              "repair_actions": {
+                "snap_to_ground": 112,
+                "snap_to_support_top": 267
+              },
+              "repaired": {
+                "accuracy": 0.8823529411764706,
+                "correct": 900,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 368,
+                "false_fall_missed_ground": 112,
+                "false_fall_other": 88
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 437,
+                  "total": 437
+                },
+                "high_confidence_coverage": 0.4284313725490196,
+                "low_confidence": {
+                  "accuracy": 0.025728987993138937,
+                  "correct": 15,
+                  "total": 583
+                },
+                "low_confidence_coverage": 0.5715686274509804
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4303921568627451,
+                "correct": 439,
+                "total": 1020
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 284,
+                "false_fall_missed_ground": 123,
+                "false_fall_other": 30
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 437,
+                "recovery_rate": 0.7521514629948365,
+                "regressions": 0,
+                "wrong_before": 581
+              },
+              "repair_actions": {
+                "snap_to_ground": 123,
+                "snap_to_support_top": 268
+              },
+              "repaired": {
+                "accuracy": 0.8588235294117647,
+                "correct": 876,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 415,
+                "false_fall_missed_ground": 123,
+                "false_fall_other": 43
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.7948243992606284,
+                  "correct": 430,
+                  "total": 541
+                },
+                "high_confidence_coverage": 0.5303921568627451,
+                "low_confidence": {
+                  "accuracy": 0.018789144050104383,
+                  "correct": 9,
+                  "total": 479
+                },
+                "low_confidence_coverage": 0.4696078431372549
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.42058823529411765,
+                "correct": 429,
+                "total": 1020
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 9,
+                "false_fall_missed_ground": 38,
+                "false_fall_other": 2
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 49,
+                "recovery_rate": 0.0829103214890017,
+                "regressions": 0,
+                "wrong_before": 591
+              },
+              "repair_actions": {
+                "snap_to_ground": 38,
+                "snap_to_support_top": 11
+              },
+              "repaired": {
+                "accuracy": 0.46862745098039216,
+                "correct": 478,
+                "total": 1020
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 152,
+                "false_fall_missed_ground": 46,
+                "false_fall_other": 393
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.4406604747162023,
+                  "correct": 427,
+                  "total": 969
+                },
+                "high_confidence_coverage": 0.95,
+                "low_confidence": {
+                  "accuracy": 0.0392156862745098,
+                  "correct": 2,
+                  "total": 51
+                },
+                "low_confidence_coverage": 0.05
+              }
+            }
+          ],
+          "id": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 396,
+                  "total": 396
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.9141414141414141,
+                "correct": 362,
+                "total": 396
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 31,
+                "false_fall_other": 3
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 34,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 34
+              },
+              "repair_actions": {
+                "snap_to_support_top": 28
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 31,
+                "false_fall_other": 3
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 187,
+                  "total": 187
+                },
+                "high_confidence_coverage": 0.4722222222222222,
+                "low_confidence": {
+                  "accuracy": 0.8373205741626795,
+                  "correct": 175,
+                  "total": 209
+                },
+                "low_confidence_coverage": 0.5277777777777778
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4116161616161616,
+                "correct": 163,
+                "total": 396
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 110,
+                "false_fall_missed_ground": 103,
+                "false_fall_other": 20
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 233,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 233
+              },
+              "repair_actions": {
+                "snap_to_ground": 103,
+                "snap_to_support_top": 110
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 110,
+                "false_fall_missed_ground": 103,
+                "false_fall_other": 20
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 146,
+                  "total": 146
+                },
+                "high_confidence_coverage": 0.3686868686868687,
+                "low_confidence": {
+                  "accuracy": 0.068,
+                  "correct": 17,
+                  "total": 250
+                },
+                "low_confidence_coverage": 0.6313131313131313
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.37626262626262624,
+                "correct": 149,
+                "total": 396
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 114,
+                "false_fall_missed_ground": 115,
+                "false_fall_other": 18
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 247,
+                "recovery_rate": 1.0,
+                "regressions": 0,
+                "wrong_before": 247
+              },
+              "repair_actions": {
+                "snap_to_ground": 115,
+                "snap_to_support_top": 126
+              },
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 396,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 114,
+                "false_fall_missed_ground": 115,
+                "false_fall_other": 18
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.8903225806451613,
+                  "correct": 138,
+                  "total": 155
+                },
+                "high_confidence_coverage": 0.39141414141414144,
+                "low_confidence": {
+                  "accuracy": 0.04564315352697095,
+                  "correct": 11,
+                  "total": 241
+                },
+                "low_confidence_coverage": 0.6085858585858586
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.3409090909090909,
+                "correct": 135,
+                "total": 396
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 6,
+                "false_fall_missed_ground": 30,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 37,
+                "recovery_rate": 0.1417624521072797,
+                "regressions": 0,
+                "wrong_before": 261
+              },
+              "repair_actions": {
+                "snap_to_ground": 30,
+                "snap_to_support_top": 6
+              },
+              "repaired": {
+                "accuracy": 0.43434343434343436,
+                "correct": 172,
+                "total": 396
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 43,
+                "false_fall_missed_ground": 49,
+                "false_fall_other": 169
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.37604456824512533,
+                  "correct": 135,
+                  "total": 359
+                },
+                "high_confidence_coverage": 0.9065656565656566,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 37
+                },
+                "low_confidence_coverage": 0.09343434343434344
+              }
+            }
+          ],
+          "larger_ood": [
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "delta": 0.0,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 930,
+                  "total": 930
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "delta": 0.0001,
+              "recovered_by_category": {},
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 0,
+                "recovery_rate": 0.0,
+                "regressions": 0,
+                "wrong_before": 0
+              },
+              "repair_actions": {},
+              "repaired": {
+                "accuracy": 1.0,
+                "correct": 930,
+                "total": 930
+              },
+              "taxonomy": {},
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 930,
+                  "total": 930
+                },
+                "high_confidence_coverage": 1.0,
+                "low_confidence": {
+                  "accuracy": 0.0,
+                  "correct": 0,
+                  "total": 0
+                },
+                "low_confidence_coverage": 0.0
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.8473118279569892,
+                "correct": 788,
+                "total": 930
+              },
+              "delta": 0.001,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 31,
+                "false_fall_other": 11
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 42,
+                "recovery_rate": 0.29577464788732394,
+                "regressions": 0,
+                "wrong_before": 142
+              },
+              "repair_actions": {
+                "snap_to_support_top": 27
+              },
+              "repaired": {
+                "accuracy": 0.8924731182795699,
+                "correct": 830,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 45,
+                "false_fall_other": 97
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 440,
+                  "total": 440
+                },
+                "high_confidence_coverage": 0.4731182795698925,
+                "low_confidence": {
+                  "accuracy": 0.710204081632653,
+                  "correct": 348,
+                  "total": 490
+                },
+                "low_confidence_coverage": 0.5268817204301075
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.443010752688172,
+                "correct": 412,
+                "total": 930
+              },
+              "delta": 0.005,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 203,
+                "false_fall_missed_ground": 233,
+                "false_fall_other": 63
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 499,
+                "recovery_rate": 0.9633204633204633,
+                "regressions": 0,
+                "wrong_before": 518
+              },
+              "repair_actions": {
+                "snap_to_ground": 233,
+                "snap_to_support_top": 218
+              },
+              "repaired": {
+                "accuracy": 0.9795698924731183,
+                "correct": 911,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 219,
+                "false_fall_missed_ground": 233,
+                "false_fall_other": 66
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 1.0,
+                  "correct": 360,
+                  "total": 360
+                },
+                "high_confidence_coverage": 0.3870967741935484,
+                "low_confidence": {
+                  "accuracy": 0.0912280701754386,
+                  "correct": 52,
+                  "total": 570
+                },
+                "low_confidence_coverage": 0.6129032258064516
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.4075268817204301,
+                "correct": 379,
+                "total": 930
+              },
+              "delta": 0.01,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 230,
+                "false_fall_missed_ground": 264,
+                "false_fall_other": 42
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 536,
+                "recovery_rate": 0.9727767695099818,
+                "regressions": 0,
+                "wrong_before": 551
+              },
+              "repair_actions": {
+                "snap_to_ground": 264,
+                "snap_to_support_top": 249
+              },
+              "repaired": {
+                "accuracy": 0.9838709677419355,
+                "correct": 915,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 241,
+                "false_fall_missed_ground": 264,
+                "false_fall_other": 46
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.8211009174311926,
+                  "correct": 358,
+                  "total": 436
+                },
+                "high_confidence_coverage": 0.46881720430107526,
+                "low_confidence": {
+                  "accuracy": 0.04251012145748988,
+                  "correct": 21,
+                  "total": 494
+                },
+                "low_confidence_coverage": 0.5311827956989247
+              }
+            },
+            {
+              "baseline": {
+                "accuracy": 0.36989247311827955,
+                "correct": 344,
+                "total": 930
+              },
+              "delta": 0.05,
+              "recovered_by_category": {
+                "false_fall_missed_contact": 5,
+                "false_fall_missed_ground": 93,
+                "false_fall_other": 1
+              },
+              "recovery": {
+                "introduced_false_supports": 0,
+                "recovered": 99,
+                "recovery_rate": 0.1689419795221843,
+                "regressions": 0,
+                "wrong_before": 586
+              },
+              "repair_actions": {
+                "snap_to_ground": 93,
+                "snap_to_support_top": 6
+              },
+              "repaired": {
+                "accuracy": 0.47634408602150535,
+                "correct": 443,
+                "total": 930
+              },
+              "taxonomy": {
+                "false_fall_missed_contact": 113,
+                "false_fall_missed_ground": 132,
+                "false_fall_other": 341
+              },
+              "triage": {
+                "high_confidence": {
+                  "accuracy": 0.41007194244604317,
+                  "correct": 342,
+                  "total": 834
+                },
+                "high_confidence_coverage": 0.896774193548387,
+                "low_confidence": {
+                  "accuracy": 0.020833333333333332,
+                  "correct": 2,
+                  "total": 96
+                },
+                "low_confidence_coverage": 0.1032258064516129
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "results_path": "experiments/exp90_support_repair_sweep_data/results.json",
+  "splits": {
+    "branching_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 1040,
+      "scenes": 160
+    },
+    "counterfactual": {
+      "interventions": [
+        "remove"
+      ],
+      "objects": 1730,
+      "scenes": 320
+    },
+    "deeper_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 1020,
+      "scenes": 160
+    },
+    "id": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 396,
+      "scenes": 160
+    },
+    "larger_ood": {
+      "interventions": [
+        "none",
+        "remove"
+      ],
+      "objects": 930,
+      "scenes": 160
+    }
+  }
+}
