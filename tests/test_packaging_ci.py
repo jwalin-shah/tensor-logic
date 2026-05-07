@@ -2,7 +2,9 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import tomllib
+import zipfile
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -26,6 +28,9 @@ def test_pyproject_declares_worker_dev_install_contract():
     assert "torch" in dependencies
     assert {"pytest", "numpy", "matplotlib"} <= dev_dependencies
     assert "tensor_logic*" in package_include
+    assert "web_workbench*" in package_include
+    assert project["scripts"]["tensor-logic-workbench"] == "web_workbench.server:main"
+    assert "static/*" in pyproject["tool"]["setuptools"]["package-data"]["web_workbench"]
 
 
 def test_heavy_ml_dependencies_are_optional_not_default_ci():
@@ -126,3 +131,31 @@ def test_lightweight_import_proof_runs_without_remote_or_gpu():
 
     assert result.returncode == 0, result.stderr
     assert "tensor_logic import ok" in result.stdout
+
+
+def test_built_wheel_contains_web_workbench_package_and_assets():
+    with tempfile.TemporaryDirectory() as td:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "wheel",
+                ".",
+                "--no-deps",
+                "--wheel-dir",
+                td,
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        )
+
+        assert result.returncode == 0, result.stderr
+        wheel = next(Path(td).glob("tensor_logic-*.whl"))
+        with zipfile.ZipFile(wheel) as archive:
+            names = set(archive.namelist())
+
+    assert "web_workbench/__init__.py" in names
+    assert "web_workbench/server.py" in names
+    assert "web_workbench/static/index.html" in names
