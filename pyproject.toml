@@ -19,6 +19,18 @@ dev = [
     "numpy>=1.24",
     "pytest>=8.0",
 ]
+lm = [
+    "transformers>=4.40",
+]
+sft = [
+    "accelerate>=0.30",
+    "datasets>=2.18",
+    "peft>=0.10",
+    "transformers>=4.40",
+]
+science = [
+    "scipy>=1.11",
+]
 
 [tool.setuptools.packages.find]
 include = ["tensor_logic*"]
