@@ -23,6 +23,7 @@ class PythonImportGraph:
     modules: tuple[str, ...]
     edges: tuple[tuple[str, str], ...]
     symbols: dict[str, str]
+    files: dict[str, str]
 
 
 def ingest_python(root: str | Path) -> PythonImportGraph:
@@ -51,7 +52,8 @@ def ingest_python(root: str | Path) -> PythonImportGraph:
                         edges.add((module, target))
     modules = tuple(sorted(known))
     symbols = _module_symbols(modules)
-    return PythonImportGraph(modules, tuple(sorted(edges)), symbols)
+    files_by_module = {module: str(path) for path, module in module_by_file.items()}
+    return PythonImportGraph(modules, tuple(sorted(edges)), symbols, files_by_module)
 
 
 def render_python_imports_tl(graph: PythonImportGraph) -> str:

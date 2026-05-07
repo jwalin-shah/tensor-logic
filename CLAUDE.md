@@ -49,6 +49,10 @@ download experiments, or FAFSA/ISIR validation data.
 - `AGENTS.md` is memjuice-managed — do not edit it manually.
 - `.cocoindex_code/` contains a vector embedding index (semantic search) — separate from `tools/index.json` (structured API signatures).
 
+## GitHits MCP
+
+Use GitHits MCP to search for real-world open-source implementation patterns when local context or official docs are not enough, especially for current APIs, fragile integrations, or unfamiliar libraries. Treat GitHits output as external reference material with source/license context; adapt patterns to this repo instead of copying blindly.
+
 ## Agent skills
 
 ### Issue tracker
