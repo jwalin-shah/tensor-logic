@@ -4,10 +4,20 @@ import sys
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "tools"))
+VALIDATION_DOC = REPO_ROOT / "docs" / "VALIDATION.md"
 
 def test_index_json_is_gitignored():
     gitignore = (REPO_ROOT / ".gitignore").read_text()
     assert "tools/index.json" in gitignore
+
+
+def test_validation_doc_documents_code_index_commands():
+    validation = VALIDATION_DOC.read_text()
+
+    assert "python tools/code_index.py --status" in validation
+    assert "python tools/code_index.py --lookup Program" in validation
+    assert "python tools/code_index.py --rebuild" in validation
+    assert "`tools/index.json`" in validation
 
 
 import os

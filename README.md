@@ -84,7 +84,8 @@ Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` a
 
 ## Worker validation
 
-Symphony workers should validate a clean checkout with:
+Symphony workers should validate a clean checkout with the same commands used by
+CI:
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -100,6 +101,17 @@ python experiments/exp86_support_baselines.py --quick
 
 `exp86` is a neural baseline smoke run and should stay out of CI unless it is
 kept quick and deterministic.
+
+If `python` is absent locally, use the equivalent `python3` fallback:
+
+```bash
+python3 -m pip install -e ".[dev]"
+python3 -m pytest tests/ -v
+```
+
+See `docs/VALIDATION.md` for the tiered matrix covering cheap CI tests, code
+index commands, demo smokes, optional dependencies, heavyweight/remote
+experiments, external downloads, and expected artifacts.
 
 ## Run
 
