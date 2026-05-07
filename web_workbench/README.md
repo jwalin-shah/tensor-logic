@@ -26,7 +26,7 @@ clickable proof or why-not checks for changed dependencies.
 ## Run
 
 ```bash
-python web_workbench/server.py --host 127.0.0.1 --port 8080
+tensor-logic-workbench --host 127.0.0.1 --port 8080
 ```
 
 Then open <http://127.0.0.1:8080>.
