@@ -3,25 +3,20 @@ import unittest
 import torch
 
 from tensor_logic import (
-    Atom,
     Domain,
     Program,
     Relation,
-    Rule,
     bfs_per_source_closure,
     bfs_query,
     dense_closure,
-    evaluate_rule,
-    evaluate_with_provenance,
-    parse_rule,
-    proof_score,
-    query_relation,
-    load_tl,
     prove,
     prove_negative,
-    fmt_negative_proof_tree,
-    fmt_proof_tree,
 )
+from tensor_logic.file_format import load_tl
+from tensor_logic.program import Atom, Rule
+from tensor_logic.proofs import fmt_negative_proof_tree, fmt_proof_tree
+from tensor_logic.provenance import evaluate_with_provenance, proof_score
+from tensor_logic.rules import evaluate_rule, parse_rule, query_relation
 from tensor_logic.semirings import gf2_matmul
 
 
@@ -868,7 +863,7 @@ class TensorLogicCoreTest(unittest.TestCase):
 
 
     def test_execute_command_returns_query_output(self):
-        from tensor_logic import execute_command
+        from tensor_logic.execution import execute_command
         from tensor_logic.file_format import Command
         from tensor_logic.program import Program
 
@@ -881,7 +876,7 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(result.text, "edge(a, b) = True")
 
     def test_execute_command_returns_proof_output(self):
-        from tensor_logic import execute_command
+        from tensor_logic.execution import execute_command
         from tensor_logic.file_format import Command
         from tensor_logic.program import Program
 
@@ -895,7 +890,7 @@ class TensorLogicCoreTest(unittest.TestCase):
 
     def test_execute_command_returns_json_proof_output(self):
         import json
-        from tensor_logic import execute_command
+        from tensor_logic.execution import execute_command
         from tensor_logic.file_format import Command
         from tensor_logic.program import Program
 
@@ -908,7 +903,7 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(json.loads(result.text)["proof"]["head"], ["edge", "a", "b"])
 
     def test_execute_command_returns_negative_proof_output_when_requested(self):
-        from tensor_logic import execute_command
+        from tensor_logic.execution import execute_command
         from tensor_logic.file_format import Command
         from tensor_logic.program import Program
 

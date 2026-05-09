@@ -21,11 +21,19 @@ class Atom:
 
     @property
     def left(self) -> str:
-        return self.args[0]
+        return self._require_binary_args()[0]
 
     @property
     def right(self) -> str:
-        return self.args[1]
+        return self._require_binary_args()[1]
+
+    def _require_binary_args(self) -> tuple[str, str]:
+        if len(self.args) != 2:
+            raise ValueError(
+                f"Atom.left/right are only defined for binary atoms; "
+                f"{self.relation} has {len(self.args)} args"
+            )
+        return self.args[0], self.args[1]
 
 
 @dataclass(frozen=True)

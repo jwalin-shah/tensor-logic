@@ -1,7 +1,7 @@
-"""Narrow import surface for Tensor Logic semantics (programs, proofs, closure).
+"""Supported import surface for Tensor Logic semantics.
 
-Use this when you want programmatic access without HTTP, ingest, or repo-graph
-adapters. The package root ``tensor_logic`` still re-exports the full toolkit.
+Use this surface, or the equivalent package root ``tensor_logic``, when you
+want programmatic access without HTTP, ingest, repo-graph, or research helpers.
 """
 
 from .closure import bfs_query, bfs_per_source_closure, dense_closure
