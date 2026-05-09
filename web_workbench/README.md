@@ -25,8 +25,20 @@ clickable proof or why-not checks for changed dependencies.
 
 ## Run
 
+After installing the package locally, run the packaged console script:
+
+```bash
+python -m pip install -e .
+```
+
 ```bash
 tensor-logic-workbench --host 127.0.0.1 --port 8080
+```
+
+From a source checkout without the console script installed, run:
+
+```bash
+python web_workbench/server.py --host 127.0.0.1 --port 8080
 ```
 
 Then open <http://127.0.0.1:8080>.

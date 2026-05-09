@@ -70,6 +70,16 @@ def test_readme_documents_worker_validation_commands():
     assert "docs/VALIDATION.md" in readme
 
 
+def test_workbench_readme_scopes_console_script_to_local_install():
+    readme = (REPO_ROOT / "web_workbench" / "README.md").read_text()
+
+    assert "After installing the package locally" in readme
+    assert "python -m pip install -e ." in readme
+    assert "tensor-logic-workbench --host 127.0.0.1 --port 8080" in readme
+    assert "source checkout without the console script installed" in readme
+    assert "python web_workbench/server.py --host 127.0.0.1 --port 8080" in readme
+
+
 def test_symphony_protocol_requires_real_github_prs_and_support_fast_path():
     protocol = (REPO_ROOT / "docs" / "SYMPHONY_RUN_PROTOCOL.md").read_text()
 
@@ -143,6 +153,8 @@ def test_built_wheel_contains_web_workbench_package_and_assets():
                 "wheel",
                 ".",
                 "--no-deps",
+                "--no-build-isolation",
+                "--no-index",
                 "--wheel-dir",
                 td,
             ],
