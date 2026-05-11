@@ -362,6 +362,17 @@ def run_evaluation(config: EvalConfig, output_path: Path | None = None) -> dict[
         raise RuntimeError("TL deterministic label accuracy fell below 100%")
     if not bool(gates["tl_counterfactual_retraction_accuracy_100"]["passed"]):
         raise RuntimeError("TL counterfactual retraction accuracy fell below 100%")
+    ood_margin_gate = gates["tl_ood_margin_vs_best_neural_at_least_10pp"]
+    if not bool(ood_margin_gate["passed"]):
+        failed_splits = []
+        for split, split_gate in ood_margin_gate["splits"].items():
+            if not bool(split_gate["passed"]):
+                failed_splits.append(
+                    f"{split}: margin={float(split_gate['margin']):.3f}, "
+                    f"threshold={float(ood_margin_gate['threshold']):.3f}"
+                )
+        details = "; ".join(failed_splits) if failed_splits else "no split details available"
+        raise RuntimeError(f"TL OOD margin vs best neural fell below 10pp ({details})")
 
     results = {
         "experiment": "exp87_support_eval",
