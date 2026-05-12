@@ -17,6 +17,7 @@ def test_validation_doc_documents_code_index_commands():
     assert "python tools/code_index.py --status" in validation
     assert "python tools/code_index.py --lookup Program" in validation
     assert "python tools/code_index.py --rebuild" in validation
+    assert "python tools/code_index.py --validation-registry" in validation
     assert "`tools/index.json`" in validation
 
 
@@ -174,3 +175,12 @@ def test_cli_lookup_missing_exits_1():
     )
     assert result.returncode == 1
     assert "symbol not found" in result.stderr
+
+
+def test_cli_validation_registry_prints_registry_path():
+    result = subprocess.run(
+        [sys.executable, "tools/code_index.py", "--validation-registry"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT)
+    )
+    assert result.returncode == 0
+    assert result.stdout.strip() == "docs/validation-registry.json"

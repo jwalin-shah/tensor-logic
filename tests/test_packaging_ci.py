@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import re
 import subprocess
 import sys
@@ -7,6 +8,7 @@ import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 VALIDATION_DOC = REPO_ROOT / "docs" / "VALIDATION.md"
+VALIDATION_REGISTRY = REPO_ROOT / "docs" / "validation-registry.json"
 
 
 def _requirement_names(requirements: list[str]) -> set[str]:
@@ -26,6 +28,10 @@ def test_pyproject_declares_worker_dev_install_contract():
     assert "torch" in dependencies
     assert {"pytest", "numpy", "matplotlib"} <= dev_dependencies
     assert "tensor_logic*" in package_include
+    assert (
+        pyproject["tool"]["tensor-logic"]["validation"]["registry"]
+        == "docs/validation-registry.json"
+    )
 
 
 def test_heavy_ml_dependencies_are_optional_not_default_ci():
@@ -95,9 +101,16 @@ def test_validation_doc_defines_local_tiers_and_boundaries():
     assert "python -m pytest tests/ -v" in validation
     assert 'python3 -m pip install -e ".[dev]"' in validation
     assert "python3 -m pytest tests/ -v" in validation
-    assert "python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v" in validation
+    registry = json.loads(VALIDATION_REGISTRY.read_text())
+    cheap_commands = (
+        registry["tiers"]["packaging-ci"]["commands"]
+        + registry["tiers"]["packaging-ci"]["fallback_commands"]
+    )
+    for command in cheap_commands:
+        assert command in validation
     assert "remote services, external datasets, model" in validation
     assert "External FAFSA/ISIR validation" in validation
+    assert "[`docs/validation-registry.json`](validation-registry.json)" in validation
 
 
 def test_validation_doc_maps_heavy_dependencies_outside_ci():
@@ -110,6 +123,62 @@ def test_validation_doc_maps_heavy_dependencies_outside_ci():
         assert extra in validation
 
     assert "Do not add `transformers`, `peft`, `datasets`, `accelerate`, `scipy`" in validation
+
+
+def test_validation_registry_maps_change_classes_to_executable_tiers():
+    registry = json.loads(VALIDATION_REGISTRY.read_text())
+
+    expected_change_classes = {
+        "docs-only",
+        "validation-policy",
+        "packaging",
+        "code-index",
+        "tensor-logic-core",
+        "demo",
+        "lm-or-training-experiment",
+    }
+    assert expected_change_classes <= registry["change_classes"].keys()
+
+    for change_class, metadata in registry["change_classes"].items():
+        assert metadata["tiers"], change_class
+        for tier_name in metadata["tiers"]:
+            tier = registry["tiers"][tier_name]
+            assert "cost" in tier
+            assert "ci" in tier
+            assert "heavyweight" in tier
+            if tier["ci"]:
+                assert tier["commands"], tier_name
+
+
+def test_validation_registry_encodes_non_ci_boundaries():
+    registry = json.loads(VALIDATION_REGISTRY.read_text())
+
+    heavy_tier = registry["tiers"]["heavy-experiment"]
+    assert heavy_tier["ci"] is False
+    assert heavy_tier["heavyweight"] is True
+    assert heavy_tier["requires_explicit_work_order"] is True
+    assert "command" in heavy_tier["record_required"]
+    assert any("FAFSA/ISIR" in boundary for boundary in heavy_tier["boundaries"])
+
+    dependency_boundaries = registry["dependency_boundaries"]
+    assert dependency_boundaries["ci_allowed_extras"] == ["dev"]
+    for extra in ["lm", "sft", "science"]:
+        assert extra in dependency_boundaries["non_ci_extras"]
+
+
+def test_validation_registry_matches_documented_cheap_commands():
+    registry = json.loads(VALIDATION_REGISTRY.read_text())
+    validation = VALIDATION_DOC.read_text()
+
+    cheap_tiers = [
+        tier
+        for tier in registry["tiers"].values()
+        if tier["cost"] == "cheap" and tier["commands"]
+    ]
+    assert cheap_tiers
+    for tier in cheap_tiers:
+        for command in tier["commands"]:
+            assert command in validation
 
 
 def test_lightweight_import_proof_runs_without_remote_or_gpu():

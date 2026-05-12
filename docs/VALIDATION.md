@@ -1,8 +1,31 @@
 # Validation Matrix
 
-Use this matrix to choose the cheapest proof that matches the change. The default
-validation path must stay local, CPU-friendly, and free of package-download,
-model-download, GPU, remote-job, or external FAFSA/ISIR data requirements.
+Use the parseable registry at
+[`docs/validation-registry.json`](validation-registry.json) as the source of
+truth for change classes, validation tiers, command selection, costs, and non-CI
+boundaries. This page is the human guide to the same policy.
+
+The default validation path must stay local, CPU-friendly, and free of
+package-download, model-download, GPU, remote-job, or external FAFSA/ISIR data
+requirements.
+
+## Change Classes
+
+Agents should select the smallest sufficient proof from the registry's
+`change_classes` map:
+
+| Change class | Registry tiers |
+| --- | --- |
+| `docs-only` | `packaging-ci` |
+| `validation-policy` | `packaging-ci`, then `full-ci` |
+| `packaging` | `packaging-ci`, `import-proof`, then `full-ci` |
+| `code-index` | `code-index`, then `packaging-ci` |
+| `tensor-logic-core` | `code-index`, then `full-ci` |
+| `demo` | `demo-smoke`, then `full-ci` |
+| `lm-or-training-experiment` | `heavy-experiment` only |
+
+Do not duplicate or reinterpret the full policy here when changing it. Update
+the registry first, then keep this page aligned with the registry.
 
 ## Canonical CI Validation
 
@@ -22,10 +45,11 @@ python3 -m pip install -e ".[dev]"
 python3 -m pytest tests/ -v
 ```
 
-For documentation, packaging, or validation-boundary changes, this narrower proof
-is the canonical cheap preflight before the full test tree:
+For documentation, packaging, or validation-boundary changes, the registry tier
+`packaging-ci` defines this canonical cheap preflight before the full test tree:
 
 ```bash
+python -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v
 python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v
 python3 -m pytest tests/ -v
 ```
@@ -54,11 +78,13 @@ The structured API index is local tooling for agent planning. It writes
 python tools/code_index.py --status
 python tools/code_index.py --lookup Program
 python tools/code_index.py --rebuild
+python tools/code_index.py --validation-registry
 ```
 
 Use `--lookup <RelevantSymbol>` before planning changes that touch
 `tensor_logic/`. Rebuild the index only when it is stale or a validation command
-needs a fresh index.
+needs a fresh index. Use `--validation-registry` to locate the parseable
+validation tier registry.
 
 ## Lightweight Build/Import Proof
 
