@@ -4,6 +4,11 @@ Use this matrix to choose the cheapest proof that matches the change. The defaul
 validation path must stay local, CPU-friendly, and free of package-download,
 model-download, GPU, remote-job, or external FAFSA/ISIR data requirements.
 
+Before changing experiment claims, result tables, README benchmark language, or
+status summaries, read `CONTEXT.md` and `docs/EXPERIMENT_PROVENANCE.md`. The
+validation command proves that files still parse and contract checks still pass;
+it does not upgrade the evidence tier behind a claim.
+
 ## Canonical CI Validation
 
 GitHub Actions validates pull requests and pushes to `main` with the editable dev
@@ -132,6 +137,28 @@ The following checks are outside the default `tests/` path:
 
 Run these only from an explicit work order. Record the command, dependency set,
 runtime location, input dataset/model references, output path, and blockers.
+For durable outputs, follow `docs/RUN_PROTOCOL.md` and record enough provenance
+to satisfy `docs/EXPERIMENT_PROVENANCE.md`.
+
+## Claim And Provenance Checks
+
+Docs-only changes that touch provenance, experiment claims, validation wording,
+or no-overclaim rules should use the narrow contract check first:
+
+```bash
+python3 -m pytest tests/test_packaging_ci.py -v
+```
+
+When those changes also touch code-index guidance, add:
+
+```bash
+python3 -m pytest tests/test_code_index.py -v
+```
+
+This is sufficient for docs-only contract edits. It is not sufficient when a
+metric, result table, or experiment verdict changes; those edits require the
+exact experiment command or an explicit note that the artifact is historical and
+was not refreshed.
 
 ## Expected Artifacts
 
