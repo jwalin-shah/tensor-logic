@@ -1,0 +1,49 @@
+{
+  "schema": "architecture-findings.v1",
+  "repo": "experiments",
+  "generated_at": "2026-05-12",
+  "notes": [
+    "Read AGENTS.md, CLAUDE.md, README.md, llm-tldr tree output, and sampled tensor_logic modules/tests.",
+    "No docs/adr directory was present.",
+    "No git blocker was reported by git status."
+  ],
+  "candidate_count": 3,
+  "candidates": [
+    {
+      "id": "rule-surface",
+      "title": "Make rule parsing and rule execution one deep Module",
+      "files": ["tensor_logic/program.py", "tensor_logic/rules.py", "tensor_logic/proofs.py", "tensor_logic/provenance.py", "tests/test_tensor_logic_core.py", "tests/test_reason.py"],
+      "problem": "The rule Interface is split across Program.rule(), RuleParser, tensor_logic.rules.parse_rule(), proof search, and provenance helpers. Callers need to know which grammar, arity rule, negation behavior, and evaluation path they are on, which makes the Modules shallow.",
+      "solution": "Create a single rule-front-end Module that owns parsing into one Rule representation, validates arity/negation/method calls once, and exposes adapters for tensor evaluation, proof search, and provenance.",
+      "benefits": "Locality improves because grammar and invariant changes stop spreading across Program, rules, proofs, and provenance. Leverage improves because callers get one Interface for the same domain concept.",
+      "test_impact": "Move parser, AST, proof, and provenance tests to the shared rule Interface, then keep adapter tests small.",
+      "risk": "Moderate: current experiments may depend on quirks of both grammars.",
+      "suggested_validation": "python -m pytest tests/test_tensor_logic_core.py tests/test_reason.py tests/test_proof_recursion.py -v",
+      "adr_conflict": null
+    },
+    {
+      "id": "proof-engine",
+      "title": "Deepen proof search around a proof engine seam",
+      "files": ["tensor_logic/proofs.py", "tensor_logic/proof_result.py", "tensor_logic/proof_tree_viewer.py", "tensor_logic/execution.py", "tensor_logic/http_api.py"],
+      "problem": "Positive proof, negative proof, recursive fallback, do-interventions, formatting, and API result shaping are coupled through direct function calls and shared assumptions about binary relations. The proof Module exposes many operational details as its Interface.",
+      "solution": "Introduce a proof engine Module whose Interface is goal + options -> typed proof result. Keep recursion strategy, witness enumeration, negative explanations, and do-intervention handling behind that seam.",
+      "benefits": "Locality improves for proof bugs because search tables, cycle guards, recursive fallbacks, and negative explanations live together. Leverage improves because CLI, HTTP, and web callers stop coordinating proof modes themselves.",
+      "test_impact": "Tests can assert proof result semantics through one Interface instead of private helper behavior.",
+      "risk": "Moderate: binary-only assumptions are entrenched in CLI and proof formatting.",
+      "suggested_validation": "python -m pytest tests/test_proof_recursion.py tests/test_reason.py tests/test_web_workbench.py -v",
+      "adr_conflict": null
+    },
+    {
+      "id": "experiment-harness",
+      "title": "Extract a reusable experiment harness from exp79-exp83 patterns",
+      "files": ["experiments/exp79_self_play_loop.py", "experiments/exp81_sweep.py", "experiments/exp81_optimize_rule_induction.py", "experiments/exp83_slot_attention.py", "tensor_logic/research/utils.py"],
+      "problem": "Experiment scripts carry their own config, caching, result writing, and validation conventions. The Interface of each script is nearly as complex as the Implementation, so results are harder to compare and reproduce.",
+      "solution": "Move common experiment lifecycle concerns into a research harness Module: config, deterministic seeding, result paths, quick/full modes, and metric summaries. Keep individual experiments focused on domain logic.",
+      "benefits": "Locality improves for artifact and sweep behavior. Leverage improves because a new experiment gets reproducible output and validation without copying boilerplate.",
+      "test_impact": "Add small harness tests plus keep representative experiment smoke tests.",
+      "risk": "Low to moderate: experiments are research code, so over-formalizing could slow iteration.",
+      "suggested_validation": "python -m pytest tests/test_exp79.py tests/test_exp81.py tests/test_exp83_slot_attention.py -v",
+      "adr_conflict": null
+    }
+  ]
+}
