@@ -7,6 +7,8 @@ import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 VALIDATION_DOC = REPO_ROOT / "docs" / "VALIDATION.md"
+CONTEXT_DOC = REPO_ROOT / "CONTEXT.md"
+PROVENANCE_DOC = REPO_ROOT / "docs" / "EXPERIMENT_PROVENANCE.md"
 
 
 def _requirement_names(requirements: list[str]) -> set[str]:
@@ -86,6 +88,7 @@ def test_validation_doc_defines_local_tiers_and_boundaries():
         "## Demo Smoke Commands",
         "## Optional Dependency Boundaries",
         "## Heavyweight And Remote Experiments",
+        "## Claim And Provenance Checks",
         "## Expected Artifacts",
     ]
     for section in expected_sections:
@@ -98,6 +101,7 @@ def test_validation_doc_defines_local_tiers_and_boundaries():
     assert "python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v" in validation
     assert "remote services, external datasets, model" in validation
     assert "External FAFSA/ISIR validation" in validation
+    assert "docs/EXPERIMENT_PROVENANCE.md" in validation
 
 
 def test_validation_doc_maps_heavy_dependencies_outside_ci():
@@ -126,3 +130,39 @@ def test_lightweight_import_proof_runs_without_remote_or_gpu():
 
     assert result.returncode == 0, result.stderr
     assert "tensor_logic import ok" in result.stdout
+
+
+def test_context_doc_defines_no_overclaim_rules_and_agent_boundary():
+    context = CONTEXT_DOC.read_text()
+
+    assert "No-overclaim rule" in context
+    assert "docs/EXPERIMENT_PROVENANCE.md" in context
+    assert "exp87" in context
+    assert "exp95" in context
+    assert "exp53" in context
+    assert "exp54" in context
+    assert "`AGENTS.md` is memjuice-managed" in context
+
+
+def test_experiment_provenance_doc_maps_current_artifacts_and_claim_boundaries():
+    provenance = PROVENANCE_DOC.read_text()
+
+    expected_sections = [
+        "## Evidence Tiers",
+        "## Required Provenance For New Results",
+        "## Current Result Artifact Index",
+        "## No-Overclaim Rules",
+        "## Validation For Claim Edits",
+    ]
+    for section in expected_sections:
+        assert section in provenance
+
+    for exp_id in range(87, 96):
+        assert f"`exp{exp_id}`" in provenance
+        assert f"experiments/exp{exp_id}" in provenance
+
+    assert "experiments/exp78_data/results.json" in provenance
+    assert "experiments/exp79_data/results.json" in provenance
+    assert "experiments/exp83_slot_data/results.json" in provenance
+    assert "No checked-in `exp53_data/results.json`" in provenance
+    assert "python3 -m pytest tests/test_packaging_ci.py -v" in provenance
