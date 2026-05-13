@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Architecture Report - experiments - 2026-05-12</title>
+  <style>body{font-family:system-ui,sans-serif;max-width:980px;margin:40px auto;padding:0 24px;line-height:1.5}code{background:#f3f4f6;padding:2px 4px;border-radius:4px}.note{border-left:4px solid #b91c1c;padding:8px 12px;background:#fef2f2}.card{border:1px solid #ddd;border-radius:8px;padding:16px;margin:18px 0}h1,h2{line-height:1.2}</style>
+</head>
+<body>
+  <h1>Architecture Report: experiments</h1>
+  <p><strong>Date:</strong> 2026-05-12</p>
+  <p class="note"><strong>Do not implement yet.</strong> This Phase 1 report identifies deepening opportunities only. No production code was changed.</p>
+  <h2>Review Scope</h2>
+  <p>Read repo-local instructions, README, compact tree output, and sampled the reusable <code>tensor_logic</code> package, proof/search Modules, experiment scripts, and tests. No ADR conflicts were found.</p>
+  <p>The review uses the architecture vocabulary: Module, Interface, Implementation, Depth, Shallow, Seam, Adapter, Leverage, and Locality.</p>
+  <div class="card">
+    <h2>1. Make Rule Parsing And Rule Execution One Deep Module</h2>
+    <p><strong>Files:</strong> <code>tensor_logic/program.py</code>, <code>tensor_logic/rules.py</code>, <code>tensor_logic/proofs.py</code>, <code>tensor_logic/provenance.py</code></p>
+    <p><strong>Problem:</strong> The rule Interface is split across multiple grammars and execution paths. The caller must understand parser shape, arity limits, negation support, and proof compatibility.</p>
+    <p><strong>Solution:</strong> Deepen a rule-front-end Module with one Rule representation and adapters for tensor evaluation, proof search, and provenance.</p>
+    <p><strong>Benefits:</strong> Better Locality for grammar changes and higher Leverage for callers. The deletion test suggests the current split is shallow because deleting one parser would move complexity into another caller.</p>
+    <p><strong>Test Impact:</strong> Parser, AST, proof, and provenance behavior become testable through one Interface.</p>
+    <p><strong>Risk:</strong> Moderate; experiments may rely on quirks in both current grammars.</p>
+    <p><strong>Suggested Validation:</strong> <code>python -m pytest tests/test_tensor_logic_core.py tests/test_reason.py tests/test_proof_recursion.py -v</code></p>
+  </div>
+  <div class="card">
+    <h2>2. Deepen Proof Search Around A Proof Engine Seam</h2>
+    <p><strong>Files:</strong> <code>tensor_logic/proofs.py</code>, <code>tensor_logic/proof_result.py</code>, <code>tensor_logic/execution.py</code>, <code>tensor_logic/http_api.py</code></p>
+    <p><strong>Problem:</strong> Positive proof, negative proof, recursion, interventions, and formatting leak across callers. The Interface exposes much of the Implementation.</p>
+    <p><strong>Solution:</strong> Add a proof engine Module whose Interface is goal plus options to typed proof result. CLI, HTTP, and web become adapters.</p>
+    <p><strong>Benefits:</strong> Better Locality for proof bugs and more Leverage for external callers.</p>
+    <p><strong>Test Impact:</strong> Tests assert proof-result semantics through the proof engine seam.</p>
+    <p><strong>Risk:</strong> Moderate; binary-relation assumptions are widespread.</p>
+    <p><strong>Suggested Validation:</strong> <code>python -m pytest tests/test_proof_recursion.py tests/test_reason.py tests/test_web_workbench.py -v</code></p>
+  </div>
+  <div class="card">
+    <h2>3. Extract A Reusable Experiment Harness</h2>
+    <p><strong>Files:</strong> <code>experiments/exp79_self_play_loop.py</code>, <code>experiments/exp81_sweep.py</code>, <code>experiments/exp81_optimize_rule_induction.py</code>, <code>tensor_logic/research/</code></p>
+    <p><strong>Problem:</strong> Experiment scripts repeat lifecycle concerns, so each script's Interface is shallow and reproduction knowledge is scattered.</p>
+    <p><strong>Solution:</strong> Put config, deterministic seeding, result paths, quick/full modes, and metric summaries behind a research harness Module.</p>
+    <p><strong>Benefits:</strong> Higher Locality for run behavior and higher Leverage for future experiments.</p>
+    <p><strong>Test Impact:</strong> Harness tests can prove deterministic metadata; experiment tests stay focused.</p>
+    <p><strong>Risk:</strong> Low to moderate; keep the seam light because this is research code.</p>
+    <p><strong>Suggested Validation:</strong> <code>python -m pytest tests/test_exp79.py tests/test_exp81.py -v</code></p>
+  </div>
+</body>
+</html>
