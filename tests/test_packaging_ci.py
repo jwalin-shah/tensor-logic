@@ -148,6 +148,10 @@ def test_validation_registry_maps_change_classes_to_executable_tiers():
             assert "heavyweight" in tier
             if tier["ci"]:
                 assert tier["commands"], tier_name
+            if tier["cost"] == "cheap":
+                assert tier.get("fallback_commands"), tier_name
+                for command in tier["commands"]:
+                    assert command.replace("python ", "python3 ", 1) in tier["fallback_commands"]
 
 
 def test_validation_registry_encodes_non_ci_boundaries():

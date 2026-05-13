@@ -67,6 +67,12 @@
         "python tools/code_index.py --rebuild",
         "python tools/code_index.py --validation-registry"
       ],
+      "fallback_commands": [
+        "python3 tools/code_index.py --status",
+        "python3 tools/code_index.py --lookup Program",
+        "python3 tools/code_index.py --rebuild",
+        "python3 tools/code_index.py --validation-registry"
+      ],
       "artifacts": [
         "tools/index.json"
       ],
