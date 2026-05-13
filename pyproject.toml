@@ -37,3 +37,6 @@ include = ["tensor_logic*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.tensor-logic.validation]
+registry = "docs/validation-registry.json"

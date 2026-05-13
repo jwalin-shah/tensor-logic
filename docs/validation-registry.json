@@ -1,0 +1,231 @@
+{
+  "version": 1,
+  "description": "Machine-readable validation policy for tensor-logic workers.",
+  "default_policy": {
+    "select": "smallest-sufficient-proof",
+    "default_ci_tier": "full-ci",
+    "local_constraints": [
+      "cpu-friendly",
+      "no package-download experiments",
+      "no model downloads",
+      "no GPU-only execution",
+      "no remote jobs",
+      "no external FAFSA/ISIR datasets"
+    ],
+    "expected_cheap_artifacts": [
+      "tools/index.json"
+    ]
+  },
+  "tiers": {
+    "full-ci": {
+      "title": "Canonical CI validation",
+      "cost": "cheap",
+      "ci": true,
+      "heavyweight": false,
+      "commands": [
+        "python -m pip install -e \".[dev]\"",
+        "python -m pytest tests/ -v"
+      ],
+      "fallback_commands": [
+        "python3 -m pip install -e \".[dev]\"",
+        "python3 -m pytest tests/ -v"
+      ],
+      "boundaries": [
+        "deterministic unit and smoke tests only",
+        "no remote services",
+        "no external datasets",
+        "no model downloads",
+        "no GPU-only training"
+      ]
+    },
+    "packaging-ci": {
+      "title": "Packaging and validation-boundary preflight",
+      "cost": "cheap",
+      "ci": true,
+      "heavyweight": false,
+      "commands": [
+        "python -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v"
+      ],
+      "fallback_commands": [
+        "python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v"
+      ],
+      "boundaries": [
+        "no remote services",
+        "no external datasets",
+        "no model downloads",
+        "no GPU-only training"
+      ]
+    },
+    "code-index": {
+      "title": "Structured API index",
+      "cost": "cheap",
+      "ci": true,
+      "heavyweight": false,
+      "commands": [
+        "python tools/code_index.py --status",
+        "python tools/code_index.py --lookup Program",
+        "python tools/code_index.py --rebuild",
+        "python tools/code_index.py --validation-registry"
+      ],
+      "fallback_commands": [
+        "python3 tools/code_index.py --status",
+        "python3 tools/code_index.py --lookup Program",
+        "python3 tools/code_index.py --rebuild",
+        "python3 tools/code_index.py --validation-registry"
+      ],
+      "artifacts": [
+        "tools/index.json"
+      ],
+      "boundaries": [
+        "local AST parsing only",
+        "writes only gitignored tools/index.json"
+      ]
+    },
+    "import-proof": {
+      "title": "Editable install and import proof",
+      "cost": "cheap",
+      "ci": false,
+      "heavyweight": false,
+      "commands": [
+        "python -m pip install -e \".[dev]\"",
+        "python -c \"import tensor_logic; from tensor_logic import Program; print('tensor_logic import ok')\""
+      ],
+      "fallback_commands": [
+        "python3 -m pip install -e \".[dev]\"",
+        "python3 -c \"import tensor_logic; from tensor_logic import Program; print('tensor_logic import ok')\""
+      ],
+      "boundaries": [
+        "no wheel build",
+        "no demos",
+        "no remote services",
+        "no model downloads"
+      ]
+    },
+    "demo-smoke": {
+      "title": "Demo smoke commands",
+      "cost": "medium",
+      "ci": false,
+      "heavyweight": false,
+      "commands": [
+        "uv run --with torch python demos/transitive_closure.py",
+        "uv run --with torch python demos/tensor_language.py",
+        "uv run --with torch python demos/program_rules.py",
+        "uv run --with torch python demos/provenance_kb.py"
+      ],
+      "boundaries": [
+        "non-CI",
+        "run only when examples, demos, or tensor-language ergonomics changed"
+      ]
+    },
+    "heavy-experiment": {
+      "title": "Heavyweight and remote experiments",
+      "cost": "heavy",
+      "ci": false,
+      "heavyweight": true,
+      "commands": [],
+      "requires_explicit_work_order": true,
+      "boundaries": [
+        "non-CI",
+        "may require Hugging Face, MLX, Kaggle, Colab, Modal, or other remote/provider artifacts",
+        "may require GPU/MPS training, long sweeps, or batch experiment runners",
+        "may download external packages for import-graph benchmarks",
+        "may require official or private FAFSA/ISIR validation datasets"
+      ],
+      "record_required": [
+        "command",
+        "dependency set",
+        "runtime location",
+        "input dataset/model references",
+        "output path",
+        "blockers"
+      ]
+    }
+  },
+  "change_classes": {
+    "docs-only": {
+      "description": "Documentation-only changes that do not alter validation policy.",
+      "tiers": [
+        "packaging-ci"
+      ]
+    },
+    "validation-policy": {
+      "description": "Validation docs, registry, CI packaging tests, or validation-boundary edits.",
+      "tiers": [
+        "packaging-ci",
+        "full-ci"
+      ]
+    },
+    "packaging": {
+      "description": "pyproject metadata, dependency groups, editable install contract, or import surface.",
+      "tiers": [
+        "packaging-ci",
+        "import-proof",
+        "full-ci"
+      ]
+    },
+    "code-index": {
+      "description": "Structured API index tooling or tests.",
+      "tiers": [
+        "code-index",
+        "packaging-ci"
+      ]
+    },
+    "tensor-logic-core": {
+      "description": "Reusable tensor_logic package behavior.",
+      "tiers": [
+        "code-index",
+        "full-ci"
+      ]
+    },
+    "demo": {
+      "description": "Demo scripts or research-facing examples.",
+      "tiers": [
+        "demo-smoke",
+        "full-ci"
+      ]
+    },
+    "lm-or-training-experiment": {
+      "description": "LM/VLM inference, SFT, long training, GPU/MPS, remote, or external data experiments.",
+      "tiers": [
+        "heavy-experiment"
+      ]
+    }
+  },
+  "dependency_boundaries": {
+    "ci_allowed_extras": [
+      "dev"
+    ],
+    "non_ci_extras": {
+      "lm": {
+        "packages": [
+          "transformers"
+        ],
+        "reason": "local LM-backed experiments; may download models"
+      },
+      "sft": {
+        "packages": [
+          "transformers",
+          "peft",
+          "datasets",
+          "accelerate"
+        ],
+        "reason": "LoRA/SFT training and evaluation; download/GPU/remote candidate"
+      },
+      "science": {
+        "packages": [
+          "scipy"
+        ],
+        "reason": "scientific helpers; non-CI unless promoted by a future issue"
+      }
+    },
+    "non_ci_local_only_packages": [
+      "mlx-lm",
+      "networkx",
+      "sqlalchemy",
+      "django",
+      "fastapi",
+      "sympy",
+      "scikit-learn"
+    ]
+  }
+}

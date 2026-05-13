@@ -7,6 +7,7 @@ Usage:
     python tools/code_index.py --lookup Schema
     python tools/code_index.py --dump
     python tools/code_index.py --status
+    python tools/code_index.py --validation-registry
 """
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _SOURCE_DIR = _REPO_ROOT / "tensor_logic"
 _INDEX_PATH = Path(__file__).resolve().parent / "index.json"
+_VALIDATION_REGISTRY_PATH = _REPO_ROOT / "docs" / "validation-registry.json"
 
 
 def _extract_module(path: Path, module_prefix: str = "tensor_logic") -> dict:
@@ -167,6 +169,12 @@ def status(source_dir: Path = _SOURCE_DIR, index_path: Path = _INDEX_PATH) -> in
     return 0
 
 
+def validation_registry() -> int:
+    """Print the parseable validation registry path."""
+    print(_VALIDATION_REGISTRY_PATH.relative_to(_REPO_ROOT))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="tensor_logic/ code index")
     group = parser.add_mutually_exclusive_group(required=True)
@@ -174,6 +182,11 @@ def main(argv: list[str] | None = None) -> int:
     group.add_argument("--lookup", metavar="SYMBOL", help="Look up a symbol")
     group.add_argument("--dump", action="store_true", help="Print all symbols")
     group.add_argument("--status", action="store_true", help="Check staleness")
+    group.add_argument(
+        "--validation-registry",
+        action="store_true",
+        help="Print validation registry path",
+    )
     args = parser.parse_args(argv)
 
     if args.rebuild:
@@ -187,6 +200,8 @@ def main(argv: list[str] | None = None) -> int:
         return dump()
     if args.status:
         return status()
+    if args.validation_registry:
+        return validation_registry()
     return 0
 
 
