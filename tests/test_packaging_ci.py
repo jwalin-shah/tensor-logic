@@ -9,6 +9,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 VALIDATION_DOC = REPO_ROOT / "docs" / "VALIDATION.md"
 CONTEXT_DOC = REPO_ROOT / "CONTEXT.md"
 PROVENANCE_DOC = REPO_ROOT / "docs" / "EXPERIMENT_PROVENANCE.md"
+STATUS_DOC = REPO_ROOT / "docs" / "EXPERIMENT_STATUS.md"
 
 
 def _requirement_names(requirements: list[str]) -> set[str]:
@@ -166,3 +167,33 @@ def test_experiment_provenance_doc_maps_current_artifacts_and_claim_boundaries()
     assert "experiments/exp83_slot_data/results.json" in provenance
     assert "No checked-in `exp53_data/results.json`" in provenance
     assert "python3 -m pytest tests/test_packaging_ci.py -v" in provenance
+
+
+def test_experiment_status_snapshot_records_active_contract_boundaries():
+    status = STATUS_DOC.read_text()
+
+    expected_sections = [
+        "# Experiment Status Snapshot",
+        "## Current Contract Status",
+        "## Claim Status Summary",
+        "## Required Next Review Triggers",
+    ]
+    for section in expected_sections:
+        assert section in status
+
+    for linked_doc in [
+        "docs/EXPERIMENT_PROVENANCE.md",
+        "docs/VALIDATION.md",
+        "notes/EXPERIMENTS.md",
+    ]:
+        assert linked_doc in status
+
+    for required_phrase in [
+        "Provenance contract",
+        "No-overclaim rule",
+        "Validation matrix",
+        "Result artifact index",
+        "do not claim fully reproducible from checked-in artifacts alone",
+        "must retain missing-object and merge/cardinality caveats",
+    ]:
+        assert required_phrase in status
