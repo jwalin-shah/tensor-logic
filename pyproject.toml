@@ -13,6 +13,9 @@ dependencies = [
     "torch>=2.0",
 ]
 
+[project.scripts]
+tensor-logic-workbench = "web_workbench.server:main"
+
 [project.optional-dependencies]
 dev = [
     "matplotlib>=3.7",
@@ -33,7 +36,10 @@ science = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["tensor_logic*"]
+include = ["tensor_logic*", "web_workbench*"]
+
+[tool.setuptools.package-data]
+web_workbench = ["static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

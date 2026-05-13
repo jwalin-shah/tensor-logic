@@ -925,14 +925,21 @@ class TensorLogicCoreTest(unittest.TestCase):
         from tensor_logic.file_format import load_tl
 
         app_js = open("web_workbench/static/app.js", encoding="utf-8").read()
-        match = re.search(r"sourceEl\.value = `(?P<source>.*?)`;", app_js, re.S)
-        self.assertIsNotNone(match)
+        sources = re.findall(r"source:\s*`(?P<source>.*?)`,", app_js, re.S)
+        self.assertGreaterEqual(len(sources), 1)
+        import os
         import tempfile
-        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
-            f.write(match.group("source"))
-            path = f.name
-        loaded = load_tl(path)
-        self.assertEqual(loaded.program.query("ancestor", "alice", "cara", recursive=True), 1.0)
+        for index, source in enumerate(sources):
+            with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+                f.write(source)
+                path = f.name
+            try:
+                loaded = load_tl(path)
+                self.assertGreaterEqual(len(loaded.program.relations), 1)
+                if index == 0:
+                    self.assertEqual(loaded.program.query("ancestor", "alice", "dave", recursive=True), 1.0)
+            finally:
+                os.unlink(path)
 
 
 if __name__ == "__main__":

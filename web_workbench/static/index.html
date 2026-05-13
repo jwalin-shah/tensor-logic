@@ -7,26 +7,144 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <header class="toolbar">
-      <button data-action="run">Run</button>
-      <button data-action="query">Query</button>
-      <button data-action="prove">Prove</button>
-      <button data-action="why-not">Why Not</button>
-      <label>relation <input id="relation" value="ancestor" /></label>
-      <label>arg1 <input id="arg1" value="alice" /></label>
-      <label>arg2 <input id="arg2" value="cara" /></label>
-      <label class="toggle"><input id="recursive" type="checkbox" checked /> recursive</label>
+    <header class="app-shell">
+      <div class="brand">
+        <span class="brand-mark">tl</span>
+        <div>
+          <h1>tensor_logic</h1>
+          <p id="program-summary">0 domains / 0 relations / 0 facts / 0 rules</p>
+        </div>
+      </div>
+
+      <div class="command-bar" aria-label="Workbench actions">
+        <button class="primary" data-action="run" type="button">Run</button>
+        <button data-action="query" type="button">Query</button>
+        <button data-action="prove" type="button">Prove</button>
+        <button data-action="why-not" type="button">Why Not</button>
+      </div>
     </header>
-    <main class="split">
-      <section>
-        <div class="pane-title">source.tl</div>
+
+    <main class="workbench">
+      <aside class="rail" aria-label="Program controls">
+        <label class="field">
+          <span>preset</span>
+          <select id="preset"></select>
+        </label>
+
+        <div class="repo-loader">
+          <label class="field">
+            <span>python path</span>
+            <input id="ingest-path" value="tensor_logic" />
+          </label>
+          <button id="load-repo" type="button">Load Imports</button>
+          <p id="ingest-summary">Load a Python package to ask dependency questions.</p>
+        </div>
+
+        <div class="overview-card">
+          <button id="analyze-overview" type="button">Repo Overview</button>
+          <p id="overview-summary">Rank hotspots after loading imports.</p>
+        </div>
+
+        <div class="compare-card">
+          <button id="set-baseline" type="button">Set Baseline</button>
+          <button id="compare-graph" type="button">Compare Graph</button>
+          <p id="compare-summary">Set a baseline before editing or reloading imports.</p>
+        </div>
+
+        <div class="query-card">
+          <label class="field">
+            <span>relation</span>
+            <input id="relation" list="relation-options" value="ancestor" />
+          </label>
+          <datalist id="relation-options"></datalist>
+
+          <div class="arg-grid">
+            <label class="field">
+              <span>arg 1</span>
+              <input id="arg1" list="argument-options" value="alice" />
+            </label>
+            <label class="field">
+              <span>arg 2</span>
+              <input id="arg2" list="argument-options" value="cara" />
+            </label>
+            <datalist id="argument-options"></datalist>
+          </div>
+
+          <label class="switch">
+            <input id="recursive" type="checkbox" checked />
+            <span>recursive</span>
+          </label>
+        </div>
+
+        <div class="impact-card">
+          <label class="field">
+            <span>impact module</span>
+            <input id="impact-module" list="argument-options" value="language" />
+          </label>
+          <button id="analyze-impact" type="button">Analyze Impact</button>
+          <button id="change-brief" type="button">Change Brief</button>
+          <p id="impact-summary">No impact yet.</p>
+          <p id="brief-summary">No brief yet.</p>
+        </div>
+
+        <section class="inspector" aria-label="Program index">
+          <div class="section-title">
+            <span>program</span>
+            <span id="line-count">0 lines</span>
+          </div>
+          <div id="program-index" class="index-list"></div>
+        </section>
+
+        <section class="inspector" aria-label="History">
+          <div class="section-title">
+            <span>history</span>
+            <button id="clear-history" class="ghost" type="button">Clear</button>
+          </div>
+          <div id="history" class="history-list"></div>
+        </section>
+      </aside>
+
+      <section class="editor-pane" aria-label="Source editor">
+        <div class="pane-header">
+          <div>
+            <span class="eyebrow">source.tl</span>
+            <strong id="active-preset">Kinship Closure</strong>
+          </div>
+          <button id="reset-source" class="ghost" type="button">Reset</button>
+        </div>
         <textarea id="source" spellcheck="false"></textarea>
       </section>
-      <section>
-        <div class="pane-title">result</div>
-        <pre id="result"></pre>
+
+      <section class="result-pane" aria-label="Result">
+        <div class="answer-strip" id="answer-strip">
+          <div>
+            <span class="eyebrow">result</span>
+            <strong id="answer-title">Ready</strong>
+          </div>
+          <div class="metrics">
+            <span id="duration">0 ms</span>
+            <span id="exit-code">idle</span>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Result views">
+          <button class="tab active" data-tab="output" type="button">Output</button>
+          <button class="tab" data-tab="proof" type="button">Proof</button>
+          <button class="tab" data-tab="json" type="button">JSON</button>
+        </nav>
+
+        <div class="tab-panel active" data-panel="output">
+          <pre id="result"></pre>
+        </div>
+        <div class="tab-panel" data-panel="proof">
+          <div id="proof-view" class="proof-view"></div>
+        </div>
+        <div class="tab-panel" data-panel="json">
+          <pre id="json-view"></pre>
+        </div>
       </section>
     </main>
+
     <script src="./app.js" type="module"></script>
   </body>
 </html>
