@@ -187,6 +187,29 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(proof.head, ("depends_on", "worker", "models"))
         self.assertGreater(len(proof.body), 0)
 
+    def test_tl_file_rejects_unknown_command_flag(self):
+        import tempfile
+        from pathlib import Path
+
+        source = "\n".join(
+            [
+                "domain Node { a b c }",
+                "relation edge(Node, Node)",
+                "relation path(Node, Node)",
+                "fact edge(a, b)",
+                "fact edge(b, c)",
+                "rule path(x,y) := edge(x,y).step()",
+                "rule path(x,y) := edge(x,z) * path(z,y).step()",
+                "query path(a, c) recursvie",
+            ]
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "bad_flag.tl"
+            path.write_text(source, encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "unknown command flag\\(s\\): recursvie"):
+                load_tl(str(path))
+
     def test_rule_aware_proof_with_witness(self):
         loaded = load_tl("examples/personal_memory.tl")
         proof = prove(loaded.program, "should_follow_up", "ryan", "tensor_demo")
