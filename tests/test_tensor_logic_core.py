@@ -489,6 +489,18 @@ class TensorLogicCoreTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 load_tl(a_path)
 
+    def test_tl_file_rejects_empty_comma_items(self):
+        import tempfile, os
+        from tensor_logic.file_format import load_tl
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write("domain Node { a,, b }\n")
+            path = f.name
+        try:
+            with self.assertRaisesRegex(ValueError, r"empty item in list"):
+                load_tl(path)
+        finally:
+            os.unlink(path)
+
     def test_proof_json_roundtrip(self):
         from tensor_logic import format_proof_result
         from tensor_logic.proofs import Proof

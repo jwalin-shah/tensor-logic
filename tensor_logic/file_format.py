@@ -105,4 +105,8 @@ def _logical_lines(path: str):
 def _split_items(text: str) -> list[str]:
     if not text:
         return []
+    if "," in text:
+        chunks = text.split(",")
+        if any(not chunk.strip() for chunk in chunks):
+            raise ValueError(f"empty item in list: {text!r}")
     return [item.strip() for item in re.split(r"[,\s]+", text) if item.strip()]
