@@ -84,15 +84,24 @@ Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` a
 
 ## Worker validation
 
-Symphony workers should validate a clean checkout with the same commands used by
-CI:
+After installing dev dependencies, Symphony workers should run one local gate
+before PR handoff:
+
+```bash
+python3 tools/local_validation.py
+```
+
+The gate uses the active Python interpreter to run the full pytest suite, then
+runs `git diff --check`. It exits nonzero on the first failing check.
+
+CI runs the same test command after an editable dev install:
 
 ```bash
 python -m pip install -e ".[dev]"
 python -m pytest tests/ -v
 ```
 
-Support/stability fast path:
+Support/stability fast path for narrower research-support changes:
 
 ```bash
 python -m pytest tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v
@@ -102,11 +111,10 @@ python experiments/exp86_support_baselines.py --quick
 `exp86` is a neural baseline smoke run and should stay out of CI unless it is
 kept quick and deterministic.
 
-If `python` is absent locally, use the equivalent `python3` fallback:
+If the checkout does not already have dev dependencies installed:
 
 ```bash
 python3 -m pip install -e ".[dev]"
-python3 -m pytest tests/ -v
 ```
 
 See `docs/VALIDATION.md` for the tiered matrix covering cheap CI tests, code

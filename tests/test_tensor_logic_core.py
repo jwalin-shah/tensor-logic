@@ -187,6 +187,29 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(proof.head, ("depends_on", "worker", "models"))
         self.assertGreater(len(proof.body), 0)
 
+    def test_tl_file_rejects_unknown_command_flag(self):
+        import tempfile
+        from pathlib import Path
+
+        source = "\n".join(
+            [
+                "domain Node { a b c }",
+                "relation edge(Node, Node)",
+                "relation path(Node, Node)",
+                "fact edge(a, b)",
+                "fact edge(b, c)",
+                "rule path(x,y) := edge(x,y).step()",
+                "rule path(x,y) := edge(x,z) * path(z,y).step()",
+                "query path(a, c) recursvie",
+            ]
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "bad_flag.tl"
+            path.write_text(source, encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "unknown command flag\\(s\\): recursvie"):
+                load_tl(str(path))
+
     def test_rule_aware_proof_with_witness(self):
         loaded = load_tl("examples/personal_memory.tl")
         proof = prove(loaded.program, "should_follow_up", "ryan", "tensor_demo")
@@ -489,6 +512,18 @@ class TensorLogicCoreTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 load_tl(a_path)
 
+    def test_tl_file_rejects_empty_comma_items(self):
+        import tempfile, os
+        from tensor_logic.file_format import load_tl
+        with tempfile.NamedTemporaryFile("w", suffix=".tl", delete=False, encoding="utf-8") as f:
+            f.write("domain Node { a,, b }\n")
+            path = f.name
+        try:
+            with self.assertRaisesRegex(ValueError, r"empty item in list"):
+                load_tl(path)
+        finally:
+            os.unlink(path)
+
     def test_proof_json_roundtrip(self):
         from tensor_logic import format_proof_result
         from tensor_logic.proofs import Proof
@@ -606,15 +641,16 @@ class TensorLogicCoreTest(unittest.TestCase):
             self.assertIsNotNone(proof)
 
     def test_repo_graph_helpers_and_report(self):
-        from tensor_logic.repo_graph_view import build_adjacency, dependency_report, filter_modules, imports_path, load_repo_graph
+        from tensor_logic.repo_graph_view import RepoGraphView, dependency_report, load_repo_graph
 
         graph = load_repo_graph("examples/code_dependencies.tl")
         self.assertIn("worker", graph.modules)
         self.assertIn(("worker", "api"), graph.imports)
-        adjacency = build_adjacency(graph.modules, graph.imports)
-        self.assertEqual(adjacency["worker"], ["api"])
-        self.assertEqual(filter_modules(graph.modules, "mo"), ["models"])
-        self.assertEqual(imports_path(graph.modules, graph.imports, "worker", "models"), ["worker", "api", "db", "models"])
+
+        view = RepoGraphView.load("examples/code_dependencies.tl")
+        self.assertEqual(view.direct_imports("worker"), ("api",))
+        self.assertEqual(view.search("mo"), ["models"])
+        self.assertEqual(view.imports_path("worker", "models"), ["worker", "api", "db", "models"])
         report = dependency_report("examples/code_dependencies.tl", module="worker", src="worker", dst="models")
         self.assertIn("direct imports(worker): api", report)
         self.assertIn("depends_on(worker, models) = True", report)
@@ -874,7 +910,7 @@ class TensorLogicCoreTest(unittest.TestCase):
 
     def test_http_source_execution_preserves_arity_and_load_errors(self):
         from http import HTTPStatus
-        from tensor_logic.http_api import ApiError, query_source, run_source
+        from tensor_logic.http_api import ApiError, prove_source, query_source, run_source
 
         source = "\n".join(
             [
@@ -887,6 +923,11 @@ class TensorLogicCoreTest(unittest.TestCase):
             query_source(source, "edge", ["a"])
         self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(caught.exception.message, "query requires exactly 2 args")
+
+        with self.assertRaises(ApiError) as caught:
+            prove_source(source, "edge", ["a"])
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "prove requires exactly 2 args")
 
         with self.assertRaises(ValueError) as parse:
             run_source("not valid tl\n")

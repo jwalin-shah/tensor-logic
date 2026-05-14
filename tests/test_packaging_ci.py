@@ -1,4 +1,5 @@
 from pathlib import Path
+import importlib.util
 import re
 import subprocess
 import sys
@@ -10,6 +11,18 @@ VALIDATION_DOC = REPO_ROOT / "docs" / "VALIDATION.md"
 CONTEXT_DOC = REPO_ROOT / "CONTEXT.md"
 PROVENANCE_DOC = REPO_ROOT / "docs" / "EXPERIMENT_PROVENANCE.md"
 STATUS_DOC = REPO_ROOT / "docs" / "EXPERIMENT_STATUS.md"
+LOCAL_VALIDATION_SCRIPT = REPO_ROOT / "tools" / "local_validation.py"
+
+
+def _load_local_validation_module():
+    spec = importlib.util.spec_from_file_location(
+        "local_validation", LOCAL_VALIDATION_SCRIPT
+    )
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _requirement_names(requirements: list[str]) -> set[str]:
@@ -59,12 +72,12 @@ def test_github_actions_runs_worker_validation_commands():
 def test_readme_documents_worker_validation_commands():
     readme = (REPO_ROOT / "README.md").read_text()
 
+    assert "python3 tools/local_validation.py" in readme
     assert 'python -m pip install -e ".[dev]"' in readme
     assert "python -m pytest tests/ -v" in readme
     assert "tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v" in readme
     assert "python experiments/exp86_support_baselines.py --quick" in readme
     assert 'python3 -m pip install -e ".[dev]"' in readme
-    assert "python3 -m pytest tests/ -v" in readme
     assert "docs/VALIDATION.md" in readme
 
 
@@ -95,14 +108,90 @@ def test_validation_doc_defines_local_tiers_and_boundaries():
     for section in expected_sections:
         assert section in validation
 
+    assert "## Canonical Local Handoff Gate" in validation
+    assert "python3 tools/local_validation.py" in validation
+    assert "`git diff --check`" in validation
     assert 'python -m pip install -e ".[dev]"' in validation
     assert "python -m pytest tests/ -v" in validation
     assert 'python3 -m pip install -e ".[dev]"' in validation
-    assert "python3 -m pytest tests/ -v" in validation
     assert "python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v" in validation
     assert "remote services, external datasets, model" in validation
     assert "External FAFSA/ISIR validation" in validation
     assert "docs/EXPERIMENT_PROVENANCE.md" in validation
+
+
+def test_local_validation_gate_runs_executable_checks_and_fails_fast(monkeypatch):
+    local_validation = _load_local_validation_module()
+    calls = []
+
+    class FailedResult:
+        returncode = 7
+
+    def fake_run(command, cwd):
+        calls.append((command, cwd))
+        return FailedResult()
+
+    monkeypatch.setattr(local_validation.subprocess, "run", fake_run)
+
+    assert local_validation.main() == 7
+    assert calls == [
+        (
+            [sys.executable, "-m", "pytest", "tests/", "-v"],
+            REPO_ROOT,
+        )
+    ]
+
+
+def test_local_validation_gate_checks_pr_diff_after_tests_pass(monkeypatch):
+    local_validation = _load_local_validation_module()
+    calls = []
+    returncodes = iter([0, 9])
+
+    class Result:
+        def __init__(self, returncode):
+            self.returncode = returncode
+
+    def fake_run(command, cwd):
+        calls.append((command, cwd))
+        return Result(next(returncodes))
+
+    monkeypatch.setattr(local_validation.subprocess, "run", fake_run)
+
+    assert local_validation.main() == 9
+    assert calls == [
+        (
+            [sys.executable, "-m", "pytest", "tests/", "-v"],
+            REPO_ROOT,
+        ),
+        (["git", "diff", "--check", "origin/main...HEAD"], REPO_ROOT),
+    ]
+
+
+def test_local_validation_gate_checks_staged_and_worktree_diffs(monkeypatch):
+    local_validation = _load_local_validation_module()
+    calls = []
+    returncodes = iter([0, 0, 0, 11])
+
+    class Result:
+        def __init__(self, returncode):
+            self.returncode = returncode
+
+    def fake_run(command, cwd):
+        calls.append((command, cwd))
+        return Result(next(returncodes))
+
+    monkeypatch.setattr(local_validation.subprocess, "run", fake_run)
+
+    assert local_validation.main() == 11
+    assert calls == [
+        (
+            [sys.executable, "-m", "pytest", "tests/", "-v"],
+            REPO_ROOT,
+        ),
+        (["git", "diff", "--check", "origin/main...HEAD"], REPO_ROOT),
+        (["git", "diff", "--cached", "--check"], REPO_ROOT),
+        (["git", "diff", "--check"], REPO_ROOT),
+    ]
 
 
 def test_validation_doc_maps_heavy_dependencies_outside_ci():

@@ -6,8 +6,14 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-from .execution import execute_command, execute_source_prove, execute_source_query, execute_source_run
-from .file_format import Command
+from .execution import (
+    PROVE_BINARY_RELATION_ARGS_ERROR,
+    QUERY_BINARY_RELATION_ARGS_ERROR,
+    execute_prove,
+    execute_query,
+    execute_run,
+    load_tl_source,
+)
 from .ingest import ingest_python, render_python_imports_tl
 
 
@@ -22,14 +28,14 @@ def ingest_python_source(path: str) -> str:
 
 
 def run_source(source: str) -> dict[str, Any]:
-    return execute_source_run(source)
+    return execute_run(_load_program_from_source(source))
 
 
 def query_source(source: str, relation: str, args: list[str], recursive: bool = False) -> dict[str, Any]:
     try:
-        return execute_source_query(source, relation, args, recursive=recursive)
+        return execute_query(_load_program_from_source(source).program, relation, args, recursive=recursive)
     except ValueError as exc:
-        if str(exc) == "query requires exactly 2 args":
+        if str(exc) == QUERY_BINARY_RELATION_ARGS_ERROR:
             raise ApiError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
         raise
 
@@ -43,12 +49,12 @@ def prove_source(
     format_type: str = "tree",
 ) -> dict[str, Any]:
     if len(args) != 2:
-        raise ApiError(HTTPStatus.BAD_REQUEST, "prove requires exactly 2 args")
+        raise ApiError(HTTPStatus.BAD_REQUEST, PROVE_BINARY_RELATION_ARGS_ERROR)
     if format_type not in {"tree", "json"}:
         raise ApiError(HTTPStatus.BAD_REQUEST, "format must be 'tree' or 'json'")
     try:
-        return execute_source_prove(
-            source,
+        return execute_prove(
+            _load_program_from_source(source).program,
             relation,
             args,
             recursive=recursive,
@@ -56,7 +62,7 @@ def prove_source(
             format_type=format_type,
         )
     except ValueError as exc:
-        if str(exc) in {"prove requires exactly 2 args", "format must be 'tree' or 'json'"}:
+        if str(exc) == PROVE_BINARY_RELATION_ARGS_ERROR:
             raise ApiError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
         raise
 
@@ -117,7 +123,6 @@ def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
     finally:
         server.server_close()
 
-def _execute_command(program, command: Command, format_type: str = "tree", why_not: bool = False, out=None) -> None:
-    if out is None:
-        return
-    print(execute_command(program, command, format_type=format_type, why_not=why_not).text, file=out)
+
+def _load_program_from_source(source: str):
+    return load_tl_source(source, prefix="tensor_logic_api_")

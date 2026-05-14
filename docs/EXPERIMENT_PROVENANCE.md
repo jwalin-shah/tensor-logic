@@ -37,6 +37,11 @@ If an experiment writes weights, adapters, large outputs, or remote artifacts,
 do not commit those binaries. Commit `results.json` and a pointer file such as
 `ADAPTER.md` or `PROVENANCE.md` instead.
 
+Default local reruns should write to ignored `.runtime/experiments/` paths.
+Committed `experiments/*_data/results*.json` files are fixtures/evidence and
+should only be refreshed with an explicit output path plus an experiment-log
+entry or provenance note.
+
 ## Current Result Artifact Index
 
 This is a repo-local pointer index, not a full metric table. Read the linked

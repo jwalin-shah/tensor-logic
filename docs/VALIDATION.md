@@ -9,6 +9,24 @@ status summaries, read `CONTEXT.md` and `docs/EXPERIMENT_PROVENANCE.md`. The
 validation command proves that files still parse and contract checks still pass;
 it does not upgrade the evidence tier behind a claim.
 
+## Canonical Local Handoff Gate
+
+After installing dev dependencies, workers should run one local gate before PR
+handoff:
+
+```bash
+python3 tools/local_validation.py
+```
+
+The gate uses the active Python interpreter to run `pytest tests/ -v`, then runs
+`git diff --check`. It exits nonzero on the first failing check.
+
+If the checkout does not already have dev dependencies installed:
+
+```bash
+python3 -m pip install -e ".[dev]"
+```
+
 ## Canonical CI Validation
 
 GitHub Actions validates pull requests and pushes to `main` with the editable dev
@@ -17,14 +35,6 @@ install and the full default test tree:
 ```bash
 python -m pip install -e ".[dev]"
 python -m pytest tests/ -v
-```
-
-If a local machine does not provide `python`, use the equivalent `python3`
-fallback:
-
-```bash
-python3 -m pip install -e ".[dev]"
-python3 -m pytest tests/ -v
 ```
 
 For documentation, packaging, or validation-boundary changes, this narrower proof
@@ -81,6 +91,16 @@ Fallback when `python` is absent:
 ```bash
 python3 -m pip install -e ".[dev]"
 python3 -c "import tensor_logic; from tensor_logic import Program; print('tensor_logic import ok')"
+```
+
+## CLI Smoke Contract
+
+Use this proof when the `python -m tensor_logic` entrypoint or `.tl` file loading
+failure behavior changes. It runs without remote services, secrets, durable
+experiment artifacts, or model downloads:
+
+```bash
+python3 -m pytest tests/test_cli_smoke.py -q
 ```
 
 ## Demo Smoke Commands
@@ -163,10 +183,11 @@ was not refreshed.
 ## Expected Artifacts
 
 Cheap CI proofs should leave no durable artifact except the gitignored
-`tools/index.json` when the code-index command rebuilds it.
+`tools/index.json` when the code-index command rebuilds it, or ignored
+`.runtime/` files when a script default writes local runtime output.
 
-Experiment runs may intentionally write artifacts under experiment-specific
-directories, for example:
+Committed experiment fixtures live under experiment-specific directories, for
+example:
 
 - `experiments/exp78_data/results.json`
 - `experiments/exp79_data/results.json`
@@ -175,4 +196,6 @@ directories, for example:
 - `experiments/exp83_slot_data/complexity_curve.png`
 
 Do not create, refresh, or commit experiment artifacts as part of default
-validation unless the issue explicitly owns those outputs.
+validation unless the issue explicitly owns those outputs. Prefer script
+defaults or explicit temporary `--output` paths for validation; pass an
+`experiments/*_data/` path only when intentionally refreshing evidence.

@@ -99,8 +99,8 @@ class Program:
         relation = self.relations[relation_name]
         if len(symbols) != len(relation.domains):
             raise ValueError(
-                f"{relation_name} expects {len(relation.domains)} symbols, got {len(symbols)}; "
-                f"expects {len(relation.domains)} args, got {len(symbols)}"
+                f"{relation_name} expects {len(relation.domains)} symbols, got {len(symbols)} "
+                f"(expects {len(relation.domains)} args, got {len(symbols)})"
             )
         for i, (domain, symbol) in enumerate(zip(relation.domains, symbols)):
             if symbol not in domain.index:
