@@ -14,9 +14,82 @@ class RepoGraphData:
     imports: tuple[tuple[str, str], ...]
 
 
+@dataclass(frozen=True)
+class RepoGraphView:
+    program: object
+    graph: RepoGraphData
+    adjacency: dict[str, list[str]]
+
+    @classmethod
+    def load(cls, path: str) -> "RepoGraphView":
+        loaded = load_tl(path)
+        graph = _repo_graph_data_from_program(loaded.program)
+        return cls(
+            program=loaded.program,
+            graph=graph,
+            adjacency=build_adjacency(graph.modules, graph.imports),
+        )
+
+    @property
+    def module_count(self) -> int:
+        return len(self.graph.modules)
+
+    @property
+    def import_count(self) -> int:
+        return len(self.graph.imports)
+
+    def search(self, query: str) -> list[str]:
+        return filter_modules(self.graph.modules, query)
+
+    def direct_imports(self, module: str) -> tuple[str, ...]:
+        if module not in self.adjacency:
+            raise ValueError(f"Unknown module: {module}")
+        return tuple(self.adjacency[module])
+
+    def has_modules(self, *modules: str) -> bool:
+        return all(module in self.adjacency for module in modules)
+
+    def format_direct_imports(self, module: str) -> str:
+        direct = self.direct_imports(module)
+        return f"direct imports({module}): {', '.join(direct) if direct else '(none)'}"
+
+    def imports_path(self, src: str, dst: str) -> list[str] | None:
+        return _imports_path_from_adjacency(self.adjacency, src, dst)
+
+    def depends_on(self, src: str, dst: str) -> bool:
+        return bool(self.program.query("depends_on", src, dst, recursive=True))
+
+    def format_adjacency(self) -> str:
+        return format_adjacency(self.adjacency)
+
+    def report(self, module: str | None = None, src: str | None = None, dst: str | None = None) -> str:
+        lines = [
+            "Repo dependency graph report",
+            f"modules={self.module_count} imports={self.import_count}",
+        ]
+        if module is not None:
+            lines.append(self.format_direct_imports(module))
+        if src is not None and dst is not None:
+            answer = self.depends_on(src, dst)
+            lines.append(f"depends_on({src}, {dst}) = {answer}")
+            if answer:
+                proof = prove(self.program, "depends_on", src, dst, recursive=True)
+                if proof is not None:
+                    path = extract_path_from_proof(proof)
+                    if path is not None:
+                        lines.append("path: " + " -> ".join(path))
+                    lines.append(fmt_proof_tree(proof))
+        lines.append("adjacency:")
+        lines.append(self.format_adjacency())
+        return "\n".join(lines)
+
+
 def load_repo_graph(path: str) -> RepoGraphData:
     loaded = load_tl(path)
-    program = loaded.program
+    return _repo_graph_data_from_program(loaded.program)
+
+
+def _repo_graph_data_from_program(program) -> RepoGraphData:
     if "Module" not in program.domains:
         raise ValueError("domain 'Module' is required for repo graph view")
     if "imports" not in program.relations:
@@ -51,6 +124,10 @@ def filter_modules(modules: Iterable[str], query: str) -> list[str]:
 
 def imports_path(modules: Iterable[str], imports: Iterable[tuple[str, str]], src: str, dst: str) -> list[str] | None:
     adjacency = build_adjacency(modules, imports)
+    return _imports_path_from_adjacency(adjacency, src, dst)
+
+
+def _imports_path_from_adjacency(adjacency: dict[str, list[str]], src: str, dst: str) -> list[str] | None:
     if src not in adjacency or dst not in adjacency:
         return None
     queue = deque([src])
@@ -90,28 +167,7 @@ def format_adjacency(adjacency: dict[str, list[str]]) -> str:
 
 
 def dependency_report(path: str, module: str | None = None, src: str | None = None, dst: str | None = None) -> str:
-    loaded = load_tl(path)
-    graph = load_repo_graph(path)
-    adjacency = build_adjacency(graph.modules, graph.imports)
-    lines = ["Repo dependency graph report", f"modules={len(graph.modules)} imports={len(graph.imports)}"]
-    if module is not None:
-        if module not in adjacency:
-            raise ValueError(f"Unknown module: {module}")
-        direct = adjacency[module]
-        lines.append(f"direct imports({module}): {', '.join(direct) if direct else '(none)'}")
-    if src is not None and dst is not None:
-        answer = bool(loaded.program.query("depends_on", src, dst, recursive=True))
-        lines.append(f"depends_on({src}, {dst}) = {answer}")
-        if answer:
-            proof = prove(loaded.program, "depends_on", src, dst, recursive=True)
-            if proof is not None:
-                path = extract_path_from_proof(proof)
-                if path is not None:
-                    lines.append("path: " + " -> ".join(path))
-                lines.append(fmt_proof_tree(proof))
-    lines.append("adjacency:")
-    lines.append(format_adjacency(adjacency))
-    return "\n".join(lines)
+    return RepoGraphView.load(path).report(module=module, src=src, dst=dst)
 
 
 def repo_graph_repl(path: str, out=None) -> None:
@@ -119,9 +175,7 @@ def repo_graph_repl(path: str, out=None) -> None:
 
     if out is None:
         out = sys.stdout
-    loaded = load_tl(path)
-    graph = load_repo_graph(path)
-    adjacency = build_adjacency(graph.modules, graph.imports)
+    view = RepoGraphView.load(path)
     print("tensor-logic repo dependency graph view", file=out)
     print("Commands: search <text> | show <module> | depends <src> <dst> | adj | help | exit", file=out)
     while True:
@@ -141,19 +195,18 @@ def repo_graph_repl(path: str, out=None) -> None:
             print("adj               Full import adjacency list", file=out)
             continue
         if line == "adj":
-            print(format_adjacency(adjacency), file=out)
+            print(view.format_adjacency(), file=out)
             continue
         if line.startswith("search "):
-            hits = filter_modules(graph.modules, line[len("search "):])
+            hits = view.search(line[len("search "):])
             print("\n".join(f"- {hit}" for hit in hits) if hits else "No matching modules.", file=out)
             continue
         if line.startswith("show "):
             module = line[len("show "):].strip()
-            if module not in adjacency:
-                print(f"Unknown module: {module}", file=out)
-                continue
-            direct = adjacency[module]
-            print(f"direct imports({module}): {', '.join(direct) if direct else '(none)'}", file=out)
+            try:
+                print(view.format_direct_imports(module), file=out)
+            except ValueError as exc:
+                print(exc, file=out)
             continue
         if line.startswith("depends "):
             parts = line.split()
@@ -161,10 +214,10 @@ def repo_graph_repl(path: str, out=None) -> None:
                 print("Usage: depends <src> <dst>", file=out)
                 continue
             src, dst = parts[1], parts[2]
-            if src not in adjacency or dst not in adjacency:
+            if not view.has_modules(src, dst):
                 print("Unknown module symbol(s)", file=out)
                 continue
-            print(dependency_report(path, src=src, dst=dst), file=out)
+            print(view.report(src=src, dst=dst), file=out)
             continue
         print(f"Unknown command: {line}", file=out)
 
