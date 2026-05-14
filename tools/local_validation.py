@@ -18,7 +18,9 @@ def _run(label: str, command: Sequence[str]) -> int:
 def main() -> int:
     checks = [
         ("Full pytest suite", [sys.executable, "-m", "pytest", "tests/", "-v"]),
-        ("Whitespace diff check", ["git", "diff", "--check"]),
+        ("PR whitespace diff check", ["git", "diff", "--check", "origin/main...HEAD"]),
+        ("Staged whitespace diff check", ["git", "diff", "--cached", "--check"]),
+        ("Working tree whitespace diff check", ["git", "diff", "--check"]),
     ]
 
     for label, command in checks:

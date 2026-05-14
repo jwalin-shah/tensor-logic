@@ -142,7 +142,7 @@ def test_local_validation_gate_runs_executable_checks_and_fails_fast(monkeypatch
     ]
 
 
-def test_local_validation_gate_checks_diff_after_tests_pass(monkeypatch):
+def test_local_validation_gate_checks_pr_diff_after_tests_pass(monkeypatch):
     local_validation = _load_local_validation_module()
     calls = []
     returncodes = iter([0, 9])
@@ -163,6 +163,33 @@ def test_local_validation_gate_checks_diff_after_tests_pass(monkeypatch):
             [sys.executable, "-m", "pytest", "tests/", "-v"],
             REPO_ROOT,
         ),
+        (["git", "diff", "--check", "origin/main...HEAD"], REPO_ROOT),
+    ]
+
+
+def test_local_validation_gate_checks_staged_and_worktree_diffs(monkeypatch):
+    local_validation = _load_local_validation_module()
+    calls = []
+    returncodes = iter([0, 0, 0, 11])
+
+    class Result:
+        def __init__(self, returncode):
+            self.returncode = returncode
+
+    def fake_run(command, cwd):
+        calls.append((command, cwd))
+        return Result(next(returncodes))
+
+    monkeypatch.setattr(local_validation.subprocess, "run", fake_run)
+
+    assert local_validation.main() == 11
+    assert calls == [
+        (
+            [sys.executable, "-m", "pytest", "tests/", "-v"],
+            REPO_ROOT,
+        ),
+        (["git", "diff", "--check", "origin/main...HEAD"], REPO_ROOT),
+        (["git", "diff", "--cached", "--check"], REPO_ROOT),
         (["git", "diff", "--check"], REPO_ROOT),
     ]
 
