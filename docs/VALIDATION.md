@@ -20,8 +20,9 @@ python3 tools/local_validation.py
 ```
 
 `tools/local_validation.py` runs the full default pytest tree with `-q` through
-the active interpreter, then runs `git diff --check`. It exits nonzero if either
-step fails. GitHub Actions uses the same gate after `actions/setup-python`:
+the active interpreter, checks the committed diff against the base branch for
+whitespace errors, then checks the current worktree diff. It exits nonzero if
+any step fails. GitHub Actions uses the same gate after `actions/setup-python`:
 
 ```bash
 python -m pip install -e ".[dev]"

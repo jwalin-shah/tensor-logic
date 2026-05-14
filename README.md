@@ -104,8 +104,9 @@ kept quick and deterministic.
 
 CI uses `python tools/local_validation.py` after `actions/setup-python`; local
 workers should use `python3 tools/local_validation.py` when `python` is absent.
-The gate runs `python -m pytest -q tests/` through the active interpreter and
-then `git diff --check`, exiting nonzero on the first failing step.
+The gate runs `python -m pytest -q tests/` through the active interpreter, checks
+the committed diff against the base branch for whitespace errors, then checks
+the current worktree diff, exiting nonzero on the first failing step.
 
 If `python3` is absent but `python` is available, use the equivalent command:
 
