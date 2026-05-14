@@ -48,6 +48,8 @@ def prove_source(
     why_not: bool = False,
     format_type: str = "tree",
 ) -> dict[str, Any]:
+    if len(args) != 2:
+        raise ApiError(HTTPStatus.BAD_REQUEST, PROVE_BINARY_RELATION_ARGS_ERROR)
     if format_type not in {"tree", "json"}:
         raise ApiError(HTTPStatus.BAD_REQUEST, "format must be 'tree' or 'json'")
     try:

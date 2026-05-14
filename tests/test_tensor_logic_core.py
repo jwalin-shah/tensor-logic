@@ -710,6 +710,22 @@ class TensorLogicCoreTest(unittest.TestCase):
             tl_source = ingest_python_source(tmpdir)
         self.assertIn("fact imports(pkg_api, pkg_db)", tl_source)
 
+    def test_http_api_prove_validates_request_before_source_parse(self):
+        from http import HTTPStatus
+        from tensor_logic.http_api import ApiError, prove_source
+
+        malformed_source = "this is not valid TL"
+
+        with self.assertRaises(ApiError) as caught:
+            prove_source(malformed_source, "edge", ["a"])
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "prove requires exactly 2 args")
+
+        with self.assertRaises(ApiError) as caught:
+            prove_source(malformed_source, "edge", ["a", "b"], format_type="xml")
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "format must be 'tree' or 'json'")
+
     def test_cli_and_http_share_positive_proof_json_semantics(self):
         import json
         import subprocess
@@ -991,6 +1007,38 @@ class TensorLogicCoreTest(unittest.TestCase):
         result = execute_command(program, Command("prove", "edge", ("a", "b")), why_not=True)
         self.assertIn("edge(a, b) = False", result.text)
         self.assertIn("reason: no_rules", result.text)
+
+    def test_execute_source_helpers_share_loading_and_result_semantics(self):
+        from tensor_logic.execution import execute_source_prove, execute_source_query, execute_source_run
+
+        source = "\n".join(
+            [
+                "domain Node { a, b }",
+                "relation edge(Node, Node)",
+                "fact edge(a, b)",
+                "query edge(a, b)",
+                "prove edge(a, b)",
+            ]
+        )
+
+        outputs = execute_source_run(source)["outputs"]
+        self.assertEqual(outputs[0], "edge(a, b) = True")
+        self.assertIn("edge(a, b)", outputs[1])
+        self.assertTrue(execute_source_query(source, "edge", ("a", "b"))["answer"])
+        proof = execute_source_prove(source, "edge", ("a", "b"), format_type="json")
+        self.assertEqual(proof["proof"]["head"], ["edge", "a", "b"])
+
+    def test_execute_prove_owns_proof_format_validation(self):
+        from tensor_logic.execution import execute_prove
+        from tensor_logic.program import Program
+
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+
+        with self.assertRaises(ValueError) as caught:
+            execute_prove(program, "edge", ("a", "b"), format_type="xml")
+        self.assertEqual(str(caught.exception), "format must be 'tree' or 'json'")
 
     def test_web_workbench_sample_is_valid_tl(self):
         import re
