@@ -14,7 +14,12 @@ a half-hard variant — names+graph only, original templates — for ablation).
 import json
 import random
 from pathlib import Path
+import sys
 
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from experiments.runtime_paths import experiment_output_dir
 from exp76a_rule_traces import (
     RULE_BODIES,
     derive_siblings,
@@ -102,8 +107,16 @@ def make_hard_trace(rng, rule_type, want_positive):
 
 
 def main():
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", type=Path, default=experiment_output_dir("exp76b_hard_eval") / "eval_hard.jsonl",
+                    help="Output JSONL path for generated hard eval traces.")
+    args = ap.parse_args()
+
     rng = random.Random(76)
-    out_path = Path(__file__).parent / "exp76_data" / "eval_hard.jsonl"
+    out_path = args.out
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     rules = list(RULE_BODIES.keys())
     n = 200
     rule_counts = {}

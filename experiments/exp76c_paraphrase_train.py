@@ -19,7 +19,12 @@ from a 5-paraphrase pool).
 import json
 import random
 from pathlib import Path
+import sys
 
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from experiments.runtime_paths import experiment_output_dir
 from exp76a_rule_traces import (
     NAMES,
     RULE_BODIES,
@@ -96,8 +101,16 @@ def make_paraphrased_trace(rng, rule_type, want_positive):
 
 
 def main():
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", type=Path, default=experiment_output_dir("exp76c_paraphrase_train") / "train_paraphrased.jsonl",
+                    help="Output JSONL path for generated paraphrased train traces.")
+    args = ap.parse_args()
+
     rng = random.Random(76)
-    out_path = Path(__file__).parent / "exp76_data" / "train_paraphrased.jsonl"
+    out_path = args.out
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     rules = list(RULE_BODIES.keys())
     n = 2000
     rule_counts = {}

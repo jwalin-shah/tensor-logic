@@ -22,9 +22,11 @@ if __package__ in {None, ""}:
 from experiments.exp85_support_tl import SupportTolerance, infer_stability
 from experiments.exp87_support_eval import EvalConfig, make_splits
 from experiments.exp88_support_noisy_relations import perturb_objects
+from experiments.runtime_paths import portable_path, result_path
 
 
 RESULT_DIR = Path(__file__).with_name("exp89_support_primitive_confidence_data")
+EXPERIMENT_NAME = "exp89_support_primitive_confidence"
 GEOMETRY_MODES = {
     "x_only": ("x",),
     "y_only": ("y",),
@@ -413,12 +415,9 @@ def run_confidence_evaluation(
     }
 
     if output_path is None:
-        output_path = RESULT_DIR / ("results_quick.json" if config.quick else "results.json")
+        output_path = result_path(EXPERIMENT_NAME, quick=config.quick)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        results["results_path"] = str(output_path.resolve().relative_to(Path.cwd().resolve()))
-    except ValueError:
-        results["results_path"] = str(output_path)
+    results["results_path"] = portable_path(output_path)
     output_path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return results
 

@@ -23,8 +23,12 @@ Metrics per target:
 """
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import torch
 
@@ -38,8 +42,10 @@ from tensor_logic.research.utils import (
     sample_examples,
     semantic_equiv,
 )
+from experiments.runtime_paths import result_path
 
 HERE = Path(__file__).parent
+EXPERIMENT_NAME = "exp78_rule_induction"
 
 
 # ---------- LM pruner (v2) ----------
@@ -199,7 +205,7 @@ def eval_split(name: str, targets: list, schema_for_world, n_pos: int = 20,
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(HERE / "exp78_data" / "results.json"))
+    ap.add_argument("--out", default=str(result_path(EXPERIMENT_NAME)))
     ap.add_argument("--n-pos", type=int, default=20)
     ap.add_argument("--n-neg", type=int, default=20)
     ap.add_argument("--n-entities", type=int, default=8)

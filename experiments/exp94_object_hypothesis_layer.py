@@ -33,9 +33,11 @@ from experiments.exp93_detector_calibration_stress import (
     _seed_for,
     apply_detector_stress,
 )
+from experiments.runtime_paths import portable_path, result_path
 
 
 RESULT_DIR = Path(__file__).with_name("exp94_object_hypothesis_layer_data")
+EXPERIMENT_NAME = "exp94_object_hypothesis_layer"
 STRUCTURAL_FAILURE_MODES = tuple(mode for mode in FAILURE_MODES if mode != "coordinate")
 
 
@@ -531,12 +533,9 @@ def run_object_hypothesis_layer(
     }
 
     if output_path is None:
-        output_path = RESULT_DIR / ("results_quick.json" if config.quick else "results.json")
+        output_path = result_path(EXPERIMENT_NAME, quick=config.quick)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        results["results_path"] = str(output_path.resolve().relative_to(Path.cwd().resolve()))
-    except ValueError:
-        results["results_path"] = str(output_path)
+    results["results_path"] = portable_path(output_path)
     output_path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return results
 

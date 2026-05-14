@@ -30,9 +30,11 @@ from experiments.exp92_pixel_abstain_recover import (
     detect_object_table,
     render_scene,
 )
+from experiments.runtime_paths import portable_path, result_path
 
 
 RESULT_DIR = Path(__file__).with_name("exp93_detector_calibration_stress_data")
+EXPERIMENT_NAME = "exp93_detector_calibration_stress"
 LOCALIZATION_MODES = {
     "x_only": ("x",),
     "y_only": ("y",),
@@ -626,12 +628,9 @@ def run_detector_stress(
     }
 
     if output_path is None:
-        output_path = RESULT_DIR / ("results_quick.json" if config.quick else "results.json")
+        output_path = result_path(EXPERIMENT_NAME, quick=config.quick)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        results["results_path"] = str(output_path.resolve().relative_to(Path.cwd().resolve()))
-    except ValueError:
-        results["results_path"] = str(output_path)
+    results["results_path"] = portable_path(output_path)
     output_path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return results
 

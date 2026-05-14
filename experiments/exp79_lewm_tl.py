@@ -45,6 +45,7 @@ from tensor_logic.research.synthetic_scene import (
     generate_labeled_scene_frames as generate_labeled_frames,
     remove_object_facts as remove_object,
 )
+from experiments.runtime_paths import experiment_output_dir
 from tensor_logic.research.utils import f1, Schema
 
 torch.manual_seed(42)
@@ -53,7 +54,8 @@ np.random.seed(42)
 # ── Constants ──────────────────────────────────────────────────────────────
 JEPA_SCHEMA = Schema("jepa", {r: ("obj", "obj") for r in RELATIONS})
 LATENT_DIM = 64
-DATA_DIR = os.path.join(os.path.dirname(__file__), "exp79_data")
+FIXTURE_DATA_DIR = os.path.join(os.path.dirname(__file__), "exp79_data")
+DATA_DIR = str(experiment_output_dir("exp79_lewm_tl"))
 
 
 # ── 2. JEPA Model ─────────────────────────────────────────────────────────
@@ -398,10 +400,15 @@ def compute_complexity_scaling(val_acc, val_frames, probe, encoder, device):
 # ── Main ──────────────────────────────────────────────────────────────────
 
 def main():
+    global DATA_DIR
+
     parser = argparse.ArgumentParser(description="exp79: LeWM + TL relational layer")
     parser.add_argument("--skip-train", action="store_true",
                         help="Load saved encoder.pt and probe.pt instead of retraining")
+    parser.add_argument("--output-dir", default=DATA_DIR,
+                        help=f"Directory for runtime outputs; use {FIXTURE_DATA_DIR} only when intentionally refreshing fixtures.")
     args = parser.parse_args()
+    DATA_DIR = args.output_dir
 
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print(f"Device: {device}")

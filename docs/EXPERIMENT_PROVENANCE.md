@@ -37,6 +37,17 @@ If an experiment writes weights, adapters, large outputs, or remote artifacts,
 do not commit those binaries. Commit `results.json` and a pointer file such as
 `ADAPTER.md` or `PROVENANCE.md` instead.
 
+## Runtime Outputs Versus Fixtures
+
+Default local experiment runs write under ignored `runtime_outputs/experiments/`
+paths. Checked-in `experiments/*_data/` directories are deterministic evidence
+fixtures and should only be refreshed intentionally by passing an explicit
+`--out`, `--output`, or `--output-dir` path into the fixture directory.
+
+When refreshing a fixture, preserve the previous evidence unless it is
+explicitly obsolete, and document the command, commit, dependency context, and
+claim boundary in this file or the relevant experiment note.
+
 ## Current Result Artifact Index
 
 This is a repo-local pointer index, not a full metric table. Read the linked

@@ -39,6 +39,12 @@ evaluate_rule.
 import json
 import random
 from pathlib import Path
+import sys
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from experiments.runtime_paths import experiment_output_dir
 
 NAMES = [
     "alice", "bob", "carol", "dave", "eve", "frank", "grace", "henry",
@@ -194,8 +200,14 @@ def make_trace(rng, rule_type, want_positive=None):
 
 def main():
     rng = random.Random(7)
-    out_dir = Path(__file__).parent / "exp76_data"
-    out_dir.mkdir(exist_ok=True)
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out-dir", type=Path, default=experiment_output_dir("exp76a_rule_traces"),
+                    help="Output directory for generated train/eval traces.")
+    args = ap.parse_args()
+
+    out_dir = args.out_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     rules = list(RULE_BODIES.keys())  # 4 rule types
     splits = [("train", 2000), ("eval", 400)]

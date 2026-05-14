@@ -24,9 +24,11 @@ from experiments.exp86_support_baselines import (
     tensorize_scenes,
     train_model,
 )
+from experiments.runtime_paths import portable_path, result_path
 
 
 RESULT_DIR = Path(__file__).with_name("exp87_support_data")
+EXPERIMENT_NAME = "exp87_support_eval"
 OOD_GATE_SPLITS = ("larger_ood", "deeper_ood")
 
 
@@ -334,14 +336,6 @@ def _build_gates(tl: dict[str, object], baselines: dict[str, dict[str, object]])
     }
 
 
-def _portable_path(path: Path) -> str:
-    resolved = path.resolve()
-    try:
-        return str(resolved.relative_to(Path.cwd().resolve()))
-    except ValueError:
-        return str(resolved)
-
-
 def run_evaluation(config: EvalConfig, output_path: Path | None = None) -> dict[str, object]:
     train, eval_splits = make_splits(config)
     split_summaries = {"train": _split_summary(train)}
@@ -388,9 +382,9 @@ def run_evaluation(config: EvalConfig, output_path: Path | None = None) -> dict[
     }
 
     if output_path is None:
-        output_path = RESULT_DIR / ("results_quick.json" if config.quick else "results.json")
+        output_path = result_path(EXPERIMENT_NAME, quick=config.quick)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    results["results_path"] = _portable_path(output_path)
+    results["results_path"] = portable_path(output_path)
     output_path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return results
 

@@ -67,9 +67,10 @@ files.
 ## Experiment Map
 
 - `demos/`: small runnable demonstrations of a single idea.
-- `experiments/`: historical and active experiment scripts. Many scripts write
-  result JSON by default, so use explicit temporary `--output` paths when
-  validating unless the work order owns those artifacts.
+- `experiments/`: historical and active experiment scripts. Active result
+  writers default to ignored `runtime_outputs/experiments/` paths; pass an
+  explicit `--out`, `--output`, or `--output-dir` only when intentionally
+  refreshing committed `experiments/*_data/` evidence fixtures.
 - `phase_training/`: embodied-agent and phase-training experiments.
 - `notes/`: long-form research notes, memos, transcript material.
 - `web_workbench/`: local web workbench that exercises package behavior through
@@ -111,9 +112,9 @@ Use `docs/VALIDATION.md` as the source of truth for validation tiers.
   `python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v`.
 - **Support/stability fast path**:
   `python3 -m pytest tests/test_exp84_support_data.py tests/test_exp85_support_tl.py -v`.
-- **CLI smoke without repo mutation**: pass explicit temp output paths to
-  experiment scripts that otherwise write under tracked `experiments/*_data/`
-  directories.
+- **CLI smoke without repo mutation**: use script defaults or explicit temp
+  output paths; committed `experiments/*_data/` directories are fixture targets,
+  not default runtime output targets.
 
 ## Maintainer Notes For Agents
 

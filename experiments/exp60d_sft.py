@@ -34,6 +34,12 @@ import json
 import re
 from pathlib import Path
 from collections import defaultdict
+import sys
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from experiments.runtime_paths import experiment_output_dir
 
 HERE = Path(__file__).parent
 DATA = HERE / "exp60_data"
@@ -339,7 +345,7 @@ def main():
     ap.add_argument("--model", default="Qwen/Qwen2.5-0.5B-Instruct")
     ap.add_argument("--epochs", type=int, default=1)
     ap.add_argument("--lr", type=float, default=2e-4)
-    ap.add_argument("--out", default=str(HERE / "exp60_data" / "lora_adapter"))
+    ap.add_argument("--out", default=str(experiment_output_dir("exp60d_sft") / "lora_adapter"))
     ap.add_argument("--skip-train", action="store_true",
                     help="Skip training; eval base LM only (condition A).")
     ap.add_argument("--eval-only", action="store_true",

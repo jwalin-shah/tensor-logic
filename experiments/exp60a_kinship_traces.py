@@ -36,6 +36,12 @@ Sweep: NAMES = 12 people, GRAPHS = 1000 train + 200 eval, 4 query types
 import json
 import random
 from pathlib import Path
+import sys
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from experiments.runtime_paths import experiment_output_dir
 
 NAMES = [
     "alice", "bob", "carol", "dave", "eve", "frank",
@@ -243,16 +249,19 @@ def main():
     ap.add_argument("--hard", action="store_true",
                     help="Generate harder eval set: 25-35 person graphs, "
                          "hops 6-10, distractor relations.")
+    default_out_dir = experiment_output_dir("exp60a_kinship_traces")
     ap.add_argument("--out", default=None,
                     help="Output filename (default: train+eval for normal, "
                          "eval_hard.jsonl for --hard).")
+    ap.add_argument("--out-dir", type=Path, default=default_out_dir,
+                    help="Output directory for generated traces.")
     ap.add_argument("--n", type=int, default=200,
                     help="Number of traces (only used with --hard).")
     args = ap.parse_args()
 
     rng = random.Random(42 if not args.hard else 1337)
-    out_dir = Path(__file__).parent / "exp60_data"
-    out_dir.mkdir(exist_ok=True)
+    out_dir = args.out_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     if args.hard:
         out_path = out_dir / (args.out or "eval_hard.jsonl")
