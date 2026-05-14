@@ -11,6 +11,8 @@ from .file_format import Command, LoadedProgram, load_tl
 from .program import Program
 from .proof_result import prove_binary_relation_result
 
+PROOF_FORMATS = frozenset({"tree", "json"})
+
 
 @dataclass(frozen=True)
 class CommandResult:
@@ -35,10 +37,23 @@ def execute_run(loaded: LoadedProgram, format_type: str = "tree") -> dict[str, A
     return {"outputs": outputs}
 
 
+def execute_source_run(source: str, format_type: str = "tree") -> dict[str, Any]:
+    return execute_run(load_tl_source(source), format_type=format_type)
+
+
 def execute_query(program: Program, relation: str, args: list[str] | tuple[str, ...], recursive: bool = False) -> dict[str, Any]:
     _require_binary_args(args, "query requires exactly 2 args")
     value = program.query(relation, *args, recursive=recursive)
     return {"answer": bool(value), "value": float(value), "relation": relation, "args": list(args), "recursive": recursive}
+
+
+def execute_source_query(
+    source: str,
+    relation: str,
+    args: list[str] | tuple[str, ...],
+    recursive: bool = False,
+) -> dict[str, Any]:
+    return execute_query(load_tl_source(source).program, relation, args, recursive=recursive)
 
 
 def execute_prove(
@@ -50,11 +65,30 @@ def execute_prove(
     format_type: str = "tree",
 ) -> dict[str, Any]:
     _require_binary_args(args, "prove requires exactly 2 args")
+    _require_proof_format(format_type)
     return prove_binary_relation_result(
         program,
         relation,
         args[0],
         args[1],
+        recursive=recursive,
+        why_not=why_not,
+        format_type=format_type,
+    )
+
+
+def execute_source_prove(
+    source: str,
+    relation: str,
+    args: list[str] | tuple[str, ...],
+    recursive: bool = False,
+    why_not: bool = False,
+    format_type: str = "tree",
+) -> dict[str, Any]:
+    return execute_prove(
+        load_tl_source(source).program,
+        relation,
+        args,
         recursive=recursive,
         why_not=why_not,
         format_type=format_type,
@@ -67,8 +101,8 @@ def execute_command(
     format_type: str = "tree",
     why_not: bool = False,
 ) -> CommandResult:
-    _require_binary_args(command.args, "CLI proof/query currently supports binary relations")
     if command.kind == "query":
+        _require_binary_args(command.args, "query currently supports binary relations")
         payload = execute_query(program, command.relation, command.args, recursive=command.recursive)
         text = f"{command.relation}({', '.join(command.args)}) = {payload['answer']}"
         return CommandResult(payload=payload, text=text)
@@ -110,3 +144,8 @@ def _format_prove_text(payload: dict[str, Any], command: Command, format_type: s
 def _require_binary_args(args: list[str] | tuple[str, ...], message: str) -> None:
     if len(args) != 2:
         raise ValueError(message)
+
+
+def _require_proof_format(format_type: str) -> None:
+    if format_type not in PROOF_FORMATS:
+        raise ValueError("format must be 'tree' or 'json'")
