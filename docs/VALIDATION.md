@@ -173,10 +173,11 @@ was not refreshed.
 ## Expected Artifacts
 
 Cheap CI proofs should leave no durable artifact except the gitignored
-`tools/index.json` when the code-index command rebuilds it.
+`tools/index.json` when the code-index command rebuilds it, or ignored
+`.runtime/` files when a script default writes local runtime output.
 
-Experiment runs may intentionally write artifacts under experiment-specific
-directories, for example:
+Committed experiment fixtures live under experiment-specific directories, for
+example:
 
 - `experiments/exp78_data/results.json`
 - `experiments/exp79_data/results.json`
@@ -185,4 +186,6 @@ directories, for example:
 - `experiments/exp83_slot_data/complexity_curve.png`
 
 Do not create, refresh, or commit experiment artifacts as part of default
-validation unless the issue explicitly owns those outputs.
+validation unless the issue explicitly owns those outputs. Prefer script
+defaults or explicit temporary `--output` paths for validation; pass an
+`experiments/*_data/` path only when intentionally refreshing evidence.

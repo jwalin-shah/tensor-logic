@@ -25,6 +25,7 @@ from experiments.exp87_support_eval import EvalConfig, make_splits
 from experiments.exp89_support_primitive_confidence import prediction_confidences
 from experiments.exp90_support_repair_sweep import repair_objects
 from experiments.exp91_interval_support_uncertainty import possible_stability
+from experiments.runtime_paths import default_runtime_result_path, portable_path
 from experiments.exp92_pixel_abstain_recover import (
     DetectedTable,
     detect_object_table,
@@ -626,12 +627,9 @@ def run_detector_stress(
     }
 
     if output_path is None:
-        output_path = RESULT_DIR / ("results_quick.json" if config.quick else "results.json")
+        output_path = default_runtime_result_path(RESULT_DIR, quick=config.quick)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        results["results_path"] = str(output_path.resolve().relative_to(Path.cwd().resolve()))
-    except ValueError:
-        results["results_path"] = str(output_path)
+    results["results_path"] = portable_path(output_path)
     output_path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return results
 
