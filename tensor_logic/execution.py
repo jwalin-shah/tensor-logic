@@ -11,6 +11,10 @@ from .file_format import Command, LoadedProgram, load_tl
 from .program import Program
 from .proof_result import prove_binary_relation_result
 
+QUERY_BINARY_RELATION_ARGS_ERROR = "query requires exactly 2 args"
+PROVE_BINARY_RELATION_ARGS_ERROR = "prove requires exactly 2 args"
+COMMAND_BINARY_RELATION_ARGS_ERROR = "CLI proof/query currently supports binary relations"
+
 
 @dataclass(frozen=True)
 class CommandResult:
@@ -36,7 +40,7 @@ def execute_run(loaded: LoadedProgram, format_type: str = "tree") -> dict[str, A
 
 
 def execute_query(program: Program, relation: str, args: list[str] | tuple[str, ...], recursive: bool = False) -> dict[str, Any]:
-    _require_binary_args(args, "query requires exactly 2 args")
+    require_binary_relation_args(args, QUERY_BINARY_RELATION_ARGS_ERROR)
     value = program.query(relation, *args, recursive=recursive)
     return {"answer": bool(value), "value": float(value), "relation": relation, "args": list(args), "recursive": recursive}
 
@@ -49,7 +53,7 @@ def execute_prove(
     why_not: bool = False,
     format_type: str = "tree",
 ) -> dict[str, Any]:
-    _require_binary_args(args, "prove requires exactly 2 args")
+    require_binary_relation_args(args, PROVE_BINARY_RELATION_ARGS_ERROR)
     return prove_binary_relation_result(
         program,
         relation,
@@ -67,7 +71,7 @@ def execute_command(
     format_type: str = "tree",
     why_not: bool = False,
 ) -> CommandResult:
-    _require_binary_args(command.args, "CLI proof/query currently supports binary relations")
+    require_binary_relation_args(command.args, COMMAND_BINARY_RELATION_ARGS_ERROR)
     if command.kind == "query":
         payload = execute_query(program, command.relation, command.args, recursive=command.recursive)
         text = f"{command.relation}({', '.join(command.args)}) = {payload['answer']}"
@@ -107,6 +111,6 @@ def _format_prove_text(payload: dict[str, Any], command: Command, format_type: s
     return f"{command.relation}({', '.join(command.args)}) = {payload['answer']}"
 
 
-def _require_binary_args(args: list[str] | tuple[str, ...], message: str) -> None:
+def require_binary_relation_args(args: list[str] | tuple[str, ...], message: str) -> None:
     if len(args) != 2:
         raise ValueError(message)

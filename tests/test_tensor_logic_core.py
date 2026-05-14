@@ -859,7 +859,7 @@ class TensorLogicCoreTest(unittest.TestCase):
 
     def test_http_source_execution_preserves_arity_and_load_errors(self):
         from http import HTTPStatus
-        from tensor_logic.http_api import ApiError, query_source, run_source
+        from tensor_logic.http_api import ApiError, prove_source, query_source, run_source
 
         source = "\n".join(
             [
@@ -872,6 +872,11 @@ class TensorLogicCoreTest(unittest.TestCase):
             query_source(source, "edge", ["a"])
         self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(caught.exception.message, "query requires exactly 2 args")
+
+        with self.assertRaises(ApiError) as caught:
+            prove_source(source, "edge", ["a"])
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "prove requires exactly 2 args")
 
         with self.assertRaises(ValueError) as parse:
             run_source("not valid tl\n")
