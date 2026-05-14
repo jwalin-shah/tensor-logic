@@ -11,7 +11,7 @@ from .proof_result import format_proof_result, prove_binary_relation_result
 from .proofs import fmt_proof_tree, fmt_negative_proof_tree, prove, prove_negative, prove_with_do, Proof, NegativeProof
 from .proof_tree_viewer import ProofTreeNode, build_proof_tree_view, render_proof_tree
 from .provenance import evaluate_with_provenance, fmt_proof, proof_score
-from .repo_graph_view import RepoGraphData, dependency_report, load_repo_graph
+from .repo_graph_view import RepoGraphData, RepoGraphView, dependency_report, load_repo_graph
 from .rules import (
     Atom,
     Rule,
@@ -30,6 +30,7 @@ __all__ = [
     "PythonImportGraph",
     "ProofTreeNode",
     "RepoGraphData",
+    "RepoGraphView",
     "Proof",
     "NegativeProof",
     "bfs_query",

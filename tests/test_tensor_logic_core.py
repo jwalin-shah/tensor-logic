@@ -606,15 +606,16 @@ class TensorLogicCoreTest(unittest.TestCase):
             self.assertIsNotNone(proof)
 
     def test_repo_graph_helpers_and_report(self):
-        from tensor_logic.repo_graph_view import build_adjacency, dependency_report, filter_modules, imports_path, load_repo_graph
+        from tensor_logic.repo_graph_view import RepoGraphView, dependency_report, load_repo_graph
 
         graph = load_repo_graph("examples/code_dependencies.tl")
         self.assertIn("worker", graph.modules)
         self.assertIn(("worker", "api"), graph.imports)
-        adjacency = build_adjacency(graph.modules, graph.imports)
-        self.assertEqual(adjacency["worker"], ["api"])
-        self.assertEqual(filter_modules(graph.modules, "mo"), ["models"])
-        self.assertEqual(imports_path(graph.modules, graph.imports, "worker", "models"), ["worker", "api", "db", "models"])
+
+        view = RepoGraphView.load("examples/code_dependencies.tl")
+        self.assertEqual(view.direct_imports("worker"), ("api",))
+        self.assertEqual(view.search("mo"), ["models"])
+        self.assertEqual(view.imports_path("worker", "models"), ["worker", "api", "db", "models"])
         report = dependency_report("examples/code_dependencies.tl", module="worker", src="worker", dst="models")
         self.assertIn("direct imports(worker): api", report)
         self.assertIn("depends_on(worker, models) = True", report)
