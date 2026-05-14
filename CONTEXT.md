@@ -105,6 +105,8 @@ files.
 
 Use `docs/VALIDATION.md` as the source of truth for validation tiers.
 
+- **Local handoff gate**: `python3 tools/local_validation.py`, which runs the
+  full suite and `git diff --check`.
 - **Full suite**: `python3 -m pytest tests/ -v` locally, or the documented
   `python -m pytest tests/ -v` in CI environments where `python` exists.
 - **Packaging/code-index preflight**:
