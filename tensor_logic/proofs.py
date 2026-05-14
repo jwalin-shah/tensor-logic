@@ -44,6 +44,12 @@ class NegativeProof:
 def prove(program: Program, relation_name: str, src: str, dst: str,
           recursive: bool = False, _table: dict | None = None,
           _do: dict | None = None) -> Proof | None:
+    """Return a proof for a binary relation goal ``relation_name(src, dst)``.
+
+    ``Program`` and ``Atom.args`` can represent other arities, but this proof
+    engine currently formats proof heads as ``(relation, src, dst)`` triples
+    and only evaluates binary body atoms.
+    """
     if relation_name not in program.relations:
         raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
@@ -79,6 +85,7 @@ def prove_negative(program: Program, relation_name: str, src: str, dst: str,
                    recursive: bool = False,
                    _table: dict | None = None,
                    _neg_table: dict | None = None) -> NegativeProof | None:
+    """Return a negative proof for a binary relation goal when one is known."""
     if relation_name not in program.relations:
         raise ValueError(f"relation '{relation_name}' not defined")
     relation = program.relations[relation_name]
@@ -308,7 +315,7 @@ def _try_prove_body_atoms(program: Program, atoms: tuple[Atom, ...], bindings: d
 def prove_with_do(program: Program, relation_name: str, src: str, dst: str,
                   do: dict[tuple[str, str, str], float],
                   recursive: bool = False) -> Proof | None:
-    """prove() under Pearl do()-interventions.
+    """prove() under Pearl do()-interventions for binary relation goals.
 
     do: {(relation_name, src, dst): value} — each entry asserts the fact at
     the given value and severs all rule derivations that would re-derive it.

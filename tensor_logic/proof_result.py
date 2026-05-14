@@ -34,7 +34,7 @@ def prove_binary_relation_result(
     why_not: bool = False,
     format_type: str = "tree",
 ) -> dict[str, Any]:
-    """Run ``prove`` / optional ``prove_negative`` and format; shared by CLI and HTTP adapters."""
+    """Run and format proof results for binary proof/query adapter boundaries."""
     proof = prove(program, relation, arg0, arg1, recursive=recursive)
     if proof is not None:
         return format_proof_result(proof=proof, format_type=format_type)

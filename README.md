@@ -72,6 +72,20 @@ Beyond the headline demos, the repo also contains `experiments/exp1`–`exp54` a
 
 `tensor_logic/` is the first reusable extraction from the experiment arc: a small named-index language layer, dense/sparse closure, binary Datalog-style rule joins, stratified negation, provenance proof trees, and a few semiring helpers. New experiments should import from this package rather than copying logic out of older `exp*.py` files.
 
+## Public API
+
+The supported root import surface is intentionally narrow and mirrors
+`tensor_logic.core`: `Domain`, `Relation`, `Program`, `FactSource`, proof
+types/functions, proof-result formatting, closure helpers, `evaluate_expr`,
+and `facts`. Adapter helpers for file loading, CLI/HTTP execution, repo import
+graphs, proof-tree viewing, legacy graph-dict rules, and research utilities are
+module-scoped rather than root API. See `docs/PUBLIC_API.md`.
+
+Proof and query boundaries are currently binary even though the canonical
+`Atom.args` representation is variadic. CLI/HTTP proof/query adapters and
+legacy graph-dict rule evaluation support `relation(arg0, arg1)` goals only;
+future higher-arity proof/query support should land as a focused arity slice.
+
 ## Memos & writing
 
 | File | What it is |
