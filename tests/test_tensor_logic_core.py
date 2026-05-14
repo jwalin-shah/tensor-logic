@@ -244,6 +244,28 @@ class TensorLogicCoreTest(unittest.TestCase):
         with self.assertRaises(ValueError, msg="prove unknown symbol"):
             prove(program, "edge", "a", "z")
 
+    def test_query_rejects_wrong_arity_and_unknown_symbols(self):
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        with self.assertRaisesRegex(ValueError, "edge expects 2 symbols, got 1"):
+            program.query("edge", "a")
+        with self.assertRaisesRegex(ValueError, "edge expects 2 symbols, got 3"):
+            program.query("edge", "a", "b", "extra")
+        with self.assertRaisesRegex(ValueError, "symbol 'z' not in domain"):
+            program.query("edge", "a", "z")
+
+    def test_recursive_query_rejects_wrong_arity(self):
+        program = Program()
+        program.domain("Node", ["a", "b"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        with self.assertRaisesRegex(ValueError, "edge expects 2 symbols, got 3"):
+            program.query("edge", "a", "b", "extra", recursive=True)
+
     def test_confidence_propagates(self):
         program = Program()
         program.domain("X", ["a", "b", "c"])
