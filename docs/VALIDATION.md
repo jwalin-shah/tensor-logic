@@ -9,22 +9,24 @@ status summaries, read `CONTEXT.md` and `docs/EXPERIMENT_PROVENANCE.md`. The
 validation command proves that files still parse and contract checks still pass;
 it does not upgrade the evidence tier behind a claim.
 
-## Canonical CI Validation
+## Canonical Local And CI Validation
 
-GitHub Actions validates pull requests and pushes to `main` with the editable dev
-install and the full default test tree:
-
-```bash
-python -m pip install -e ".[dev]"
-python -m pytest tests/ -v
-```
-
-If a local machine does not provide `python`, use the equivalent `python3`
-fallback:
+The authoritative pre-handoff gate is one local command after an editable dev
+install:
 
 ```bash
 python3 -m pip install -e ".[dev]"
-python3 -m pytest tests/ -v
+python3 tools/local_validation.py
+```
+
+`tools/local_validation.py` runs the full default pytest tree with `-q` through
+the active interpreter, checks the committed diff against the base branch for
+whitespace errors, then checks the current worktree diff. It exits nonzero if
+any step fails. GitHub Actions uses the same gate after `actions/setup-python`:
+
+```bash
+python -m pip install -e ".[dev]"
+python tools/local_validation.py
 ```
 
 For documentation, packaging, or validation-boundary changes, this narrower proof

@@ -105,8 +105,11 @@ files.
 
 Use `docs/VALIDATION.md` as the source of truth for validation tiers.
 
-- **Full suite**: `python3 -m pytest tests/ -v` locally, or the documented
-  `python -m pytest tests/ -v` in CI environments where `python` exists.
+- **Full pre-handoff gate**: `python3 tools/local_validation.py` locally, or
+  the documented `python tools/local_validation.py` in CI environments where
+  `python` exists. The gate runs the full pytest tree, checks the committed diff
+  against the base branch for whitespace errors, then checks the current
+  worktree diff.
 - **Packaging/code-index preflight**:
   `python3 -m pytest tests/test_packaging_ci.py tests/test_code_index.py -v`.
 - **Support/stability fast path**:

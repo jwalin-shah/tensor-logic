@@ -16,14 +16,14 @@ to get current constructor signatures and function args. This prevents plan/code
 pytest tests/ -v
 ```
 
-Canonical CI validation is:
+Canonical local and CI validation is:
 
 ```bash
-python -m pip install -e ".[dev]"
-python -m pytest tests/ -v
+python3 -m pip install -e ".[dev]"
+python3 tools/local_validation.py
 ```
 
-Use `python3` for the same commands when `python` is absent locally. See
+CI may use `python tools/local_validation.py` after `actions/setup-python`. See
 `docs/VALIDATION.md` for the validation tiers, code-index proof commands,
 optional dependency boundaries, and the checks that must stay outside default
 CI because they require model downloads, GPU/remote execution, external package
