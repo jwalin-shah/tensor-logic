@@ -162,7 +162,7 @@ class Relation:
 
     def value(self, *symbols: str, semiring: str = "boolean") -> float:
         tensor = self.eval(semiring=semiring)
-        coords = tuple(domain.id(symbol) for domain, symbol in zip(self.domains, symbols))
+        coords = self._coords_for_symbols(symbols)
         return float(tensor[coords].item())
 
     def fixpoint(
@@ -193,11 +193,21 @@ class Relation:
 
     def reachable(self, *symbols: str, semiring: str = "boolean", max_iters: int | None = None) -> float:
         tensor = self.fixpoint(semiring=semiring, max_iters=max_iters)
-        coords = tuple(domain.id(symbol) for domain, symbol in zip(self.domains, symbols))
+        coords = self._coords_for_symbols(symbols)
         return float(tensor[coords].item())
 
     def default_indices(self) -> tuple[str, ...]:
         return tuple(chr(ord("a") + i) for i in range(len(self.domains)))
+
+    def _coords_for_symbols(self, symbols: tuple[str, ...]) -> tuple[int, ...]:
+        if len(symbols) != len(self.domains):
+            raise ValueError(f"{self.name} expects {len(self.domains)} symbols, got {len(symbols)}")
+        coords = []
+        for i, (domain, symbol) in enumerate(zip(self.domains, symbols)):
+            if symbol not in domain.index:
+                raise ValueError(f"symbol '{symbol}' not in domain for arg {i} of '{self.name}' (known: {', '.join(domain.symbols)})")
+            coords.append(domain.id(symbol))
+        return tuple(coords)
 
 
 @dataclass(frozen=True)
