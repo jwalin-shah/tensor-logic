@@ -24,6 +24,7 @@ from experiments.exp86_support_baselines import (
     tensorize_scenes,
     train_model,
 )
+from experiments.runtime_paths import default_runtime_result_path, portable_path
 
 
 RESULT_DIR = Path(__file__).with_name("exp87_support_data")
@@ -335,11 +336,7 @@ def _build_gates(tl: dict[str, object], baselines: dict[str, dict[str, object]])
 
 
 def _portable_path(path: Path) -> str:
-    resolved = path.resolve()
-    try:
-        return str(resolved.relative_to(Path.cwd().resolve()))
-    except ValueError:
-        return str(resolved)
+    return portable_path(path)
 
 
 def run_evaluation(config: EvalConfig, output_path: Path | None = None) -> dict[str, object]:
@@ -388,7 +385,7 @@ def run_evaluation(config: EvalConfig, output_path: Path | None = None) -> dict[
     }
 
     if output_path is None:
-        output_path = RESULT_DIR / ("results_quick.json" if config.quick else "results.json")
+        output_path = default_runtime_result_path(RESULT_DIR, quick=config.quick)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     results["results_path"] = _portable_path(output_path)
     output_path.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
