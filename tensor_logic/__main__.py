@@ -50,44 +50,48 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
-    if args.cmd == "ingest-python":
-        text = render_python_imports_tl(ingest_python(args.path))
-        if args.output:
-            with open(args.output, "w", encoding="utf-8") as f:
-                f.write(text)
-        else:
-            print(text)
-        return 0
-
-    if args.cmd == "repl":
-        _run_repl()
-        return 0
-    if args.cmd == "repo-graph":
-        if args.interactive:
-            repo_graph_repl(args.file)
+    try:
+        if args.cmd == "ingest-python":
+            text = render_python_imports_tl(ingest_python(args.path))
+            if args.output:
+                with open(args.output, "w", encoding="utf-8") as f:
+                    f.write(text)
+            else:
+                print(text)
             return 0
-        if (args.src is None) != (args.dst is None):
-            parser.error("--src and --dst must be provided together")
-        print(dependency_report(args.file, module=args.module, src=args.src, dst=args.dst))
-        return 0
-    if args.cmd == "serve":
-        serve(args.host, args.port)
-        return 0
 
-    loaded = load_tl(args.file)
+        if args.cmd == "repl":
+            _run_repl()
+            return 0
+        if args.cmd == "repo-graph":
+            if args.interactive:
+                repo_graph_repl(args.file)
+                return 0
+            if (args.src is None) != (args.dst is None):
+                parser.error("--src and --dst must be provided together")
+            print(dependency_report(args.file, module=args.module, src=args.src, dst=args.dst))
+            return 0
+        if args.cmd == "serve":
+            serve(args.host, args.port)
+            return 0
 
-    if args.cmd == "run":
-        for command in loaded.commands:
-            _execute_command(loaded.program, command, "tree")
-        return 0
-    if args.cmd == "query":
-        _execute_command(loaded.program, Command("query", args.relation, tuple(args.args), args.recursive), "tree")
-        return 0
-    if args.cmd == "prove":
-        format_type = getattr(args, "format", "tree")
-        why_not = getattr(args, "why_not", False)
-        _execute_command(loaded.program, Command("prove", args.relation, tuple(args.args), args.recursive), format_type, why_not=why_not)
-        return 0
+        loaded = load_tl(args.file)
+
+        if args.cmd == "run":
+            for command in loaded.commands:
+                _execute_command(loaded.program, command, "tree")
+            return 0
+        if args.cmd == "query":
+            _execute_command(loaded.program, Command("query", args.relation, tuple(args.args), args.recursive), "tree")
+            return 0
+        if args.cmd == "prove":
+            format_type = getattr(args, "format", "tree")
+            why_not = getattr(args, "why_not", False)
+            _execute_command(loaded.program, Command("prove", args.relation, tuple(args.args), args.recursive), format_type, why_not=why_not)
+            return 0
+    except (OSError, ValueError) as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
     return 1
 
 
