@@ -74,7 +74,11 @@ def main(argv: list[str] | None = None) -> int:
         serve(args.host, args.port)
         return 0
 
-    loaded = load_tl(args.file)
+    try:
+        loaded = load_tl(args.file)
+    except (OSError, ValueError) as exc:
+        print(f"tensor-logic: error: {exc}", file=sys.stderr)
+        return 1
 
     if args.cmd == "run":
         for command in loaded.commands:

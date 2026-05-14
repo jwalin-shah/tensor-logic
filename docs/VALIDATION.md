@@ -83,6 +83,16 @@ python3 -m pip install -e ".[dev]"
 python3 -c "import tensor_logic; from tensor_logic import Program; print('tensor_logic import ok')"
 ```
 
+## CLI Smoke Contract
+
+Use this proof when the `python -m tensor_logic` entrypoint or `.tl` file loading
+failure behavior changes. It runs without remote services, secrets, durable
+experiment artifacts, or model downloads:
+
+```bash
+python3 -m pytest tests/test_cli_smoke.py -q
+```
+
 ## Demo Smoke Commands
 
 Demos are useful after changes to examples, tensor-language ergonomics, or
