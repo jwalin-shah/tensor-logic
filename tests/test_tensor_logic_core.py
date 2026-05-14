@@ -674,6 +674,22 @@ class TensorLogicCoreTest(unittest.TestCase):
             tl_source = ingest_python_source(tmpdir)
         self.assertIn("fact imports(pkg_api, pkg_db)", tl_source)
 
+    def test_http_api_prove_validates_request_before_source_parse(self):
+        from http import HTTPStatus
+        from tensor_logic.http_api import ApiError, prove_source
+
+        malformed_source = "this is not valid TL"
+
+        with self.assertRaises(ApiError) as caught:
+            prove_source(malformed_source, "edge", ["a"])
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "prove requires exactly 2 args")
+
+        with self.assertRaises(ApiError) as caught:
+            prove_source(malformed_source, "edge", ["a", "b"], format_type="xml")
+        self.assertEqual(caught.exception.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(caught.exception.message, "format must be 'tree' or 'json'")
+
     def test_cli_and_http_share_positive_proof_json_semantics(self):
         import json
         import subprocess

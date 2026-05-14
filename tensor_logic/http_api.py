@@ -42,6 +42,10 @@ def prove_source(
     why_not: bool = False,
     format_type: str = "tree",
 ) -> dict[str, Any]:
+    if len(args) != 2:
+        raise ApiError(HTTPStatus.BAD_REQUEST, "prove requires exactly 2 args")
+    if format_type not in {"tree", "json"}:
+        raise ApiError(HTTPStatus.BAD_REQUEST, "format must be 'tree' or 'json'")
     try:
         return execute_source_prove(
             source,
