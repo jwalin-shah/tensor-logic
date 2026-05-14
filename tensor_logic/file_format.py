@@ -71,7 +71,7 @@ def _parse_line(program: Program, line: str, path: str = "", lineno: int = 0) ->
         program.rule(match.group("rule"))
         return None
     if match := QUERY_RE.match(line):
-        flags = set(_split_items(match.group("flags").strip()))
+        flags = _parse_command_flags(match.group("flags").strip())
         return Command(
             match.group("kind"),
             match.group("rel"),
@@ -80,6 +80,16 @@ def _parse_line(program: Program, line: str, path: str = "", lineno: int = 0) ->
         )
     keywords = "domain, relation, fact, rule, query, prove"
     raise ValueError(f"unrecognized statement: {line!r} (expected one of: {keywords})")
+
+
+def _parse_command_flags(text: str) -> set[str]:
+    flags = set(_split_items(text))
+    unknown = flags - {"recursive"}
+    if unknown:
+        allowed = "recursive"
+        found = ", ".join(sorted(unknown))
+        raise ValueError(f"unknown command flag(s): {found} (allowed: {allowed})")
+    return flags
 
 
 def _logical_lines(path: str):
