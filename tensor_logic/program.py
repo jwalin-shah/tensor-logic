@@ -97,6 +97,11 @@ class Program:
 
     def query(self, relation_name: str, *symbols: str, recursive: bool = False, semiring: str = "boolean") -> float:
         relation = self.relations[relation_name]
+        if len(symbols) != len(relation.domains):
+            raise ValueError(f"relation '{relation_name}' expects {len(relation.domains)} args, got {len(symbols)}")
+        for i, (domain, symbol) in enumerate(zip(relation.domains, symbols)):
+            if symbol not in domain.index:
+                raise ValueError(f"symbol '{symbol}' not in domain for arg {i} of '{relation_name}' (known: {', '.join(domain.symbols)})")
         if recursive:
             return relation.reachable(*symbols, semiring=semiring)
         return relation.value(*symbols, semiring=semiring)

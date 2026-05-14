@@ -170,6 +170,15 @@ class TensorLogicCoreTest(unittest.TestCase):
         self.assertEqual(program.query("ancestor", "alice", "dave", recursive=True), 1.0)
         self.assertEqual(program.query("ancestor", "dave", "alice", recursive=True), 0.0)
 
+    def test_program_query_rejects_extra_symbols(self):
+        program = Program()
+        program.domain("Node", ["a", "b", "c"])
+        program.relation("edge", "Node", "Node")
+        program.fact("edge", "a", "b")
+
+        with self.assertRaisesRegex(ValueError, "expects 2 args, got 3"):
+            program.query("edge", "a", "b", "c")
+
     def test_tl_file_query_and_proof(self):
         loaded = load_tl("examples/code_dependencies.tl")
         self.assertEqual(loaded.program.query("depends_on", "worker", "models", recursive=True), 1.0)
