@@ -234,6 +234,44 @@ def test_context_doc_defines_no_overclaim_rules_and_agent_boundary():
     assert "`AGENTS.md` is memjuice-managed" in context
 
 
+def test_context_doc_preserves_agent_domain_map():
+    context = CONTEXT_DOC.read_text()
+
+    for section in [
+        "## Repo Identity",
+        "## Domain Vocabulary",
+        "## Package Map",
+        "## Experiment Map",
+        "## Maintainer Notes For Agents",
+    ]:
+        assert section in context
+
+    for required_term in [
+        "**Tensor Logic (TL)**",
+        "**Program**",
+        "**Domain**",
+        "**Relation**",
+        "**Fact**",
+        "**Rule**",
+        "**Atom**",
+        "**Proof**",
+        "**TL file**",
+        "**Repo graph**",
+    ]:
+        assert required_term in context
+
+    for required_path in [
+        "`tensor_logic/language.py`",
+        "`tensor_logic/program.py`",
+        "`tensor_logic/file_format.py`",
+        "`tensor_logic/execution.py`",
+        "`tensor_logic/proofs.py`",
+        "`tensor_logic/research/`",
+        "`web_workbench/`",
+    ]:
+        assert required_path in context
+
+
 def test_experiment_provenance_doc_maps_current_artifacts_and_claim_boundaries():
     provenance = PROVENANCE_DOC.read_text()
 
