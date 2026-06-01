@@ -6,6 +6,25 @@ Working through Pedro Domingos' [Tensor Logic: The Language of AI](https://arxiv
 
 A learning project, not a product. Each demo is intended to make one idea click viscerally.
 
+## Local checkout routing
+
+Use `/Users/jwalinshah/projects/tensor/tensor-logic` as the canonical local
+checkout for active Tensor Logic implementation, validation, claim docs, and PR
+work. If an isolated branch is needed, create a worktree from that checkout or
+from its local `origin/main`.
+
+Do not use `/Users/jwalinshah/projects/tensor/experiments` as a source of truth
+for new work. It points at the same `jwalin-shah/tensor-logic` remote but is a
+stale local duplicate. Treat it as a review-only preservation checkout until a
+human explicitly approves artifact migration or archive/delete operations.
+
+As of the MAX-256 routing review, the duplicate checkout had no tracked or
+untracked non-ignored work, but it did contain ignored local artifacts such as
+`.cocoindex_code/`, `tools/index.json`, `exp53_run.log`, `exp54_run.log`,
+`experiments/exp79_data/*.pt`, social post drafts, and chart images. Preserve or
+migrate those artifacts through an issue-scoped plan before cleaning that
+checkout.
+
 ## Headline result
 
 On transitive closure (graph reachability), a **3-scalar tensor-logic recurrence** generalizes zero-shot from random 16-node DAGs to real Python import graphs of arbitrary size. Trained once on synthetic data, then evaluated on 8 OSS packages without any fine-tuning:
