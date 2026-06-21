@@ -45,10 +45,32 @@ class TensorRef:
     def __rsub__(self, other) -> "Difference":
         return Difference(as_expr(other), as_expr(self))
 
+    def __rmul__(self, other) -> "Product":
+        # TENSOR-LOGIC-OPS: scalar * TensorRef must produce the same
+        # Product as TensorRef * scalar. Without this, expressions like
+        # `2 * r[x,y]` raise TypeError because int.__mul__ returns
+        # NotImplemented when the right operand is not a TensorRef.
+        return Product(as_expr(other), as_expr(self))
+
+    def __radd__(self, other) -> "Sum":
+        # TENSOR-LOGIC-OPS: Sum is commutative; mirror __add__.
+        return Sum(as_expr(other), as_expr(self))
+
 
 @dataclass(frozen=True)
 class Scalar:
     value: float
+
+    def __rmul__(self, other) -> "Product":
+        # TENSOR-LOGIC-OPS: when the left operand is a Python number,
+        # Python calls `int.__mul__(other, self)`, which returns
+        # NotImplemented for our Expr. Dispatch back through as_expr
+        # so `2 * s` and `s * 2` produce the same Product.
+        return Product(as_expr(other), as_expr(self))
+
+    def __radd__(self, other) -> "Sum":
+        # TENSOR-LOGIC-OPS: Sum is commutative; mirror __add__.
+        return Sum(as_expr(other), as_expr(self))
 
 
 @dataclass(frozen=True)
@@ -68,6 +90,14 @@ class Product:
     def __add__(self, other) -> "Sum":
         return Sum(as_expr(self), as_expr(other))
 
+    def __rmul__(self, other) -> "Product":
+        # TENSOR-LOGIC-OPS: Product is commutative; mirror __mul__.
+        return Product(as_expr(other), as_expr(self))
+
+    def __radd__(self, other) -> "Sum":
+        # TENSOR-LOGIC-OPS: Sum is commutative; mirror __add__.
+        return Sum(as_expr(other), as_expr(self))
+
 
 @dataclass(frozen=True)
 class Sum:
@@ -85,6 +115,14 @@ class Sum:
 
     def __mul__(self, other) -> "Product":
         return Product(as_expr(self), as_expr(other))
+
+    def __rmul__(self, other) -> "Product":
+        # TENSOR-LOGIC-OPS: Product is commutative; mirror __mul__.
+        return Product(as_expr(other), as_expr(self))
+
+    def __radd__(self, other) -> "Sum":
+        # TENSOR-LOGIC-OPS: Sum is commutative; mirror __add__.
+        return Sum(as_expr(other), as_expr(self))
 
 
 @dataclass(frozen=True)
