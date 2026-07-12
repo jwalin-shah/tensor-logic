@@ -99,6 +99,47 @@ Brain dump (from Bridge create pipeline)
   proof outcomes and expected counterexamples. Immutable — if a golden test
   breaks, something fundamental changed.
 
+## Pattern Matcher
+
+`internal/matcher` connects natural-language problem descriptions to pre-proven
+components. It is deterministic — no ML, no embeddings. Every match cites which
+keyword or domain triggered it.
+
+```
+brain dump ("file watcher daemon")
+  → ExtractSignature: boundaries, concurrency, state shape, lifetime, domains, keywords
+  → MatchComponents: keyword matching + domain defaults + lifetime defaults + concurrency defaults
+  → ComposeMatched: compose matched components into a single system
+  → output: component list + composed state space + proof status
+```
+
+CLI: `tlogic match "file watcher daemon with graceful shutdown"`
+
+### Domain defaults
+
+When a brain dump is too sparse for keyword extraction (e.g. just "file watcher
+daemon"), domain defaults fill in the standard architecture from OSS precedent:
+
+| Domain | Standard components | Language | Why |
+|--------|-------------------|----------|-----|
+| file-watcher | bounded-channel, stop-signal, event-counter, fence | Rust | kernel boundary, GC-free callbacks |
+| api-server | mutex, stop-signal, event-counter, fence | Go | stdlib HTTP, goroutines per request |
+| daemon | stop-signal, event-counter | Go | single binary, LaunchAgent compatible |
+| cli-tool | (none) | Go | stateless transform, fast startup |
+| pipeline | bounded-channel, stop-signal | Go | channels = pipeline stages |
+
+### Catalog gaps
+
+The pattern library has 8 components. Known gaps — components referenced by
+domain defaults but not yet built:
+
+- **bounded-channel** — referenced by file-watcher, pipeline domains
+- **event-counter** — referenced by all domains except cli-tool
+
+These need non-trivial Z₂ transitions (not identity matrices). The pattern
+worker in the first spawn correctly skipped them — they require nonlinear
+invariants (counter comparison) or multi-bit state (channel capacity).
+
 ## Conventions
 
 - A `Component` is the unit of proof. It has: a `Space` (the state vector space),

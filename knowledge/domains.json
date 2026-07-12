@@ -1,0 +1,747 @@
+{
+  "version": "1",
+  "description": "Canonical knowledge base for the architecture compiler. All extraction prompts, domain defaults, and language decisions draw from this file. Adding a new domain is a JSON edit, not a code change.",
+  "ontology": {
+    "boundaries": {
+      "kernel": {
+        "description": "Talks to the kernel directly \u2014 syscalls, kqueue, FSEvents, ioctl, eBPF, drivers. Requires GC-free callback chains and C ABI compatibility.",
+        "keywords": [
+          "kqueue",
+          "fsevents",
+          "ioctl",
+          "kernel",
+          "driver",
+          "syscall",
+          "ebpf",
+          "bpf",
+          "kext",
+          "dev"
+        ],
+        "languages": [
+          "rust",
+          "c",
+          "swift",
+          "zig"
+        ],
+        "anti_languages": [
+          "python",
+          "javascript",
+          "bash"
+        ],
+        "rationale": "Kernel callbacks require predictable latency. GC pauses in the callback path cause event loss. Rust's ownership model prevents use-after-free in callback chains."
+      },
+      "network": {
+        "description": "Talks over the network \u2014 HTTP, gRPC, TCP, UDP, WebSocket, RPC.",
+        "keywords": [
+          "http",
+          "grpc",
+          "socket",
+          "tcp",
+          "udp",
+          "api",
+          "rest",
+          "rpc",
+          "web",
+          "websocket",
+          "tls",
+          "dns"
+        ],
+        "languages": [
+          "go",
+          "rust",
+          "typescript",
+          "python"
+        ],
+        "rationale": "Go's stdlib ships a production HTTP server. Goroutines map 1:1 to connections. Rust's hyper/tokio is competitive for latency-sensitive services."
+      },
+      "filesystem": {
+        "description": "Reads/writes files, watches directories, manages paths.",
+        "keywords": [
+          "file",
+          "disk",
+          "fs",
+          "watcher",
+          "inotify",
+          "read",
+          "write",
+          "path",
+          "directory",
+          "fswatch"
+        ],
+        "languages": [
+          "rust",
+          "go",
+          "c"
+        ],
+        "rationale": "Filesystem operations are syscall-heavy. Rust and Go both have solid cross-platform FS abstractions."
+      },
+      "human": {
+        "description": "Interacts with a human \u2014 TUI, CLI, dashboard, GUI.",
+        "keywords": [
+          "tui",
+          "cli",
+          "terminal",
+          "output",
+          "display",
+          "user",
+          "dashboard",
+          "gui",
+          "menu"
+        ],
+        "languages": [
+          "go",
+          "rust",
+          "swift",
+          "typescript"
+        ],
+        "rationale": "Go's Bubble Tea for TUI. Swift for macOS-native. TypeScript for web dashboards."
+      },
+      "database": {
+        "description": "Reads/writes to a database \u2014 SQL, KV store, document store.",
+        "keywords": [
+          "database",
+          "sql",
+          "sqlite",
+          "postgres",
+          "mysql",
+          "kv",
+          "store",
+          "query",
+          "transaction",
+          "acid"
+        ],
+        "languages": [
+          "go",
+          "rust",
+          "python"
+        ],
+        "rationale": "Go's database/sql is the standard. Rust's diesel/sqlx for type-safe queries."
+      },
+      "inter-process": {
+        "description": "Communicates with other processes on the same machine \u2014 pipes, shared memory, Unix sockets, signals.",
+        "keywords": [
+          "ipc",
+          "pipe",
+          "shared memory",
+          "unix socket",
+          "signal",
+          "mmap",
+          "message queue"
+        ],
+        "languages": [
+          "go",
+          "rust",
+          "c"
+        ],
+        "rationale": "Unix domain sockets and pipes are POSIX primitives. Go's net package handles them natively."
+      }
+    },
+    "concurrency": {
+      "request-parallel": {
+        "description": "Handles many independent operations at once. Each request/connection gets its own execution context.",
+        "keywords": [
+          "concurrent",
+          "parallel",
+          "per-request",
+          "per connection",
+          "goroutine",
+          "thread pool",
+          "worker pool",
+          "multi-threaded"
+        ],
+        "languages": [
+          "go",
+          "rust"
+        ],
+        "default_components": [
+          "mutex"
+        ]
+      },
+      "pipeline": {
+        "description": "Data flows through sequential stages. Each stage can run concurrently. Backpressure between stages.",
+        "keywords": [
+          "pipeline",
+          "stage",
+          "stream",
+          "pipe",
+          "flow",
+          "etl"
+        ],
+        "languages": [
+          "go",
+          "rust"
+        ],
+        "default_components": [
+          "bounded-channel",
+          "stop-signal"
+        ]
+      },
+      "event-loop": {
+        "description": "Single-threaded with asynchronous I/O. One event at a time, no preemption.",
+        "keywords": [
+          "event loop",
+          "single-threaded",
+          "async",
+          "await",
+          "callback",
+          "reactor"
+        ],
+        "languages": [
+          "javascript",
+          "python",
+          "rust"
+        ],
+        "default_components": []
+      },
+      "fork-reap": {
+        "description": "Spawns child processes, waits for completion, checks exit codes.",
+        "keywords": [
+          "fork",
+          "spawn",
+          "child process",
+          "exec",
+          "subprocess",
+          "wait"
+        ],
+        "languages": [
+          "bash",
+          "go",
+          "c"
+        ],
+        "default_components": []
+      },
+      "none": {
+        "description": "Purely sequential. One thing at a time, start to finish.",
+        "keywords": [
+          "sequential",
+          "single",
+          "batch",
+          "script"
+        ],
+        "languages": [
+          "bash",
+          "go",
+          "python",
+          "any"
+        ],
+        "default_components": []
+      }
+    },
+    "state_shape": {
+      "stateless": {
+        "description": "Holds no state between operations. Pure input \u2192 output transformation.",
+        "keywords": [
+          "stateless",
+          "pure",
+          "transform",
+          "convert",
+          "map",
+          "filter",
+          "idempotent"
+        ]
+      },
+      "in-flight": {
+        "description": "Holds temporary state while processing. State is bounded by request lifetime.",
+        "keywords": [
+          "request",
+          "session",
+          "connection",
+          "in-flight",
+          "pending",
+          "buffer",
+          "queue"
+        ]
+      },
+      "persistent": {
+        "description": "State must survive restarts. Written to disk or database.",
+        "keywords": [
+          "database",
+          "sqlite",
+          "persist",
+          "durable",
+          "store",
+          "save",
+          "disk",
+          "recover"
+        ]
+      },
+      "shared-mutable": {
+        "description": "Multiple execution contexts read and write the same state simultaneously.",
+        "keywords": [
+          "shared state",
+          "mutable",
+          "cache",
+          "global",
+          "singleton",
+          "concurrent map"
+        ]
+      }
+    },
+    "lifetime": {
+      "minutes": {
+        "description": "One-off. Runs, produces output, exits. Won't be maintained.",
+        "keywords": [
+          "one-off",
+          "script",
+          "ad-hoc",
+          "once",
+          "migration"
+        ]
+      },
+      "days": {
+        "description": "Prototype or experiment. Will be thrown away or rewritten.",
+        "keywords": [
+          "prototype",
+          "spike",
+          "experiment",
+          "temporary",
+          "throwaway"
+        ]
+      },
+      "months": {
+        "description": "Tool or utility. Used regularly, may evolve.",
+        "keywords": [
+          "tool",
+          "cli tool",
+          "utility",
+          "helper"
+        ]
+      },
+      "years": {
+        "description": "Daemon, service, or agent. Runs continuously. Must not leak, must handle edge cases, must have observability.",
+        "keywords": [
+          "daemon",
+          "service",
+          "server",
+          "agent",
+          "long-running",
+          "24/7",
+          "always on"
+        ]
+      },
+      "decades": {
+        "description": "Protocol, kernel module, or standard. Will outlive its original authors.",
+        "keywords": [
+          "kernel",
+          "protocol",
+          "standard",
+          "specification",
+          "rfc",
+          "formal"
+        ]
+      }
+    }
+  },
+  "domains": {
+    "file-watcher": {
+      "description": "Watches filesystem changes and reacts to events. Kernel-adjacent. Callback chains. Must not drop events under load.",
+      "standard_components": [
+        "bounded-channel",
+        "stop-signal",
+        "event-counter",
+        "fence"
+      ],
+      "recommended_language": "rust",
+      "language_rationale": "File watchers sit on kernel boundaries (kqueue/FSEvents/inotify). Rust's ownership model prevents use-after-free in callback chains. Go's GC pauses can cause event loss under high throughput. 14/17 OSS file watchers on GitHub use Rust.",
+      "oss_references": [
+        {
+          "name": "notify",
+          "url": "github.com/notify-rs/notify",
+          "language": "rust",
+          "note": "The standard Rust filesystem notification library"
+        },
+        {
+          "name": "watchexec",
+          "url": "github.com/watchexec/watchexec",
+          "language": "rust",
+          "note": "Executes commands on file changes"
+        },
+        {
+          "name": "fsnotify",
+          "url": "github.com/fsnotify/fsnotify",
+          "language": "go",
+          "note": "Go filesystem notifications. Simpler API, less performant under load."
+        },
+        {
+          "name": "FSEvents",
+          "url": "developer.apple.com/documentation/coreservices/file_system_events",
+          "language": "c",
+          "note": "macOS kernel-level filesystem event API"
+        },
+        {
+          "name": "inotify",
+          "url": "man7.org/linux/man-pages/man7/inotify.7.html",
+          "language": "c",
+          "note": "Linux kernel filesystem event API"
+        }
+      ],
+      "common_failures": [
+        "event loss under high throughput (buffer overflow)",
+        "callback after close (use-after-free)",
+        "race between event processing and shutdown",
+        "duplicate events from kernel coalescing"
+      ],
+      "principles": [
+        "Buffer events with backpressure \u2014 never block the kernel callback",
+        "Separate kernel thread from processing thread",
+        "Stop must be monotonic \u2014 once signalled, never un-signalled",
+        "Count events at every stage for observability"
+      ],
+      "keywords": [
+        "watch",
+        "watcher",
+        "file watcher",
+        "fsevents",
+        "inotify",
+        "file change",
+        "file system event",
+        "directory watch"
+      ]
+    },
+    "api-server": {
+      "description": "Serves HTTP/REST/gRPC endpoints. Handles concurrent requests with shared backend state.",
+      "standard_components": [
+        "mutex",
+        "stop-signal",
+        "event-counter",
+        "fence"
+      ],
+      "recommended_language": "go",
+      "language_rationale": "Go's stdlib ships a production HTTP server. Goroutines map 1:1 to requests. Dominant in cloud infrastructure.",
+      "oss_references": [
+        {
+          "name": "net/http",
+          "url": "pkg.go.dev/net/http",
+          "language": "go",
+          "note": "Go standard library HTTP server"
+        },
+        {
+          "name": "Kubernetes apiserver",
+          "url": "github.com/kubernetes/kubernetes",
+          "language": "go",
+          "note": "Canonical Go API server at scale"
+        },
+        {
+          "name": "Prometheus",
+          "url": "github.com/prometheus/prometheus",
+          "language": "go",
+          "note": "Metrics server with concurrent scrape handling"
+        }
+      ],
+      "common_failures": [
+        "goroutine leak under connection exhaustion",
+        "unbounded request queues (OOM under load)",
+        "missing graceful drain (dropped in-flight requests)",
+        "shared state race between request handlers"
+      ],
+      "principles": [
+        "Every handler gets a timeout \u2014 never unbounded",
+        "Graceful shutdown: stop accepting \u2192 drain in-flight \u2192 close",
+        "Shared state behind a mutex or channel, never raw",
+        "Count requests, errors, and latency at the handler level"
+      ],
+      "keywords": [
+        "api",
+        "server",
+        "http",
+        "rest",
+        "endpoint",
+        "web server",
+        "grpc",
+        "rest api"
+      ]
+    },
+    "daemon": {
+      "description": "Background service or agent. Runs indefinitely. Managed by launchd/systemd.",
+      "standard_components": [
+        "stop-signal",
+        "event-counter"
+      ],
+      "recommended_language": "go",
+      "language_rationale": "Single static binary, no runtime. Ideal for LaunchAgents. The jw-* ecosystem standard.",
+      "oss_references": [
+        {
+          "name": "jw-sentry",
+          "url": "~/projects/jw-sentry",
+          "language": "rust",
+          "note": "macOS FSEvents daemon"
+        },
+        {
+          "name": "jw-sessiond",
+          "url": "~/projects/jw-sessiond",
+          "language": "go",
+          "note": "Transcript watcher daemon"
+        },
+        {
+          "name": "mintmux",
+          "url": "~/projects/mintmux",
+          "language": "go",
+          "note": "PTY multiplexer daemon"
+        }
+      ],
+      "common_failures": [
+        "no signal handler \u2014 SIGTERM kills in-flight work",
+        "resource leak over weeks of uptime (goroutines, FDs, memory)",
+        "no health check \u2014 launchd can't tell if it's hung"
+      ],
+      "principles": [
+        "Handle SIGTERM gracefully \u2014 drain, flush, close",
+        "Emit metrics periodically even when idle (proof of life)",
+        "Use resource limits \u2014 ulimit for FDs, memory, CPU",
+        "Restart cleanly \u2014 no state corruption on crash"
+      ],
+      "keywords": [
+        "daemon",
+        "agent",
+        "background",
+        "launchagent",
+        "system service",
+        "background service"
+      ]
+    },
+    "distributed-lock": {
+      "description": "Mutual exclusion across multiple processes or machines. Lease-based or token-based.",
+      "standard_components": [
+        "lease",
+        "fence",
+        "stop-signal"
+      ],
+      "recommended_language": "go",
+      "language_rationale": "Most lock services are Go (etcd, Chubby-style). Channels model lock acquisition naturally.",
+      "oss_references": [
+        {
+          "name": "etcd concurrency",
+          "url": "github.com/etcd-io/etcd",
+          "language": "go",
+          "note": "Distributed mutex and leader election via etcd"
+        },
+        {
+          "name": "Google Chubby",
+          "url": "static.googleusercontent.com/media/research.google.com/en//archive/chubby-osdi06.pdf",
+          "language": "c++",
+          "note": "Original distributed lock service paper (Burrows, OSDI 2006)"
+        },
+        {
+          "name": "Redis Redlock",
+          "url": "redis.io/topics/distlock",
+          "language": "various",
+          "note": "Distributed lock algorithm using Redis"
+        }
+      ],
+      "common_failures": [
+        "split-brain: two processes think they hold the lock",
+        "lease expiry during GC pause (client loses lock, doesn't know)",
+        "fencing token not checked on write (stale holder corrupts data)"
+      ],
+      "principles": [
+        "Every lock operation carries a fencing token",
+        "Assume the lease can expire at any time \u2014 check before acting",
+        "Monotonic tokens \u2014 version numbers that only increase",
+        "Time-bounded, not infinite \u2014 leases expire, locks release"
+      ],
+      "keywords": [
+        "lock",
+        "mutual exclusion",
+        "lease",
+        "distributed lock",
+        "exclusive access",
+        "mutex"
+      ]
+    },
+    "consensus": {
+      "description": "Agreement across a group of processes. Leader election, log replication, state machine replication.",
+      "standard_components": [
+        "lockstep",
+        "unanimous-vote",
+        "fence",
+        "stop-signal"
+      ],
+      "recommended_language": "go",
+      "language_rationale": "Most consensus implementations are Go (etcd/raft, HashiCorp/raft). Channels match the RPC model.",
+      "oss_references": [
+        {
+          "name": "etcd/raft",
+          "url": "github.com/etcd-io/raft",
+          "language": "go",
+          "note": "Canonical RAFT implementation"
+        },
+        {
+          "name": "Hashicorp Raft",
+          "url": "github.com/hashicorp/raft",
+          "language": "go",
+          "note": "Production RAFT used in Consul, Nomad"
+        },
+        {
+          "name": "Paxos Made Simple",
+          "url": "lamport.azurewebsites.net/pubs/paxos-simple.pdf",
+          "language": "n/a",
+          "note": "Lamport's Paxos paper"
+        }
+      ],
+      "common_failures": [
+        "split vote \u2014 no leader elected, system stalls",
+        "log divergence \u2014 followers fall behind, can't catch up",
+        "committed entries lost on restart (missing fsync)",
+        "membership change during leader election (joint consensus)"
+      ],
+      "principles": [
+        "Term numbers are monotonic \u2014 higher term always wins",
+        "Commit index advances only when quorum acks",
+        "Fsync before responding to client \u2014 committed means durable",
+        "Lockstep replication \u2014 followers apply same sequence as leader"
+      ],
+      "keywords": [
+        "consensus",
+        "raft",
+        "paxos",
+        "agreement",
+        "quorum",
+        "leader election",
+        "leader"
+      ]
+    },
+    "event-sourcing": {
+      "description": "Append-only event log as source of truth. State is derived by replaying events.",
+      "standard_components": [
+        "event-counter",
+        "fence",
+        "stop-signal"
+      ],
+      "recommended_language": "go",
+      "language_rationale": "Event sourcing is I/O-bound. Go's concurrency handles replays efficiently. The jw-* ecosystem uses JSONL event sourcing.",
+      "oss_references": [
+        {
+          "name": "jw-core",
+          "url": "~/projects/jw-core",
+          "language": "go",
+          "note": "Orchestrator with JSONL event log"
+        },
+        {
+          "name": "Event Store",
+          "url": "github.com/EventStore/EventStore",
+          "language": "c#",
+          "note": "Purpose-built event store database"
+        },
+        {
+          "name": "Kafka",
+          "url": "github.com/apache/kafka",
+          "language": "java",
+          "note": "Distributed event log at scale"
+        }
+      ],
+      "common_failures": [
+        "event ordering violation \u2014 events applied out of sequence",
+        "missing idempotency \u2014 duplicate events corrupt state",
+        "unbounded log growth \u2014 no compaction or retention policy"
+      ],
+      "principles": [
+        "Events are immutable \u2014 append only, never modify",
+        "Every event has a sequence number",
+        "State is a left-fold over events: foldl(apply, initial, events)",
+        "Idempotent application \u2014 applying the same event twice is safe"
+      ],
+      "keywords": [
+        "event source",
+        "event sourcing",
+        "event log",
+        "append only",
+        "journal",
+        "event store"
+      ]
+    },
+    "pipeline": {
+      "description": "Data flows through sequential stages. Each stage transforms and passes downstream.",
+      "standard_components": [
+        "bounded-channel",
+        "stop-signal"
+      ],
+      "recommended_language": "go",
+      "language_rationale": "Go channels are pipeline stages. Select provides backpressure and cancellation natively.",
+      "oss_references": [
+        {
+          "name": "Go Concurrency Patterns",
+          "url": "go.dev/blog/pipelines",
+          "language": "go",
+          "note": "Official Go blog on pipeline concurrency"
+        }
+      ],
+      "common_failures": [
+        "head-of-line blocking \u2014 slow consumer blocks entire pipeline",
+        "unbounded intermediate buffers \u2014 OOM under throughput spike",
+        "partial failure \u2014 one stage crashes, upstream keeps sending",
+        "cancellation doesn't propagate \u2014 goroutine leak"
+      ],
+      "principles": [
+        "Every inter-stage channel is bounded",
+        "Cancellation propagates forward AND backward",
+        "Each stage is independently monitored",
+        "Backpressure, not dropping \u2014 unless dropping is explicit policy"
+      ],
+      "keywords": [
+        "pipeline",
+        "etl",
+        "data flow",
+        "stream",
+        "stage"
+      ]
+    },
+    "cli-tool": {
+      "description": "Command-line utility. Runs, does one thing, exits.",
+      "standard_components": [],
+      "recommended_language": "go",
+      "language_rationale": "Single static binary, fast startup, no runtime. Go is the CLI default on this machine.",
+      "oss_references": [],
+      "common_failures": [
+        "no --help or usage output",
+        "no exit code differentiation (always 0 or always 1)",
+        "silent failure \u2014 error goes to stdout instead of stderr"
+      ],
+      "principles": [
+        "One thing well \u2014 do it and exit",
+        "Exit 0 for success, non-zero for failure, different codes for different failures",
+        "Errors to stderr, output to stdout",
+        "Flags, not positional arguments for anything non-trivial"
+      ],
+      "keywords": [
+        "cli",
+        "command line",
+        "terminal app",
+        "command line tool",
+        "cli tool"
+      ]
+    }
+  },
+  "design_principles": {
+    "general": [
+      "Pick the weakest language that can do the job correctly \u2014 not the strongest.",
+      "Every component must cite its provenance (OSS reference, ledger record, or academic paper).",
+      "No pattern without evidence. If githits returns zero similar projects, flag for captain review.",
+      "The architecture is proven before any code is written. The implementation is verified, not trusted.",
+      "Every invariant has a runtime check. If the check fires, the proof was wrong \u2014 learn from it.",
+      "State must be explicit. Implicit state (globals, env vars, ambient context) is a bug waiting to happen.",
+      "Graceful degradation over silent failure. If something breaks, tell the operator what broke and what to do."
+    ],
+    "concurrency": [
+      "Share memory by communicating, not communicate by sharing memory.",
+      "Every goroutine/task has a known exit path. No fire-and-forget without a timeout.",
+      "Bounded everything \u2014 queues, channels, pools, caches. Unbounded = eventual OOM.",
+      "Cancellation is part of the contract. Every async operation accepts a context or cancel token."
+    ],
+    "error_handling": [
+      "Errors must tell you what to do next, not just what went wrong.",
+      "Don't log and return \u2014 return the error, let the caller decide.",
+      "Errors are values. Handle them, don't ignore them.",
+      "Panic only for unrecoverable programmer errors. Never for expected failure modes."
+    ],
+    "observability": [
+      "Every long-running process emits health signals even when idle.",
+      "Counters over gauges \u2014 rates tell you more than point values.",
+      "The ledger is the audit trail. Every decision, every violation, every fix is recorded.",
+      "If you can't measure it, you can't prove it works."
+    ]
+  },
+  "ledger_learnings": {
+    "description": "Patterns learned from actual Bridge spawn history. Updated after each spawn cycle.",
+    "entries": []
+  }
+}
