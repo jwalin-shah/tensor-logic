@@ -2,16 +2,17 @@
 // Commands:
 //   tlogic prove <component>     — prove an invariant holds for a component
 //   tlogic compose <A> <B>       — compose two components and verify
-//   tlogic check <pattern>       — check a pre-proven pattern
 //   tlogic list-patterns         — list all known patterns
 //   tlogic show-pattern <name>   — show a pattern's details
-//   tlogic counterexample <...>  — extract a counterexample from a failed proof
+//   tlogic match <description>   — match problem description against pattern catalog
 package main
 
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"tensor-logic/internal/matcher"
 	"tensor-logic/internal/prover"
 	"tensor-logic/patterns"
 )
@@ -44,6 +45,13 @@ func main() {
 			os.Exit(1)
 		}
 		composeComponents(os.Args[2], os.Args[3])
+	case "match":
+		text := strings.Join(os.Args[2:], " ")
+		if strings.TrimSpace(text) == "" {
+			fmt.Fprintln(os.Stderr, "usage: tlogic match <problem description>")
+			os.Exit(1)
+		}
+		matchProblem(text)
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
 		usage()
@@ -59,6 +67,7 @@ func usage() {
 	fmt.Println("  show-pattern <name>        show pattern details")
 	fmt.Println("  prove <component>          prove an invariant (from patterns)")
 	fmt.Println("  compose <A> <B>            compose two components and verify")
+	fmt.Println("  match <description>        match problem description against pattern catalog")
 }
 
 func listPatterns() {
@@ -151,5 +160,68 @@ func composeComponents(aName, bName string) {
 		} else {
 			fmt.Printf("State space too large (%d states). Verify components individually.\n", 1<<composite.Dim)
 		}
+	}
+}
+
+func matchProblem(text string) {
+	sig := matcher.ExtractSignature(text)
+	matches := matcher.MatchComponents(sig)
+
+	fmt.Println("=== Problem Signature ===")
+	if len(sig.Boundaries) > 0 {
+		fmt.Printf("Boundaries:   %v\n", sig.Boundaries)
+	} else {
+		fmt.Println("Boundaries:   (none detected)")
+	}
+	if sig.Concurrency != "" && sig.Concurrency != "none" {
+		fmt.Printf("Concurrency:  %s\n", sig.Concurrency)
+	}
+	if sig.StateShape != "" {
+		fmt.Printf("State:        %s\n", sig.StateShape)
+	}
+	if sig.Lifetime != "" {
+		fmt.Printf("Lifetime:     %s\n", sig.Lifetime)
+	}
+	if len(sig.Domains) > 0 {
+		fmt.Printf("Domains:      %v\n", sig.Domains)
+	}
+	fmt.Println()
+
+	if len(matches) == 0 {
+		fmt.Println("No matching components found in the catalog.")
+		fmt.Println("This problem may require a novel architecture. Run:")
+		fmt.Println("  bridge create \"<your description>\"")
+		return
+	}
+
+	fmt.Println("=== Matched Components ===")
+	for i, m := range matches {
+		status := "UNPROVEN"
+		if m.Component.Proven {
+			status = "PROVEN"
+		}
+		fmt.Printf("%d. %s (%s) [%s]\n", i+1, m.Component.Name, status, m.Component.Role)
+		fmt.Printf("   Confidence: %.0f%%\n", m.Confidence*100)
+		fmt.Printf("   Rationale:  %s\n", m.Rationale)
+		for _, s := range m.Signals {
+			fmt.Printf("   → matched: %q (weight=%d, category=%s)\n", s.Keyword, s.Weight, s.Category)
+		}
+		fmt.Println()
+	}
+
+	// Compose them.
+	composed, _ := matcher.ComposeMatched(matches, "sys")
+	fmt.Println("=== Composed System ===")
+	if composed != nil {
+		fmt.Printf("Total state space: %d bits (%d states)\n", composed.Dim, 1<<composed.Dim)
+		fmt.Printf("Proven:            %v\n", composed.Proven)
+		if composed.Proven {
+			fmt.Println("All sub-components are individually proven. Composition theorem applies.")
+			fmt.Println("No re-proving needed for parallel composition.")
+		} else {
+			fmt.Println("Some components are unproven. Verify individually, then re-compose.")
+		}
+	} else {
+		fmt.Println("Nothing to compose (0 components matched).")
 	}
 }
