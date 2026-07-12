@@ -1,0 +1,23 @@
+{
+  "id": "pattern-library-extraction",
+  "target_repository": "tensor-logic",
+  "base_tree_sha": "b88449311ccd033ea7d52322241854bee174432a",
+  "allowed_paths": ["patterns/", "internal/tensor/", "internal/prover/", "internal/counter/"],
+  "acceptance_criteria": [
+    "8 patterns proven in patterns/AllPatterns()",
+    "Each pattern has provenance cited (OSS repo URL, ledger violation, or academic paper)",
+    "Adversarial counterexample tests for each pattern",
+    "go test ./patterns/ passes",
+    "tlogic prove <pattern> succeeds for each pattern"
+  ],
+  "verification_commands": [
+    {"name": "build", "argv": ["go", "build", "./cmd/tlogic"]},
+    {"name": "test", "argv": ["go", "test", "./..."]},
+    {"name": "vet", "argv": ["go", "vet", "./..."]}
+  ],
+  "delivery": "pr",
+  "timeout_seconds": 900,
+  "escalation_owner": "captain",
+  "retry_limit": 1,
+  "adapter": "ct"
+}
