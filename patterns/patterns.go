@@ -40,6 +40,7 @@ const (
 	RoleToggle     ComponentRole = "toggle"
 	RoleVote       ComponentRole = "vote"
 	RoleLockStep   ComponentRole = "lockstep"
+	RoleDaemon     ComponentRole = "daemon"
 )
 
 // Component is a proven unit of architecture. Each Component has:
@@ -509,14 +510,16 @@ func LeasePattern() *Component {
 // into larger systems via ComposeParallel. Patterns cite real
 // OSS provenance as ground truth for their encodings.
 func AllPatterns() map[string]*Component {
-	return map[string]*Component{
-		"fence":          FencePattern(),
-		"stop-signal":    StopSignalPattern(),
-		"mutex":          MutexPattern(),
-		"lockstep":       LockStepPattern(),
-		"round-robin":    RoundRobinPattern(),
-		"toggle-pair":    TogglePairPattern(),
-		"unanimous-vote": UnanimousVotePattern(),
-		"lease":          LeasePattern(),
+		return map[string]*Component{
+			"fence":          FencePattern(),
+			"stop-signal":    StopSignalPattern(),
+			"mutex":          MutexPattern(),
+			"lockstep":       LockStepPattern(),
+			"round-robin":    RoundRobinPattern(),
+			"toggle-pair":    TogglePairPattern(),
+			"unanimous-vote": UnanimousVotePattern(),
+			"lease":          LeasePattern(),
+			"daemon-lifecycle": DaemonLifecyclePattern(),
+		}
 	}
-}
+

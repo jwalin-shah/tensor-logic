@@ -388,8 +388,8 @@ func TestComposeParallel_ApproximateComponent(t *testing.T) {
 
 func TestAllPatterns_Count(t *testing.T) {
 	all := AllPatterns()
-	if len(all) != 8 {
-		t.Errorf("expected 8 patterns, got %d", len(all))
+	if len(all) != 9 {
+		t.Errorf("expected 9 patterns, got %d", len(all))
 	}
 }
 
