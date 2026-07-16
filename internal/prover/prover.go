@@ -15,18 +15,18 @@ import (
 
 // Result is the outcome of a proof attempt.
 type Result struct {
-	Passed         bool
-	StatesChecked  uint64
+	Passed           bool
+	StatesChecked    uint64
 	StatesInSubspace uint64
-	Counterexample *Counterexample
+	Counterexample   *Counterexample
 }
 
 // Counterexample captures the exact state that violates an invariant.
 type Counterexample struct {
-	PreState     tensor.Vector
-	PostState    tensor.Vector
-	Constraint   tensor.ConstraintMatrix
-	ViolatedRow  int    // which constraint was violated (-1 if unknown)
+	PreState    tensor.Vector
+	PostState   tensor.Vector
+	Constraint  tensor.ConstraintMatrix
+	ViolatedRow int // which constraint was violated (-1 if unknown)
 }
 
 func (c *Counterexample) Error() string {
@@ -49,9 +49,9 @@ func ProveExhaustive(T tensor.Matrix, I tensor.ConstraintMatrix, dim int) Result
 		return Result{
 			Passed: false,
 			Counterexample: &Counterexample{
-				PreState:  0,
-				PostState: 0,
-				Constraint: I,
+				PreState:    0,
+				PostState:   0,
+				Constraint:  I,
 				ViolatedRow: -1,
 			},
 		}

@@ -98,20 +98,20 @@ func stateShort(v tensor.Vector) string {
 //   001 = 4       101 = 5       011 = 6       111 = 7
 
 const (
-	lockOnly   = 1 << 0          // 100 (binary) = lockdir_held=1
-	daemonOnly = 1 << 1          // 010 (binary) = daemon_running=1
+	lockOnly   = 1 << 0              // 100 (binary) = lockdir_held=1
+	daemonOnly = 1 << 1              // 010 (binary) = daemon_running=1
 	lockDaemon = (1 << 0) | (1 << 1) // 110 (binary) = 3
 )
 
 func acquireLock() (pre tensor.Vector, post tensor.Vector) {
-	pre = 0          // 000
-	post = lockOnly  // 100
+	pre = 0         // 000
+	post = lockOnly // 100
 	return
 }
 
 func validateImports() (pre tensor.Vector, post tensor.Vector) {
-	pre = lockOnly   // 100
-	post = lockOnly  // 100 (idempotent)
+	pre = lockOnly  // 100
+	post = lockOnly // 100 (idempotent)
 	return
 }
 
@@ -474,7 +474,7 @@ func TestComposeParallel_DaemonLifecycle_ThreeComponents(t *testing.T) {
 
 func TestDaemonLifecycle_ExhaustiveInvalidStateCheck(t *testing.T) {
 	for v := uint64(0); v < 8; v++ {
-		lockHeld := (v>>0)&1 == 1     // bit 0
+		lockHeld := (v>>0)&1 == 1      // bit 0
 		daemonRunning := (v>>1)&1 == 1 // bit 1
 
 		isInvalid := !lockHeld && daemonRunning // bit_0=0 ∧ bit_1=1

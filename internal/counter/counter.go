@@ -1,8 +1,8 @@
 // Package counter extracts counterexamples from failed proofs.
 // Given a failed proof — T·v ∉ I — it computes:
-//   1. Which constraint was violated
-//   2. The exact pre-state and post-state
-//   3. A human-readable explanation
+//  1. Which constraint was violated
+//  2. The exact pre-state and post-state
+//  3. A human-readable explanation
 //
 // The counterexample is the error message. It tells the developer
 // (or AI worker) exactly what went wrong and what to fix.

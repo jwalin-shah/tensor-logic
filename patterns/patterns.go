@@ -76,11 +76,11 @@ func (c *Component) Verify() error {
 			next := c.Transition.Apply(state)
 			if !c.Invariant.Contains(next) {
 				return &CounterexampleError{
-					Component:  c.Name,
-					PreState:   state,
-					PostState:  next,
-					Invariant:  c.Invariant,
-					Variables:  c.Variables,
+					Component: c.Name,
+					PreState:  state,
+					PostState: next,
+					Invariant: c.Invariant,
+					Variables: c.Variables,
 				}
 			}
 		}
@@ -92,11 +92,11 @@ func (c *Component) Verify() error {
 // It contains the pre-state (inside the invariant), the post-state (outside
 // the invariant), and the constraint matrix that was violated.
 type CounterexampleError struct {
-	Component  string
-	PreState   tensor.Vector
-	PostState  tensor.Vector
-	Invariant  tensor.ConstraintMatrix
-	Variables  []string
+	Component string
+	PreState  tensor.Vector
+	PostState tensor.Vector
+	Invariant tensor.ConstraintMatrix
+	Variables []string
 }
 
 func (e *CounterexampleError) Error() string {
@@ -370,10 +370,10 @@ func LockStepPattern() *Component {
 
 func RoundRobinPattern() *Component {
 	c := &Component{
-		Name:       "round-robin",
-		Role:       RoleToken,
-		Dim:        2,
-		Variables:  []string{"token_a", "token_b"},
+		Name:      "round-robin",
+		Role:      RoleToken,
+		Dim:       2,
+		Variables: []string{"token_a", "token_b"},
 	}
 	// Swap matrix: row 0 depends on bit 1, row 1 depends on bit 0.
 	c.Transition = tensor.Matrix{1 << 1, 1 << 0} // [[0,1],[1,0]]
@@ -409,10 +409,10 @@ func RoundRobinPattern() *Component {
 
 func TogglePairPattern() *Component {
 	c := &Component{
-		Name:       "toggle-pair",
-		Role:       RoleToggle,
-		Dim:        2,
-		Variables:  []string{"flag_a", "flag_b"},
+		Name:      "toggle-pair",
+		Role:      RoleToggle,
+		Dim:       2,
+		Variables: []string{"flag_a", "flag_b"},
 	}
 	// Both-flip: each output bit = a⊕b.
 	c.Transition = tensor.Matrix{(1 << 0) | (1 << 1), (1 << 0) | (1 << 1)} // [[1,1],[1,1]]
@@ -510,16 +510,15 @@ func LeasePattern() *Component {
 // into larger systems via ComposeParallel. Patterns cite real
 // OSS provenance as ground truth for their encodings.
 func AllPatterns() map[string]*Component {
-		return map[string]*Component{
-			"fence":          FencePattern(),
-			"stop-signal":    StopSignalPattern(),
-			"mutex":          MutexPattern(),
-			"lockstep":       LockStepPattern(),
-			"round-robin":    RoundRobinPattern(),
-			"toggle-pair":    TogglePairPattern(),
-			"unanimous-vote": UnanimousVotePattern(),
-			"lease":          LeasePattern(),
-			"daemon-lifecycle": DaemonLifecyclePattern(),
-		}
+	return map[string]*Component{
+		"fence":            FencePattern(),
+		"stop-signal":      StopSignalPattern(),
+		"mutex":            MutexPattern(),
+		"lockstep":         LockStepPattern(),
+		"round-robin":      RoundRobinPattern(),
+		"toggle-pair":      TogglePairPattern(),
+		"unanimous-vote":   UnanimousVotePattern(),
+		"lease":            LeasePattern(),
+		"daemon-lifecycle": DaemonLifecyclePattern(),
 	}
-
+}

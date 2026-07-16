@@ -1,35 +1,39 @@
 // Pattern 9: DaemonLifecycle — daemon process lifecycle with lockdir guard
 //
 // State bits:
-//   0: lockdir_held — 1 if the lock directory (pidfile) is acquired
-//   1: daemon_running — 1 if the daemon process is actively running
-//   2: health_check_due — 1 when a periodic health check is due
+//
+//	0: lockdir_held — 1 if the lock directory (pidfile) is acquired
+//	1: daemon_running — 1 if the daemon process is actively running
+//	2: health_check_due — 1 when a periodic health check is due
 //
 // Total: 3 bits = 8 states
 //
 // Transitions (semantic operations, verified in tests):
-//   acquire_lock:    (0,0,0) → (1,0,0)  — acquire the pidfile lock
-//   validate_imports:(1,0,0) → (1,0,0)  — idempotent readiness check
-//   start_daemon:    (1,0,0) → (1,1,0)  — fork/exec the daemon process
-//   daemon_crash:    (1,1,0) → (1,0,0)  — daemon exits; lockdir is stale
-//   clean_stale:     (1,0,0) → (0,0,0)  — health check recovers stale lock
+//
+//	acquire_lock:    (0,0,0) → (1,0,0)  — acquire the pidfile lock
+//	validate_imports:(1,0,0) → (1,0,0)  — idempotent readiness check
+//	start_daemon:    (1,0,0) → (1,1,0)  — fork/exec the daemon process
+//	daemon_crash:    (1,1,0) → (1,0,0)  — daemon exits; lockdir is stale
+//	clean_stale:     (1,0,0) → (0,0,0)  — health check recovers stale lock
 //
 // Invariant (semantic): "not (lockdir_held=0 ∧ daemon_running=1)"
-//   A running daemon must hold the lock. The 6 valid states are:
-//   I = {000, 001, 100, 101, 110, 111}. States {010, 011} (daemon
-//   running without lock) are forbidden.
+//
+//	A running daemon must hold the lock. The 6 valid states are:
+//	I = {000, 001, 100, 101, 110, 111}. States {010, 011} (daemon
+//	running without lock) are forbidden.
 //
 // Linear approximation over Z₂:
-//   The real invariant I has 6 states — not a power of 2, therefore not
-//   a valid Z₂ subspace. The largest linear subspace contained in I is
-//   the set where daemon_running = 0 (bit 1 = 0), giving the 4-state
-//   subspace {000, 001, 100, 101}.
 //
-//   Constraint: daemon_running = 0  (mask 0b010 = 2)
+//	The real invariant I has 6 states — not a power of 2, therefore not
+//	a valid Z₂ subspace. The largest linear subspace contained in I is
+//	the set where daemon_running = 0 (bit 1 = 0), giving the 4-state
+//	subspace {000, 001, 100, 101}.
 //
-//   Gap: states {110, 111} (lock held, daemon running) are semantically
-//   valid but excluded from the linear subspace. All 5 semantic transitions
-//   map I → I; the gap is purely a Z₂ linearity artifact.
+//	Constraint: daemon_running = 0  (mask 0b010 = 2)
+//
+//	Gap: states {110, 111} (lock held, daemon running) are semantically
+//	valid but excluded from the linear subspace. All 5 semantic transitions
+//	map I → I; the gap is purely a Z₂ linearity artifact.
 //
 // Transition: identity. The daemon state persists between external actions.
 // The identity trivially preserves the linear approximation.

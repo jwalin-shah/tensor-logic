@@ -93,7 +93,7 @@ func TestRoundRobinPattern(t *testing.T) {
 	// Verify swap transition.
 	// T·[1,0] (token_a=1, token_b=0) = [0,1] (token_a=0, token_b=1).
 	post := rr.Transition.Apply(1) // 0b01: token_a=1, token_b=0
-	if post != 2 {                  // 0b10: token_a=0, token_b=1
+	if post != 2 {                 // 0b10: token_a=0, token_b=1
 		t.Errorf("round-robin swap: T·01 = %s, want 10", post)
 	}
 	// T·[0,1] = [1,0].

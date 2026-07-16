@@ -21,10 +21,10 @@ import (
 
 // KnowledgeBase is the full ontology loaded from knowledge/domains.json.
 type KnowledgeBase struct {
-	Ontology Ontology `json:"ontology"`
-	Domains  map[string]Domain `json:"domains"`
-	DesignPrinciples Principles `json:"design_principles"`
-	LedgerLearnings LedgerLearnings `json:"ledger_learnings"`
+	Ontology         Ontology          `json:"ontology"`
+	Domains          map[string]Domain `json:"domains"`
+	DesignPrinciples Principles        `json:"design_principles"`
+	LedgerLearnings  LedgerLearnings   `json:"ledger_learnings"`
 }
 
 type Ontology struct {
@@ -35,23 +35,23 @@ type Ontology struct {
 }
 
 type EnumValue struct {
-	Description string   `json:"description"`
-	Keywords    []string `json:"keywords"`
-	Languages   []string `json:"languages,omitempty"`
-	AntiLanguages []string `json:"anti_languages,omitempty"`
-	Rationale   string   `json:"rationale,omitempty"`
+	Description       string   `json:"description"`
+	Keywords          []string `json:"keywords"`
+	Languages         []string `json:"languages,omitempty"`
+	AntiLanguages     []string `json:"anti_languages,omitempty"`
+	Rationale         string   `json:"rationale,omitempty"`
 	DefaultComponents []string `json:"default_components,omitempty"`
 }
 
 type Domain struct {
-	Description        string        `json:"description"`
-	Keywords           []string      `json:"keywords"`
-	StandardComponents []string      `json:"standard_components"`
-	RecommendedLanguage string       `json:"recommended_language"`
-	LanguageRationale  string        `json:"language_rationale"`
-	OSSReferences      []OSSRef      `json:"oss_references"`
-	CommonFailures     []string      `json:"common_failures"`
-	Principles         []string      `json:"principles"`
+	Description         string   `json:"description"`
+	Keywords            []string `json:"keywords"`
+	StandardComponents  []string `json:"standard_components"`
+	RecommendedLanguage string   `json:"recommended_language"`
+	LanguageRationale   string   `json:"language_rationale"`
+	OSSReferences       []OSSRef `json:"oss_references"`
+	CommonFailures      []string `json:"common_failures"`
+	Principles          []string `json:"principles"`
 }
 
 type OSSRef struct {

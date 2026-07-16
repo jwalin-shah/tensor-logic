@@ -35,9 +35,13 @@ Bridge's architecture compiler uses tensor-logic to:
 - `internal/counter` — counterexample extraction. When prover returns FAIL,
   compute v ∈ I such that T·v ∉ I. For linear invariants: linear programming.
   For others: SMT or search.
+- `internal/extract` — problem signature extraction from natural-language
+  brain dumps. Extracts boundaries, concurrency model, state shape, and
+  lifetime from free-text descriptions.
 - `patterns/` — pre-proven architecture patterns. Each pattern is a component
   with a state space, transition tensor, invariant subspace, and proof artifact.
-  Start with: leasing, fencing, event-counting, bounded-channel.
+  9 patterns: fence, stop-signal, mutex, lockstep, round-robin, toggle-pair,
+  unanimous-vote, lease, daemon-lifecycle.
 - `verification/` — proofs that tensor-logic itself is correct. Z3 proofs for
   the proof checker. Property-based tests for tensor operations.
 
@@ -130,8 +134,9 @@ daemon"), domain defaults fill in the standard architecture from OSS precedent:
 
 ### Catalog gaps
 
-The pattern library has 8 components. Known gaps — components referenced by
-domain defaults but not yet built:
+The pattern library has 9 components (fence, stop-signal, mutex, lockstep,
+round-robin, toggle-pair, unanimous-vote, lease, daemon-lifecycle). Known
+gaps — components referenced by domain defaults but not yet built:
 
 - **bounded-channel** — referenced by file-watcher, pipeline domains
 - **event-counter** — referenced by all domains except cli-tool

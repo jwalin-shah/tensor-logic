@@ -1,10 +1,11 @@
 // tlogic is the CLI for the tensor-logic proof system.
 // Commands:
-//   tlogic prove <component>     — prove an invariant holds for a component
-//   tlogic compose <A> <B>       — compose two components and verify
-//   tlogic list-patterns         — list all known patterns
-//   tlogic show-pattern <name>   — show a pattern's details
-//   tlogic match <description>   — match problem description against pattern catalog
+//
+//	tlogic prove <component>     — prove an invariant holds for a component
+//	tlogic compose <A> <B>       — compose two components and verify
+//	tlogic list-patterns         — list all known patterns
+//	tlogic show-pattern <name>   — show a pattern's details
+//	tlogic match <description>   — match problem description against pattern catalog
 package main
 
 import (

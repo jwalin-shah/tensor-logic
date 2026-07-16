@@ -223,8 +223,8 @@ func ExtractSignature(text string) ProblemSignature {
 func extractComponentKeywords(text string) []string {
 	var kw []string
 	checks := []struct {
-		words    []string
-		keyword  string
+		words   []string
+		keyword string
 	}{
 		{[]string{"mutual exclusion", "mutex", "lock", "only one", "exclusive", "at most one", "single writer"}, "mutual-exclusion"},
 		{[]string{"lease", "timeout", "ttl", "expire", "renew", "acquire"}, "lease"},
@@ -297,7 +297,6 @@ func MatchComponents(sig ProblemSignature) []Match {
 			}
 		}
 	}
-
 
 	// ---- DOMAIN DEFAULTS: inject standard components for detected domains ----
 	for _, dd := range domainDefaults {
