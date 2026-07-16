@@ -1,0 +1,842 @@
+{
+  "edges": [
+    {
+      "from_file": "internal/extract/extract_test.go",
+      "from_func": "TestKeywordExtractionWithKB",
+      "to_file": "internal/extract/extract_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "buildExtractionPrompt",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "AllowedConcurrency"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestSwapTransition_Properties",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_ValidateImports",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "validateImports"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AllFiveTransitionsPreserveI",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "internal/compose/compose.go",
+      "from_func": "VerifyComposition",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle.go",
+      "from_func": "DaemonLifecyclePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "MatchComponents",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "containsStr"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "LeasePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestExtractSignature_KernelBoundary",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "internal/counter/counter.go",
+      "from_func": "Report.String",
+      "to_file": "internal/counter/counter.go",
+      "to_func": "String"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "ConstraintMatrix.Dimension",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_ValidateImports",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "internal/prover/prover.go",
+      "from_func": "ProveExhaustive",
+      "to_file": "internal/prover/prover.go",
+      "to_func": "checkConstraint"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestAdversarial_BrokenInvariant_TooPermissive",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/extract/extract_test.go",
+      "from_func": "TestKnowledgeBaseDomainDefaults",
+      "to_file": "internal/extract/extract_test.go",
+      "to_func": "testKB"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "buildExtractionPrompt",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "AllowedStateShapes"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "MutexPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "FencePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "main",
+      "to_file": "cmd/tlogic/main.go",
+      "to_func": "matchProblem"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "LeasePattern"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemon",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AcquireLock",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle.go",
+      "from_func": "DaemonLifecyclePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponents_StopSignal_LongRunning",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "matchRoles"
+    },
+    {
+      "from_file": "internal/extract/extract_test.go",
+      "from_func": "TestLoadKnowledgeBase",
+      "to_file": "internal/extract/extract_test.go",
+      "to_func": "testKB"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponents_StopSignal_LongRunning",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "LeasePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestAdversarial_UnanimousVote_BrokenTransition",
+      "to_file": "patterns/patterns_test.go",
+      "to_func": "modifyTransition"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "main",
+      "to_file": "cmd/tlogic/main.go",
+      "to_func": "listPatterns"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "Kronecker",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewMatrix"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemon",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "main",
+      "to_file": "cmd/tlogic/main.go",
+      "to_func": "composeComponents"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestAdversarial_Lease_BrokenTransition",
+      "to_file": "patterns/patterns_test.go",
+      "to_func": "modifyTransition"
+    },
+    {
+      "from_file": "internal/counter/counter.go",
+      "from_func": "Report.String",
+      "to_file": "internal/counter/counter.go",
+      "to_func": "writeConstraint"
+    },
+    {
+      "from_file": "internal/compose/compose.go",
+      "from_func": "Parallel",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "BlockDiagonal"
+    },
+    {
+      "from_file": "internal/counter/counter.go",
+      "from_func": "Report.String",
+      "to_file": "internal/counter/counter.go",
+      "to_func": "writeFixSuggestion"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "composeComponents",
+      "to_file": "patterns/patterns.go",
+      "to_func": "ComposeParallel"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "MatchComponents",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "findComponentByName"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "ConstraintMatrix.String",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "UnanimousVotePattern"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestAdversarial_RoundRobin_BrokenTransition",
+      "to_file": "patterns/patterns_test.go",
+      "to_func": "modifyTransition"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "buildExtractionPrompt",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "quoteList"
+    },
+    {
+      "from_file": "internal/counter/counter.go",
+      "from_func": "Report.String",
+      "to_file": "internal/counter/counter.go",
+      "to_func": "writeState"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "showPattern",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "internal/extract/extract_test.go",
+      "from_func": "TestExtractionIsDeterministic",
+      "to_file": "internal/extract/extract_test.go",
+      "to_func": "testKB"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AcquireLock",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "Extract",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "extractWithKeywords"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "ComposeParallel",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "matchProblem",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "ComposeMatched"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "main",
+      "to_file": "cmd/tlogic/main.go",
+      "to_func": "proveComponent"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "RoundRobinPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "ExtractSignature",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "extractComponentKeywords"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "extractWithLLM",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "buildExtractionPrompt"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "MutexPattern"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AcquireLock",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "acquireLock"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "buildExtractionPrompt",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "AllowedDomains"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "BlockDiagonal",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewMatrix"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "main",
+      "to_file": "cmd/tlogic/main.go",
+      "to_func": "showPattern"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_CleanStale",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "TogglePairPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestExtractSignature_FileWatcher",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_ExhaustiveInvalidStateCheck",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "proveComponent",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "stateToString",
+      "to_file": "patterns/patterns.go",
+      "to_func": "joinParts"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "ComposeParallel",
+      "to_file": "patterns/patterns.go",
+      "to_func": "ComponentRole"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "Kronecker",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Rows"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestBothFlipTransition_Properties",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_CleanStale",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_InvariantSubspace",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AcquireLock",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "MatchComponents",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "findComponentByRole"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "buildExtractionPrompt",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "AllowedLifetimes"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "Vector.String",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Dim"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrash",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_CleanStale",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "findComponentByName",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "internal/extract/extract_test.go",
+      "from_func": "TestPromptGeneration",
+      "to_file": "internal/extract/extract_test.go",
+      "to_func": "testKB"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "TogglePairPattern"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "Matrix.String",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_ExhaustiveInvalidStateCheck",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "matchProblem",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "ExtractSignature"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AllFiveTransitionsPreserveI",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponents_MutexExclusion",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemonAsMatrix",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrashAsMatrix",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrash",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "internal/extract/extract_test.go",
+      "from_func": "TestKeywordExtractionWithKB",
+      "to_file": "internal/extract/extract_test.go",
+      "to_func": "testKB"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "listPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "ConstraintMatrix.Dimension",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Contains"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "UnanimousVotePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/compose/compose.go",
+      "from_func": "Interactive",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Kronecker"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "LockStepPattern"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "Component.Verify",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "LockStepPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_ValidateImports",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "RoundRobinPattern"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponentNames",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrash",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemon",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "startDaemon"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "ComposeParallel",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "BlockDiagonal"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemonAsMatrix",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrashAsMatrix",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "inSet"
+    },
+    {
+      "from_file": "internal/prover/prover.go",
+      "from_func": "ProveExhaustive",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Vector"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemon",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "realI"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "StopSignalPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/counter/counter.go",
+      "from_func": "Extract",
+      "to_file": "internal/counter/counter.go",
+      "to_func": "parity"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_AllFiveTransitionsPreserveI",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponents_FileWatcher",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "matchRoles"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "UnanimousVotePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "matchProblem",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "MatchComponents"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_StartDaemonAsMatrix",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrashAsMatrix",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "findComponentByRole",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_DaemonCrash",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "daemonCrash"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "ExtractSignature",
+      "to_file": "internal/matcher/matcher.go",
+      "to_func": "containsAny"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "CounterexampleError.Error",
+      "to_file": "patterns/patterns.go",
+      "to_func": "stateToString"
+    },
+    {
+      "from_file": "internal/compose/compose.go",
+      "from_func": "Parallel",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponents_FileWatcher",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "Vector.String",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Bit"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "LockStepPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "composeComponents",
+      "to_file": "internal/prover/prover.go",
+      "to_func": "ProveExhaustive"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "buildExtractionPrompt",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "AllowedBoundaries"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "main",
+      "to_file": "cmd/tlogic/main.go",
+      "to_func": "usage"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_ValidateImports",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "stateShort"
+    },
+    {
+      "from_file": "patterns/daemon_lifecycle_test.go",
+      "from_func": "TestDaemonLifecycle_CleanStale",
+      "to_file": "patterns/daemon_lifecycle_test.go",
+      "to_func": "cleanStale"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestExtractSignature_HTTPServer",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "contains"
+    },
+    {
+      "from_file": "internal/extract/extract.go",
+      "from_func": "Extract",
+      "to_file": "internal/extract/extract.go",
+      "to_func": "extractWithLLM"
+    },
+    {
+      "from_file": "cmd/tlogic/main.go",
+      "from_func": "composeComponents",
+      "to_file": "patterns/patterns.go",
+      "to_func": "AllPatterns"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "StopSignalPattern"
+    },
+    {
+      "from_file": "internal/matcher/matcher_test.go",
+      "from_func": "TestMatchComponents_MutexExclusion",
+      "to_file": "internal/matcher/matcher_test.go",
+      "to_func": "matchRoles"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "StopSignalPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "IdentityMatrix"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "AllPatterns",
+      "to_file": "patterns/patterns.go",
+      "to_func": "FencePattern"
+    },
+    {
+      "from_file": "internal/matcher/matcher.go",
+      "from_func": "ComposeMatched",
+      "to_file": "patterns/patterns.go",
+      "to_func": "ComposeParallel"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestAdversarial_TogglePair_BrokenTransition",
+      "to_file": "patterns/patterns_test.go",
+      "to_func": "modifyTransition"
+    },
+    {
+      "from_file": "internal/tensor/tensor.go",
+      "from_func": "BlockDiagonal",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "Rows"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "MutexPattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "patterns/patterns.go",
+      "from_func": "FencePattern",
+      "to_file": "internal/tensor/tensor.go",
+      "to_func": "NewConstraintMatrix"
+    },
+    {
+      "from_file": "patterns/patterns_test.go",
+      "from_func": "TestAdversarial_LockStep_BrokenTransition",
+      "to_file": "patterns/patterns_test.go",
+      "to_func": "modifyTransition"
+    }
+  ],
+  "languages": [
+    "go"
+  ],
+  "timestamp": 1784138234.35417
+}
