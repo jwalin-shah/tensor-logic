@@ -3,3 +3,9 @@
 .jw/
 # CocoIndex Code (ccc)
 /.cocoindex_code/
+*.pem
+credentials.json
+*_rsa
+.netrc
+.env.*
+.env
