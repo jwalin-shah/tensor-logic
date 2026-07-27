@@ -211,3 +211,14 @@ invariants (counter comparison) or multi-bit state (channel capacity).
 - Lean specs for the 3 most-violated invariants
 - Generate Go property-based tests from Lean specs
 - Integrate into Bridge's verification commands
+
+## Agent skills
+
+### Issue tracker
+GitHub Issues for `jwalinshah/tensor-logic`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+Default label vocabulary: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+Single-context: CLAUDE.md + docs/adr/. See `docs/agents/domain.md`.
