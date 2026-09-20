@@ -30,3 +30,11 @@ jobs:
 
       - name: Run tests
         run: python -m pytest tests/ -v
+
+      - name: Run exp84 unlabeled-relation smoke benchmark
+        run: |
+          python experiments/exp84_unlabeled_relations.py \
+            --train-frames 200 \
+            --test-frames 100 \
+            --out /tmp/exp84-results.json
+          cat /tmp/exp84-results.json
