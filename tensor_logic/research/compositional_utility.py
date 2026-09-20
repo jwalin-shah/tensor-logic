@@ -99,8 +99,8 @@ def fit_autoencoder_relations(
         latent = torch.tanh(encoder(standardized))
         reconstructed = decoder(latent)
 
-        # Reconstruction learns useful context structure. A small variance term
-        # discourages dead channels without supplying semantic supervision.
+        # Reconstruction learns context structure. The variance term only
+        # discourages dead channels; it carries no semantic supervision.
         reconstruction_loss = F.mse_loss(
             reconstructed,
             standardized,
@@ -125,7 +125,7 @@ def pca_whitened_probabilities(
     model,
     observations: PairObservations,
 ) -> torch.Tensor:
-    """Whiten PCA channel scale before thresholding, without semantic labels."""
+    """Whiten PCA channel scale before calibration, without semantic labels."""
     standardized = (
         observations.features - model.mean
     ) / model.scale
@@ -223,10 +223,12 @@ def mapping_consistency(
 def _representation_probabilities(
     *,
     train: HiddenWorldSplit,
+    isolation: HiddenWorldSplit,
     induction: HiddenWorldSplit,
     heldout: HiddenWorldSplit,
     random_seed: int,
-) -> dict[str, tuple[torch.Tensor, torch.Tensor]]:
+) -> dict[str, tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+    """Fit on train only; return isolation, induction, and heldout projections."""
     pca = fit_pca_relations(train.observations)
     kmeans = fit_kmeans_relations(train.observations)
     autoencoder = fit_autoencoder_relations(
@@ -236,10 +238,15 @@ def _representation_probabilities(
 
     return {
         "pca": (
+            pca.transform(isolation.observations),
             pca.transform(induction.observations),
             pca.transform(heldout.observations),
         ),
         "pca_whitened": (
+            pca_whitened_probabilities(
+                pca,
+                isolation.observations,
+            ),
             pca_whitened_probabilities(
                 pca,
                 induction.observations,
@@ -250,21 +257,27 @@ def _representation_probabilities(
             ),
         ),
         "kmeans": (
+            kmeans.transform(isolation.observations),
             kmeans.transform(induction.observations),
             kmeans.transform(heldout.observations),
         ),
         "autoencoder": (
+            autoencoder.transform(isolation.observations),
             autoencoder.transform(induction.observations),
             autoencoder.transform(heldout.observations),
         ),
         "random": (
             random_relation_channels(
-                induction.observations,
+                isolation.observations,
                 seed=random_seed,
             ),
             random_relation_channels(
-                heldout.observations,
+                induction.observations,
                 seed=random_seed + 1,
+            ),
+            random_relation_channels(
+                heldout.observations,
+                seed=random_seed + 2,
             ),
         ),
     }
@@ -283,33 +296,59 @@ def _remove_object(
     return result
 
 
-def _off_diagonal_accuracy(
+def _binary_f1(
     prediction: torch.Tensor,
     target: torch.Tensor,
 ) -> float:
-    mask = ~torch.eye(
-        prediction.shape[0],
-        dtype=torch.bool,
+    prediction = (prediction > 0).float().reshape(-1)
+    target = (target > 0).float().reshape(-1)
+    tp = (prediction * target).sum().item()
+    fp = (prediction * (1 - target)).sum().item()
+    fn = ((1 - prediction) * target).sum().item()
+    precision = tp / max(tp + fp, 1e-9)
+    recall = tp / max(tp + fn, 1e-9)
+    return 2 * precision * recall / max(
+        precision + recall,
+        1e-9,
     )
-    left = (prediction[mask] > 0).float()
-    right = (target[mask] > 0).float()
-    return float((left == right).float().mean().item())
 
 
-def counterfactual_retraction_accuracy(
+def counterfactual_retraction_metrics(
     *,
     candidate: list[str] | None,
     learned_worlds: list[dict[str, torch.Tensor]],
     hidden_worlds: list[dict[str, torch.Tensor]],
     target_body: tuple[str, str],
     object_index: int = 2,
-) -> float:
-    """Remove one object's facts and compare derived consequences."""
-    if not candidate:
-        return 0.0
+) -> dict:
+    """Score consequences after removing one object, including the retraction delta.
 
-    accuracies = []
+    Delta F1 avoids the sparse-negative inflation of raw accuracy: it asks whether
+    the consequences that disappear after intervention are the consequences that
+    should disappear.
+    """
+    if not candidate:
+        return {
+            "retracted_f1": 0.0,
+            "delta_f1": 0.0,
+            "active_retraction_worlds": 0,
+        }
+
+    predicted_retracted = []
+    target_retracted = []
+    predicted_delta = []
+    target_delta = []
+    active_worlds = 0
+
     for learned, hidden in zip(learned_worlds, hidden_worlds):
+        full_prediction = _apply_candidate(
+            candidate,
+            learned,
+        )
+        full_target = _apply_candidate(
+            list(target_body),
+            hidden,
+        )
         learned_retracted = _remove_object(
             learned,
             object_index,
@@ -318,27 +357,40 @@ def counterfactual_retraction_accuracy(
             hidden,
             object_index,
         )
-
-        prediction = _apply_candidate(
+        retracted_prediction = _apply_candidate(
             candidate,
             learned_retracted,
         )
-        target = _apply_candidate(
+        retracted_target = _apply_candidate(
             list(target_body),
             hidden_retracted,
         )
-        accuracies.append(
-            _off_diagonal_accuracy(
-                prediction,
-                target,
-            )
-        )
 
-    return (
-        sum(accuracies) / len(accuracies)
-        if accuracies
-        else 0.0
-    )
+        p_delta = (
+            full_prediction != retracted_prediction
+        ).float()
+        t_delta = (
+            full_target != retracted_target
+        ).float()
+        if bool(t_delta.any().item()):
+            active_worlds += 1
+
+        predicted_retracted.append(retracted_prediction)
+        target_retracted.append(retracted_target)
+        predicted_delta.append(p_delta)
+        target_delta.append(t_delta)
+
+    return {
+        "retracted_f1": _binary_f1(
+            torch.block_diag(*predicted_retracted),
+            torch.block_diag(*target_retracted),
+        ),
+        "delta_f1": _binary_f1(
+            torch.block_diag(*predicted_delta),
+            torch.block_diag(*target_delta),
+        ),
+        "active_retraction_worlds": active_worlds,
+    }
 
 
 def _apply_candidate(
@@ -372,6 +424,7 @@ def _noise_stability(
 ) -> dict:
     curve = {}
     failure_point = None
+    baseline_passes = False
 
     for index, noise in enumerate((0.0, 0.05, 0.10, 0.20, 0.30)):
         noisy_worlds = corrupt_worlds(
@@ -379,14 +432,9 @@ def _noise_stability(
             noise=noise,
             seed=seed_offset + index,
         )
-        condition = AnonymousCondition(
-            name=f"noise_{noise:.2f}",
-            induction_base={},
-            heldout_base=_block_diagonal(noisy_worlds),
-        )
         evaluation = evaluate_body(
             candidate,
-            condition.heldout_base,
+            _block_diagonal(noisy_worlds),
             heldout_target,
             threshold=admission_threshold,
         )
@@ -394,15 +442,19 @@ def _noise_stability(
             "heldout_f1": evaluation["heldout_f1"],
             "accepted": evaluation["accepted"],
         }
-        if (
-            failure_point is None
+        if noise == 0.0:
+            baseline_passes = evaluation["accepted"]
+        elif (
+            baseline_passes
+            and failure_point is None
             and not evaluation["accepted"]
         ):
             failure_point = noise
 
     return {
         "curve": curve,
-        "failure_point": failure_point,
+        "baseline_passes": baseline_passes,
+        "failure_point_after_clean_pass": failure_point,
     }
 
 
@@ -445,22 +497,37 @@ def _oracle_condition(
 
 def run_compositional_utility_benchmark(
     *,
-    train_frames: int = 180,
+    train_frames: int = 200,
+    isolation_frames: int = 100,
     induction_frames: int = 80,
     heldout_frames: int = 80,
     train_seed: int = 11,
-    induction_seed: int = 22,
+    isolation_seed: int = 22,
+    induction_seed: int = 33,
     heldout_seed: int = 44,
-    random_seed: int = 99,
+    random_seed: int = 33,
     admission_threshold: float = 0.70,
 ) -> dict:
     """Measure isolated and compositional utility as separate evidence vectors."""
-    if len({train_seed, induction_seed, heldout_seed}) != 3:
-        raise ValueError("train, induction, and heldout seeds must differ")
+    if len(
+        {
+            train_seed,
+            isolation_seed,
+            induction_seed,
+            heldout_seed,
+        }
+    ) != 4:
+        raise ValueError(
+            "train, isolation, induction, and heldout seeds must differ"
+        )
 
     train = generate_hidden_world_split(
         n_frames=train_frames,
         seed=train_seed,
+    )
+    isolation = generate_hidden_world_split(
+        n_frames=isolation_frames,
+        seed=isolation_seed,
     )
     induction = generate_hidden_world_split(
         n_frames=induction_frames,
@@ -471,8 +538,9 @@ def run_compositional_utility_benchmark(
         seed=heldout_seed,
     )
 
-    probability_pairs = _representation_probabilities(
+    probability_triples = _representation_probabilities(
         train=train,
+        isolation=isolation,
         induction=induction,
         heldout=heldout,
         random_seed=random_seed,
@@ -482,15 +550,21 @@ def run_compositional_utility_benchmark(
     representation_results = {}
     for method_index, (
         method,
-        (induction_probabilities, heldout_probabilities),
-    ) in enumerate(probability_pairs.items()):
-        isolated = evaluate_anonymous_channels(
+        (
+            isolation_probabilities,
+            induction_probabilities,
             heldout_probabilities,
-            heldout.evaluation,
+        ),
+    ) in enumerate(probability_triples.items()):
+        # This split deliberately reproduces exp84's train/test seeds for the
+        # PCA/k-means isolated-recovery comparison.
+        isolated = evaluate_anonymous_channels(
+            isolation_probabilities,
+            isolation.evaluation,
         )
         calibration = evaluator_calibration(
-            heldout_probabilities,
-            heldout.evaluation,
+            isolation_probabilities,
+            isolation.evaluation,
         )
         consistency = mapping_consistency(
             induction_probabilities,
@@ -518,7 +592,8 @@ def run_compositional_utility_benchmark(
 
         target_results = {}
         accepted_rules = 0
-        counterfactual_scores = []
+        counterfactual_delta_scores = []
+        counterfactual_retracted_scores = []
         noise_failure_points = []
 
         for target_name, target_body in TARGETS.items():
@@ -539,13 +614,18 @@ def run_compositional_utility_benchmark(
             if composition["accepted"]:
                 accepted_rules += 1
 
-            counterfactual = counterfactual_retraction_accuracy(
+            counterfactual = counterfactual_retraction_metrics(
                 candidate=composition["candidate"],
                 learned_worlds=heldout_worlds,
                 hidden_worlds=hidden_heldout_worlds,
                 target_body=target_body,
             )
-            counterfactual_scores.append(counterfactual)
+            counterfactual_delta_scores.append(
+                counterfactual["delta_f1"]
+            )
+            counterfactual_retracted_scores.append(
+                counterfactual["retracted_f1"]
+            )
 
             noise = _noise_stability(
                 candidate=composition["candidate"],
@@ -554,15 +634,18 @@ def run_compositional_utility_benchmark(
                 admission_threshold=admission_threshold,
                 seed_offset=1000 + 100 * method_index,
             )
-            if noise["failure_point"] is not None:
+            if (
+                noise["failure_point_after_clean_pass"]
+                is not None
+            ):
                 noise_failure_points.append(
-                    noise["failure_point"]
+                    noise["failure_point_after_clean_pass"]
                 )
 
             target_results[target_name] = {
                 "target_body_evaluator_only": list(target_body),
                 **composition,
-                "counterfactual_retraction_accuracy": counterfactual,
+                "counterfactual_retraction": counterfactual,
                 "noise_stability": noise,
             }
 
@@ -576,11 +659,15 @@ def run_compositional_utility_benchmark(
                 item["heldout_f1"]
                 for item in target_results.values()
             ) / len(target_results),
-            "mean_counterfactual_retraction_accuracy": (
-                sum(counterfactual_scores)
-                / len(counterfactual_scores)
+            "mean_counterfactual_delta_f1": (
+                sum(counterfactual_delta_scores)
+                / len(counterfactual_delta_scores)
             ),
-            "earliest_noise_failure": (
+            "mean_counterfactual_retracted_f1": (
+                sum(counterfactual_retracted_scores)
+                / len(counterfactual_retracted_scores)
+            ),
+            "earliest_noise_failure_after_clean_pass": (
                 min(noise_failure_points)
                 if noise_failure_points
                 else None
@@ -636,15 +723,20 @@ def run_compositional_utility_benchmark(
 
     autoencoder = representation_results["autoencoder"]
     pca = representation_results["pca"]
+    blocked_path_f1 = pca["targets"]["blocked_path"][
+        "heldout_f1"
+    ]
     if (
         autoencoder["mean_compositional_f1"]
         < pca["mean_compositional_f1"]
     ):
         next_hypothesis = (
-            "Reconstruction-only latent learning is insufficient for "
-            "compositional utility; add an unlabeled algebraic-consistency "
-            "objective over transposition, multi-hop closure, and temporal "
-            "persistence without exposing semantic relation labels."
+            "Reconstruction-only latent learning is insufficient. The next "
+            "representation objective should preserve anonymous algebraic "
+            "structure (inverse/transposition and multi-hop closure) while "
+            "also retaining sparse local-contact structure: PCA composes "
+            f"directional relations but reaches only {blocked_path_f1:.3f} "
+            "F1 on touching-to-above composition."
         )
     else:
         next_hypothesis = (
@@ -656,9 +748,11 @@ def run_compositional_utility_benchmark(
     return {
         "config": {
             "train_frames": train_frames,
+            "isolation_frames": isolation_frames,
             "induction_frames": induction_frames,
             "heldout_frames": heldout_frames,
             "train_seed": train_seed,
+            "isolation_seed": isolation_seed,
             "induction_seed": induction_seed,
             "heldout_seed": heldout_seed,
             "random_seed": random_seed,
