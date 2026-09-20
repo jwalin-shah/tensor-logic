@@ -85,6 +85,7 @@ class SparseWorldTensor:
             tuple[str, ...], CoordinateProvenance
         ] = {}
         self._sparse_cache: torch.Tensor | None = None
+        self._revision: int = 0
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -109,6 +110,14 @@ class SparseWorldTensor:
         self.invalidate_cache()
 
     @property
+    def revision(self) -> int:
+        return self._revision
+
+    @property
+    def revision_token(self) -> str:
+        return f"{self.name}:{self._revision}:{self.shape}"
+
+    @property
     def nnz(self) -> int:
         return sum(1 for value in self._values.values() if value != 0.0)
 
@@ -124,6 +133,7 @@ class SparseWorldTensor:
         self._provenance.pop(coordinate, None)
         if existed:
             self.invalidate_cache()
+            self._revision += 1
         return existed
 
     def invalidate_cache(self) -> None:
@@ -278,6 +288,7 @@ class TensorWorld:
                 for axis in tensor.axes
             )
             tensor.invalidate_cache()
+            tensor._revision += 1
         return replacement
 
     def add_tensor(
