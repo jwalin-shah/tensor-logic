@@ -47,3 +47,12 @@ jobs:
             --heldout-frames 50 \
             --out /tmp/exp85-results.json
           cat /tmp/exp85-results.json
+
+      - name: Run exp86 compositional-utility benchmark
+        run: |
+          python experiments/exp86_compositional_utility.py \
+            --train-frames 120 \
+            --induction-frames 60 \
+            --heldout-frames 60 \
+            --out /tmp/exp86-results.json
+          cat /tmp/exp86-results.json
