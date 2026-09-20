@@ -191,6 +191,94 @@ class Conjecturer:
         )
         self.body_index = {body: i for i, body in enumerate(self.body_keys)}
 
+    def propose_from_examples(
+        self,
+        positive: list[tuple[int, int]],
+        negative: list[tuple[int, int]],
+        *,
+        target: Optional[torch.Tensor] = None,
+    ) -> dict:
+        """Rank candidates against caller-supplied examples.
+
+        This is the reusable path for research settings where valid examples
+        occupy a constrained subspace (for example, block-diagonal worlds).
+        The caller chooses examples; the Conjecturer still owns candidate
+        enumeration, scoring, and deterministic tie-breaking.
+        """
+        if not positive:
+            return {
+                "body": None,
+                "f1": 0.0,
+                "example_f1": 0.0,
+                "scores": {},
+            }
+
+        pos_i = torch.tensor(
+            [pair[0] for pair in positive],
+            dtype=torch.long,
+        )
+        pos_j = torch.tensor(
+            [pair[1] for pair in positive],
+            dtype=torch.long,
+        )
+        neg_i = torch.tensor(
+            [pair[0] for pair in negative],
+            dtype=torch.long,
+        )
+        neg_j = torch.tensor(
+            [pair[1] for pair in negative],
+            dtype=torch.long,
+        )
+
+        tp = self.pred_stack[:, pos_i, pos_j].sum(dim=1)
+        if negative:
+            fp = self.pred_stack[:, neg_i, neg_j].sum(dim=1)
+        else:
+            fp = torch.zeros_like(tp)
+        fn = len(positive) - tp
+        precision = tp / (tp + fp).clamp_min(1e-9)
+        recall = tp / (tp + fn).clamp_min(1e-9)
+        scores = (
+            2
+            * precision
+            * recall
+            / (precision + recall).clamp_min(1e-9)
+        )
+
+        best_score = float(scores.max().item())
+        best_indices = (
+            scores == scores.max()
+        ).nonzero().flatten().tolist()
+        best_idx = min(
+            best_indices,
+            key=lambda idx: (
+                len(
+                    {
+                        rel.rstrip("^T")
+                        for rel in self.body_keys[idx]
+                    }
+                ),
+                len(self.body_keys[idx]),
+                self.body_keys[idx],
+            ),
+        )
+        best_key = self.body_keys[best_idx]
+        prediction = self.pred_stack[best_idx]
+
+        return {
+            "body": list(best_key),
+            "f1": (
+                compute_f1(prediction, target)
+                if target is not None
+                else best_score
+            ),
+            "example_f1": best_score,
+            "scores": {
+                "|".join(body): float(scores[idx].item())
+                for idx, body in enumerate(self.body_keys)
+            },
+        }
+
     def propose(self, target: torch.Tensor, *, step: int) -> dict:
         """Return the majority-vote candidate for one target tensor."""
         votes: dict[tuple[str, ...], int] = {}
