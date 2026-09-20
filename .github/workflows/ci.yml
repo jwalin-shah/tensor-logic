@@ -74,3 +74,24 @@ jobs:
           ] is True
           print(json.dumps(data, indent=2, sort_keys=True))
           PY
+
+      - name: Run exp97 adaptable attention proof
+        run: |
+          python experiments/exp97_attention_queue.py \
+            --out /tmp/exp97-results.json
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/exp97-results.json"))
+          assert data["hard_fact"]["unresolved_followup_person_a"] is True
+          assert data["world_mutated_by_policy"] is False
+          default_order = [
+              item["person_id"]
+              for item in data["default_policy"]["queue"]
+          ]
+          relationship_order = [
+              item["person_id"]
+              for item in data["relationship_first_policy"]["queue"]
+          ]
+          assert default_order != relationship_order
+          print(json.dumps(data, indent=2, sort_keys=True))
+          PY
