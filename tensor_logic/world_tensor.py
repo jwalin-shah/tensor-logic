@@ -84,6 +84,7 @@ class SparseWorldTensor:
         self._provenance: dict[
             tuple[str, ...], CoordinateProvenance
         ] = {}
+        self._sparse_cache: torch.Tensor | None = None
 
     @property
     def shape(self) -> tuple[int, ...]:
@@ -105,6 +106,7 @@ class SparseWorldTensor:
         self._values[coordinate] = numeric
         if provenance is not None:
             self._provenance[coordinate] = provenance
+        self.invalidate_cache()
 
     @property
     def nnz(self) -> int:
@@ -120,7 +122,12 @@ class SparseWorldTensor:
         existed = coordinate in self._values
         self._values.pop(coordinate, None)
         self._provenance.pop(coordinate, None)
+        if existed:
+            self.invalidate_cache()
         return existed
+
+    def invalidate_cache(self) -> None:
+        self._sparse_cache = None
 
     def provenance(
         self,
@@ -143,6 +150,9 @@ class SparseWorldTensor:
         return tensor
 
     def sparse(self) -> torch.Tensor:
+        if self._sparse_cache is not None:
+            return self._sparse_cache
+
         nonzero = [
             (coordinate, value)
             for coordinate, value in sorted(self._values.items())
@@ -169,11 +179,13 @@ class SparseWorldTensor:
                 [value for _, value in nonzero],
                 dtype=torch.float32,
             )
-        return torch.sparse_coo_tensor(
+        result = torch.sparse_coo_tensor(
             indices,
             values,
             size=self.shape,
         ).coalesce()
+        self._sparse_cache = result
+        return result
 
     @property
     def digest(self) -> str:
@@ -265,6 +277,7 @@ class TensorWorld:
                 replacement if axis.name == name else axis
                 for axis in tensor.axes
             )
+            tensor.invalidate_cache()
         return replacement
 
     def add_tensor(
