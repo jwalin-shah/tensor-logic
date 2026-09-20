@@ -106,9 +106,21 @@ class SparseWorldTensor:
         if provenance is not None:
             self._provenance[coordinate] = provenance
 
+    @property
+    def nnz(self) -> int:
+        return sum(1 for value in self._values.values() if value != 0.0)
+
     def get(self, coordinate: tuple[str, ...]) -> float:
         self._validate_coordinate(coordinate)
         return self._values.get(coordinate, 0.0)
+
+    def remove(self, coordinate: tuple[str, ...]) -> bool:
+        """Remove one coordinate and its provenance for incremental retraction."""
+        self._validate_coordinate(coordinate)
+        existed = coordinate in self._values
+        self._values.pop(coordinate, None)
+        self._provenance.pop(coordinate, None)
+        return existed
 
     def provenance(
         self,
@@ -227,6 +239,33 @@ class TensorWorld:
             )
         self.axes[name] = axis
         return axis
+
+    def extend_axis(
+        self,
+        name: str,
+        symbols: Iterable[str],
+    ) -> TensorAxis:
+        """Append new symbols while preserving existing tensor coordinates."""
+        if name not in self.axes:
+            raise ValueError(f"unknown axis: {name}")
+        old = self.axes[name]
+        merged = tuple(sorted(set(old.symbols).union(symbols)))
+        if merged == old.symbols:
+            return old
+
+        replacement = TensorAxis(
+            name=old.name,
+            entity_type=old.entity_type,
+            symbols=merged,
+        )
+        self.axes[name] = replacement
+
+        for tensor in self.tensors.values():
+            tensor.axes = tuple(
+                replacement if axis.name == name else axis
+                for axis in tensor.axes
+            )
+        return replacement
 
     def add_tensor(
         self,
