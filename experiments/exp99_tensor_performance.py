@@ -271,6 +271,70 @@ def benchmark_generic_context():
     return timing
 
 
+def benchmark_incremental_updates(world, attends, event_topic):
+    new_events = tuple(f"e{i}" for i in range(10000, 11000))
+
+    start = time.perf_counter()
+    world.extend_axis("Event", new_events)
+    extend_ms = (time.perf_counter() - start) * 1000.0
+
+    people = world.axes["Person"].symbols
+    topics = world.axes["Topic"].symbols
+
+    start = time.perf_counter()
+    inserted = 0
+    for local_index, event in enumerate(new_events):
+        event_index = 10000 + local_index
+        for offset in range(10):
+            person_index = (
+                event_index * 17 + offset * 101
+            ) % len(people)
+            attends.set(
+                (people[person_index], event),
+                1.0,
+            )
+            inserted += 1
+        event_topic.set(
+            (event, topics[event_index % len(topics)]),
+            1.0,
+        )
+        inserted += 1
+    insert_ms = (time.perf_counter() - start) * 1000.0
+
+    start = time.perf_counter()
+    retracted = 0
+    for event_index in range(100):
+        event = f"e{event_index}"
+        for offset in range(10):
+            person_index = (
+                event_index * 17 + offset * 101
+            ) % len(people)
+            if attends.remove((people[person_index], event)):
+                retracted += 1
+    retract_ms = (time.perf_counter() - start) * 1000.0
+
+    return {
+        "new_axis_symbols": len(new_events),
+        "inserted_coordinates": inserted,
+        "retracted_coordinates": retracted,
+        "axis_extend_ms": extend_ms,
+        "insert_ms": insert_ms,
+        "retract_ms": retract_ms,
+        "inserts_per_second": (
+            inserted / (insert_ms / 1000.0)
+            if insert_ms > 0
+            else None
+        ),
+        "retractions_per_second": (
+            retracted / (retract_ms / 1000.0)
+            if retract_ms > 0
+            else None
+        ),
+        "final_attends_nnz": attends.nnz,
+        "final_event_topic_nnz": event_topic.nnz,
+    }
+
+
 def benchmark_cognitive_trace():
     def build():
         trace = CognitiveProgramTrace("benchmark-trace")
@@ -366,6 +430,11 @@ def main():
         "attention_scoring": benchmark_scoring(),
         "generic_context": benchmark_generic_context(),
         "cognitive_trace": benchmark_cognitive_trace(),
+        "incremental_updates": benchmark_incremental_updates(
+            world,
+            attends,
+            event_topic,
+        ),
         "process_max_rss_kb": resource.getrusage(
             resource.RUSAGE_SELF
         ).ru_maxrss,
@@ -412,6 +481,16 @@ def main():
     print(
         "500-step trace digest: "
         f"{result['cognitive_trace']['digest']['median_ms']:.2f} ms"
+    )
+    print(
+        "incremental 11k inserts: "
+        f"{result['incremental_updates']['insert_ms']:.2f} ms "
+        f"({result['incremental_updates']['inserts_per_second']:.0f}/s)"
+    )
+    print(
+        "incremental 1k retractions: "
+        f"{result['incremental_updates']['retract_ms']:.2f} ms "
+        f"({result['incremental_updates']['retractions_per_second']:.0f}/s)"
     )
     print(
         "max RSS: "
