@@ -451,17 +451,9 @@ def _build_value(
 def _first_path_segment(remainder: str) -> str | None:
     if not remainder or remainder.startswith("["):
         return None
-    depth = 0
     for index, char in enumerate(remainder):
-        if char == "[":
-            depth += 1
-        elif char == "]":
-            depth -= 1
-        elif char == "." and depth == 0:
+        if char in {".", "["}:
             return remainder[:index]
-    bracket = remainder.find("[")
-    if bracket >= 0:
-        return remainder[:bracket]
     return remainder
 
 
