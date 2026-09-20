@@ -9,13 +9,15 @@ from tensor_logic.research.unlabeled_relations import (
 
 def _small_benchmark():
     return run_compositional_utility_benchmark(
-        train_frames=120,
+        train_frames=200,
+        isolation_frames=100,
         induction_frames=60,
         heldout_frames=60,
         train_seed=11,
-        induction_seed=22,
+        isolation_seed=22,
+        induction_seed=33,
         heldout_seed=44,
-        random_seed=99,
+        random_seed=33,
         admission_threshold=0.70,
     )
 
@@ -74,11 +76,29 @@ def test_representation_report_separates_isolated_and_compositional_order():
         assert 0.0 <= metrics["isolated_matched_f1"] <= 1.0
         assert 0.0 <= metrics["mean_compositional_f1"] <= 1.0
         assert 0.0 <= metrics[
-            "mean_counterfactual_retraction_accuracy"
+            "mean_counterfactual_delta_f1"
+        ] <= 1.0
+        assert 0.0 <= metrics[
+            "mean_counterfactual_retracted_f1"
         ] <= 1.0
         assert "matched_brier" in metrics
         assert "cross_world_consistency" in metrics
-        assert "earliest_noise_failure" in metrics
+        assert "earliest_noise_failure_after_clean_pass" in metrics
+
+
+def test_counterfactual_metric_tracks_retraction_delta_not_sparse_accuracy():
+    result = _small_benchmark()
+
+    for metrics in result["representations"].values():
+        for target in metrics["targets"].values():
+            retraction = target["counterfactual_retraction"]
+            assert set(retraction) == {
+                "retracted_f1",
+                "delta_f1",
+                "active_retraction_worlds",
+            }
+            assert 0.0 <= retraction["delta_f1"] <= 1.0
+            assert retraction["active_retraction_worlds"] >= 0
 
 
 def test_semantic_labels_stay_out_of_representation_fit():
