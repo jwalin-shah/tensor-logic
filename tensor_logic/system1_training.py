@@ -149,6 +149,27 @@ def evaluate_structured_baseline(
     )
 
 
+
+def teacher_tensors(
+    pairs: Sequence[PairedDecisionCases],
+    *,
+    split: str,
+) -> dict[str, torch.Tensor]:
+    """Public teacher-distribution tensors for alternate feature baselines."""
+    _, teachers = _training_tensors(pairs, split=split)
+    if not teachers:
+        raise ValueError(f"no cases for split {split!r}")
+    return teachers
+
+
+def soft_teacher_loss(
+    outputs: dict[str, torch.Tensor],
+    teachers: dict[str, torch.Tensor],
+) -> torch.Tensor:
+    """Public shared loss so all baselines optimize identical targets."""
+    return _soft_teacher_loss(outputs, teachers)
+
+
 def _training_tensors(
     pairs: Sequence[PairedDecisionCases],
     *,
