@@ -224,7 +224,7 @@ class MiniJevBackend:
                     if p_true >= 0.5
                     else question.labels[0]
                 )
-                confidence = row.confidence
+                confidence = max(p_true, 1.0 - p_true)
 
             results.append(
                 DecisionResult(
