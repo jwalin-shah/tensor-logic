@@ -95,3 +95,18 @@ jobs:
           assert default_order != relationship_order
           print(json.dumps(data, indent=2, sort_keys=True))
           PY
+
+      - name: Run exp98 world tensor and cognition proof
+        run: |
+          python experiments/exp98_world_cognition.py \
+            --out /tmp/exp98-results.json
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/exp98-results.json"))
+          assert data["travel_tensor_coordinate"]["minutes"] == 43.0
+          assert data["hard_derivations"]["unresolved_followup"] is True
+          assert data["hard_derivations"]["infeasible_transition"] is True
+          assert data["attention_ranking"][0] == "person_a"
+          assert data["cognitive_program"]["process_digest"]
+          print(json.dumps(data, indent=2, sort_keys=True))
+          PY
