@@ -108,6 +108,7 @@ class SparseWorldTensor:
         if provenance is not None:
             self._provenance[coordinate] = provenance
         self.invalidate_cache()
+        self._revision += 1
 
     @property
     def revision(self) -> int:
