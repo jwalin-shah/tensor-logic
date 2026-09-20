@@ -21,6 +21,8 @@ def _context():
                     "tags": ["friend", "research"],
                     "metadata": {
                         "a.b": 3,
+                        "x[y]": "brackets",
+                        "tilde~key": "tilde",
                         "empty": {},
                     },
                 }
@@ -84,6 +86,8 @@ def test_generic_projection_keeps_scalar_types_distinct():
     assert ("$.active", "bool") in types
     assert ("$.nickname", "null") in types
     assert ("$.metadata.a~1b", "int") in types
+    assert ("$.metadata.x~2y~3", "string") in types
+    assert ("$.metadata.tilde~0key", "string") in types
 
 
 def test_generic_projection_is_reproducible():
