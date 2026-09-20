@@ -38,3 +38,12 @@ jobs:
             --test-frames 100 \
             --out /tmp/exp84-results.json
           cat /tmp/exp84-results.json
+
+      - name: Run exp85 anonymous-composition smoke benchmark
+        run: |
+          python experiments/exp85_anonymous_composition.py \
+            --train-frames 120 \
+            --induction-frames 50 \
+            --heldout-frames 50 \
+            --out /tmp/exp85-results.json
+          cat /tmp/exp85-results.json
