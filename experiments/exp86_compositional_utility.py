@@ -30,7 +30,8 @@ def current_commit() -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train-frames", type=int, default=180)
+    parser.add_argument("--train-frames", type=int, default=200)
+    parser.add_argument("--isolation-frames", type=int, default=100)
     parser.add_argument("--induction-frames", type=int, default=80)
     parser.add_argument("--heldout-frames", type=int, default=80)
     parser.add_argument(
@@ -41,6 +42,7 @@ def main() -> None:
 
     result = run_compositional_utility_benchmark(
         train_frames=args.train_frames,
+        isolation_frames=args.isolation_frames,
         induction_frames=args.induction_frames,
         heldout_frames=args.heldout_frames,
     )
@@ -70,17 +72,21 @@ def main() -> None:
         print(
             f"{name:>12}: isolated={metrics['isolated_matched_f1']:.4f} "
             f"composition={metrics['mean_compositional_f1']:.4f} "
-            f"counterfactual={metrics['mean_counterfactual_retraction_accuracy']:.4f} "
+            f"retraction_delta={metrics['mean_counterfactual_delta_f1']:.4f} "
+            f"retracted_f1={metrics['mean_counterfactual_retracted_f1']:.4f} "
             f"brier={metrics['matched_brier']:.4f} "
             f"accepted_rules={metrics['accepted_rule_count']} "
-            f"noise_fail={metrics['earliest_noise_failure']}"
+            "noise_fail="
+            f"{metrics['earliest_noise_failure_after_clean_pass']}"
         )
         for target_name, target in metrics["targets"].items():
+            retraction = target["counterfactual_retraction"]
             print(
                 f"    {target_name}: body={target['candidate']} "
                 f"heldout_f1={target['heldout_f1']:.4f} "
                 f"accepted={target['accepted']} "
-                f"retraction={target['counterfactual_retraction_accuracy']:.4f}"
+                f"delta_f1={retraction['delta_f1']:.4f} "
+                f"active_retractions={retraction['active_retraction_worlds']}"
             )
 
     print("next hypothesis:")
