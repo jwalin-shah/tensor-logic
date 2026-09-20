@@ -12,9 +12,10 @@ digests actually change; unrelated/intermediate-clean views remain reusable.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 import hashlib
 import json
+from enum import Enum
 from typing import Any, Callable, Mapping
 
 import torch
@@ -203,11 +204,11 @@ def value_digest(value: Any) -> str:
         return _json_digest(payload)
 
     try:
-        return _json_digest(value)
+        return _json_digest(_canonical_json_value(value))
     except (TypeError, ValueError) as exc:
         raise TypeError(
             "materialized values must expose a deterministic digest, "
-            "be a torch.Tensor, or be JSON-serializable"
+            "be a torch.Tensor, dataclass/container, or be JSON-serializable"
         ) from exc
 
 
@@ -230,6 +231,43 @@ def primitive_artifact(
             }
         ),
     )
+
+
+def _canonical_json_value(value: Any) -> Any:
+    if is_dataclass(value):
+        return {
+            "__dataclass__": (
+                f"{value.__class__.__module__}.{value.__class__.__qualname__}"
+            ),
+            "fields": _canonical_json_value(asdict(value)),
+        }
+    if isinstance(value, Enum):
+        return {
+            "__enum__": (
+                f"{value.__class__.__module__}.{value.__class__.__qualname__}"
+            ),
+            "value": _canonical_json_value(value.value),
+        }
+    if isinstance(value, Mapping):
+        return {
+            str(key): _canonical_json_value(item)
+            for key, item in sorted(
+                value.items(),
+                key=lambda pair: str(pair[0]),
+            )
+        }
+    if isinstance(value, (tuple, list)):
+        return [_canonical_json_value(item) for item in value]
+    if isinstance(value, (set, frozenset)):
+        return sorted(
+            (_canonical_json_value(item) for item in value),
+            key=lambda item: json.dumps(
+                item,
+                sort_keys=True,
+                separators=(",", ":"),
+            ),
+        )
+    return value
 
 
 def _json_digest(value: Any) -> str:
