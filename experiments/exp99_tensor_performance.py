@@ -101,22 +101,30 @@ def benchmark_point_lookup(attends):
 
 
 def benchmark_sparse_compose(attends, event_topic):
-    materialize_timing, pair = timed(
+    attends.invalidate_cache()
+    event_topic.invalidate_cache()
+
+    cold_materialize_timing, pair = timed(
         lambda: (attends.sparse(), event_topic.sparse()),
-        repeats=3,
+        repeats=1,
     )
     left, right = pair
+
+    cached_materialize_timing, _ = timed(
+        lambda: (attends.sparse(), event_topic.sparse()),
+        repeats=10,
+    )
 
     pure_timing, pure_product = timed(
         lambda: torch.sparse.mm(left, right).coalesce(),
         repeats=5,
     )
-    api_timing, api_product = timed(
+    cached_api_timing, api_product = timed(
         lambda: sparse_binary_compose(
             attends,
             event_topic,
         ),
-        repeats=3,
+        repeats=5,
     )
     if pure_product.shape != torch.Size([1000, 200]):
         raise AssertionError("unexpected composition shape")
@@ -130,9 +138,10 @@ def benchmark_sparse_compose(attends, event_topic):
         },
         "output_shape": list(pure_product.shape),
         "output_nnz": pure_product._nnz(),
-        "materialize": materialize_timing,
+        "cold_materialize": cold_materialize_timing,
+        "cached_materialize": cached_materialize_timing,
         "pure_sparse_mm": pure_timing,
-        "api_path_including_materialization": api_timing,
+        "cached_api_path": cached_api_timing,
     }
 
 
@@ -273,6 +282,7 @@ def benchmark_generic_context():
 
 def benchmark_incremental_updates(world, attends, event_topic):
     new_events = tuple(f"e{i}" for i in range(10000, 11000))
+    retract_coordinates = attends.coordinates()[:1000]
 
     start = time.perf_counter()
     world.extend_axis("Event", new_events)
@@ -303,14 +313,9 @@ def benchmark_incremental_updates(world, attends, event_topic):
 
     start = time.perf_counter()
     retracted = 0
-    for event_index in range(100):
-        event = f"e{event_index}"
-        for offset in range(10):
-            person_index = (
-                event_index * 17 + offset * 101
-            ) % len(people)
-            if attends.remove((people[person_index], event)):
-                retracted += 1
+    for coordinate in retract_coordinates:
+        if attends.remove(coordinate):
+            retracted += 1
     retract_ms = (time.perf_counter() - start) * 1000.0
 
     return {
@@ -455,12 +460,20 @@ def main():
         f"({result['point_lookup']['microseconds_per_lookup']:.3f} us)"
     )
     print(
+        "sparse materialize cold: "
+        f"{result['sparse_composition']['cold_materialize']['median_ms']:.2f} ms"
+    )
+    print(
+        "sparse materialize cached: "
+        f"{result['sparse_composition']['cached_materialize']['median_ms']:.4f} ms"
+    )
+    print(
         "sparse A@B pure: "
         f"{result['sparse_composition']['pure_sparse_mm']['median_ms']:.2f} ms"
     )
     print(
-        "sparse A@B API incl materialization: "
-        f"{result['sparse_composition']['api_path_including_materialization']['median_ms']:.2f} ms"
+        "sparse A@B cached API: "
+        f"{result['sparse_composition']['cached_api_path']['median_ms']:.2f} ms"
     )
     print(
         "score 10k candidates: "
