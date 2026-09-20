@@ -141,7 +141,13 @@ def execute_materialized_dag(
         artifact = VersionedArtifact(
             name=view_name,
             value=value,
-            digest=value_digest(value),
+            digest=_json_digest(
+                {
+                    "view_digest": view.digest,
+                    "input_digests": list(input_digests),
+                    "value_digest": value_digest(value),
+                }
+            ),
         )
         cache.put(
             CachedDerivedArtifact(
