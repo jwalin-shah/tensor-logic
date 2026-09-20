@@ -1,0 +1,33 @@
+name: Tensor Performance
+
+on:
+  push:
+    branches:
+      - "research-os/world-tensors-v2"
+
+jobs:
+  benchmark:
+    name: exp99 CPU benchmark
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+          python -m pip install "scipy>=1.11"
+
+      - name: Run exp99 tensor performance benchmark
+        run: |
+          python experiments/exp99_tensor_performance.py \
+            --out /tmp/exp99-results.json
+          cat /tmp/exp99-results.json
