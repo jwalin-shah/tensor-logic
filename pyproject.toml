@@ -31,6 +31,9 @@ sft = [
 science = [
     "scipy>=1.11",
 ]
+system1 = [
+    "laya==0.3.4",
+]
 
 [tool.setuptools.packages.find]
 include = ["tensor_logic*"]
