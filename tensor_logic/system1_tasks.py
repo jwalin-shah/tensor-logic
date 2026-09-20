@@ -18,6 +18,21 @@ from typing import Iterable, Sequence
 from .decision_benchmark import DecisionCase, DecisionQuestion
 
 
+FEATURE_KEYS = (
+    "complexity",
+    "ambiguity",
+    "stakes",
+    "confidence",
+    "source_freshness",
+    "contradiction",
+    "human_authorized",
+    "authority_available",
+    "external_search_allowed",
+    "commitment_pressure",
+    "importance",
+)
+
+
 SYSTEM1_QUESTIONS = (
     DecisionQuestion(
         question_id="route_model",
@@ -245,19 +260,16 @@ def render_raw_state(
 def feature_vector(
     scenario: SystemOneScenario,
 ) -> tuple[float, ...]:
-    return (
-        scenario.complexity,
-        scenario.ambiguity,
-        scenario.stakes,
-        scenario.confidence,
-        scenario.source_freshness,
-        scenario.contradiction,
-        float(scenario.human_authorized),
-        float(scenario.authority_available),
-        float(scenario.external_search_allowed),
-        scenario.commitment_pressure,
-        scenario.importance,
-    )
+    return structured_feature_vector(render_structured_state(scenario))
+
+
+def structured_feature_vector(
+    state: dict[str, object],
+) -> tuple[float, ...]:
+    missing = [key for key in FEATURE_KEYS if key not in state]
+    if missing:
+        raise ValueError(f"structured state missing features: {missing}")
+    return tuple(float(state[key]) for key in FEATURE_KEYS)
 
 
 def make_pair(
