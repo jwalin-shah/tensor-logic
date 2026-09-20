@@ -22,18 +22,28 @@ class TensorAxis:
     name: str
     entity_type: str
     symbols: tuple[str, ...]
+    _index: dict[str, int] = field(
+        init=False,
+        repr=False,
+        compare=False,
+    )
 
     def __post_init__(self) -> None:
         if len(set(self.symbols)) != len(self.symbols):
             raise ValueError(f"axis {self.name} contains duplicate symbols")
+        object.__setattr__(
+            self,
+            "_index",
+            {symbol: i for i, symbol in enumerate(self.symbols)},
+        )
 
     @property
     def index(self) -> dict[str, int]:
-        return {symbol: i for i, symbol in enumerate(self.symbols)}
+        return self._index
 
     def position(self, symbol: str) -> int:
         try:
-            return self.index[symbol]
+            return self._index[symbol]
         except KeyError as exc:
             raise ValueError(
                 f"symbol {symbol!r} is not present on axis {self.name!r}"
