@@ -150,7 +150,7 @@ def run(seed: int = 19, n: int = 600) -> dict:
 
     # Add one right-side coordinate. The exact impact set is determined by the
     # left relation's support on b0, rather than the whole output tensor.
-    changed = ("b0", "c211")
+    changed = ("b0", f"c{211 % n}")
     right.set(changed, 9.0)
 
     start = time.perf_counter()
