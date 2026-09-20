@@ -6,6 +6,7 @@ from tensor_logic.decision_benchmark import (
 )
 from tensor_logic.system1_backends import (
     MiniJevBackend,
+    ProbabilityCallableBackend,
     laya_questions,
     normalize_laya_response,
 )
@@ -123,3 +124,56 @@ def test_minijev_adapter_uses_same_normalized_result_contract():
     assert by_q["risk"].prediction == "medium"
     assert by_q["escalate"].prediction == "false"
     assert all(row.backend == "minijev" for row in rows)
+
+
+def test_probability_callable_backend_supports_classifier_or_llm_distributions():
+    def fake_backend(state, questions):
+        return {
+            "route": {
+                "probabilities": {"fast": 0.7, "deep": 0.3},
+            },
+            "risk": {
+                "probabilities": {
+                    "low": 0.1,
+                    "medium": 0.8,
+                    "high": 0.1,
+                },
+            },
+            "escalate": {
+                "probabilities": {"false": 0.9, "true": 0.1},
+            },
+        }
+
+    backend = ProbabilityCallableBackend(
+        fake_backend,
+        backend="classifier",
+        model="fake",
+        model_version="1",
+    )
+    rows = backend.run(_case())
+    by_q = {row.question_id: row for row in rows}
+
+    assert by_q["route"].prediction == "fast"
+    assert by_q["risk"].prediction == "medium"
+    assert by_q["escalate"].prediction == "false"
+    assert by_q["route"].confidence == 0.7
+
+
+def test_probability_callable_backend_rejects_label_only_output():
+    backend = ProbabilityCallableBackend(
+        lambda state, questions: {
+            "route": {"prediction": "fast"},
+            "risk": {"prediction": "medium"},
+            "escalate": {"prediction": "false"},
+        },
+        backend="llm",
+        model="x",
+        model_version="1",
+    )
+
+    try:
+        backend.run(_case())
+    except ValueError as exc:
+        assert "missing probabilities" in str(exc)
+    else:
+        raise AssertionError("label-only output should not enter calibration benchmark")
