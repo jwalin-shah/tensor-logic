@@ -57,3 +57,20 @@ jobs:
             --heldout-frames 60 \
             --out /tmp/exp86-results.json
           cat /tmp/exp86-results.json
+
+      - name: Run exp96 Personal Physics replay proof
+        run: |
+          python experiments/exp96_personal_physics_v0.py \
+            --out /tmp/exp96-results.json
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/exp96-results.json"))
+          assert all(
+              item["entailed"]
+              for item in data["derivations"].values()
+          )
+          assert data["retraction_check"][
+              "dependent_conclusion_removed"
+          ] is True
+          print(json.dumps(data, indent=2, sort_keys=True))
+          PY
