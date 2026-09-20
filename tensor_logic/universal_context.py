@@ -422,11 +422,21 @@ def _string_value_for(
 
 
 def _escape_key(key: str) -> str:
-    return key.replace("~", "~0").replace(".", "~1")
+    return (
+        key.replace("~", "~0")
+        .replace(".", "~1")
+        .replace("[", "~2")
+        .replace("]", "~3")
+    )
 
 
 def _unescape_key(key: str) -> str:
-    return key.replace("~1", ".").replace("~0", "~")
+    return (
+        key.replace("~3", "]")
+        .replace("~2", "[")
+        .replace("~1", ".")
+        .replace("~0", "~")
+    )
 
 
 def _stable_json(value: Any) -> str:
