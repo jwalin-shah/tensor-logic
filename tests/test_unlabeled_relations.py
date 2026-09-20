@@ -1,11 +1,17 @@
 import torch
 
+from tensor_logic.research.rule_induction import (
+    Config,
+    Conjecturer,
+    candidate_relation_names,
+)
 from tensor_logic.research.unlabeled_relations import (
     channels_to_world_tensors,
     fit_pca_relations,
     generate_hidden_world_split,
     run_unlabeled_benchmark,
 )
+from tensor_logic.research.utils import Schema, apply_body
 
 
 def test_learner_boundary_exposes_only_observations():
@@ -75,6 +81,53 @@ def test_anonymous_channels_convert_to_tensor_logic_relations():
     }
     for tensor in worlds[0].values():
         assert tensor.shape == (3, 3)
+
+
+def test_anonymous_tensors_feed_reusable_rule_induction_module():
+    train = generate_hidden_world_split(n_frames=40, seed=11)
+    test = generate_hidden_world_split(n_frames=2, seed=22)
+    probs = fit_pca_relations(train.observations).transform(
+        test.observations
+    )
+    base = channels_to_world_tensors(
+        probs,
+        test.observations,
+        n_frames=2,
+    )[0]
+
+    schema = Schema(
+        "anonymous",
+        {name: ("person", "person") for name in base},
+    )
+    cfg = Config(
+        name="anonymous-integration",
+        schema=schema,
+        n_pos=3,
+        n_neg=3,
+        noise=0.0,
+        n_entities=3,
+        max_steps=1,
+        min_equiv=0.95,
+        f1_threshold=0.80,
+        n_attempts=1,
+        vote_threshold=0.50,
+        min_support=1,
+    )
+    relation_names = candidate_relation_names(schema)
+    conjecturer = Conjecturer(
+        cfg,
+        base,
+        relation_names,
+        max_len=2,
+    )
+
+    target = apply_body(
+        [relation_names[0], relation_names[1]],
+        base,
+    )
+    proposal = conjecturer.propose(target, step=0)
+
+    assert set(proposal) == {"body", "f1", "votes"}
 
 
 def test_unlabeled_pca_beats_random_baseline_on_hidden_world():
