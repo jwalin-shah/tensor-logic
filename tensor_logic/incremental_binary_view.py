@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .materialized_view import BinaryWitness
+from .tensor_ops import sparse_binary_compose
 from .world_tensor import SparseWorldTensor
 
 
@@ -138,10 +139,13 @@ class IncrementalBinaryView:
         right: SparseWorldTensor,
     ) -> None:
         _validate_expected_inputs(self, left, right)
+        product = sparse_binary_compose(left, right).coalesce()
         coordinates = tuple(
-            (x, z)
-            for x in left.axes[0].symbols
-            for z in right.axes[1].symbols
+            (
+                left.axes[0].symbols[int(indices[0])],
+                right.axes[1].symbols[int(indices[1])],
+            )
+            for indices in product.indices().t().tolist()
         )
         cells = recompute_binary_cells(left, right, coordinates)
         self._values.clear()
