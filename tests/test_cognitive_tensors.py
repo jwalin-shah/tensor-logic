@@ -106,7 +106,7 @@ def test_metacognition_escalates_uncertain_contradictory_high_regret_case():
     assert score[1] > score[0]
 
 
-def test_plan_evaluation_prefers_higher_expected_value_not_raw_reward():
+def test_plan_evaluation_rejects_high_raw_reward_when_probability_and_risk_are_bad():
     value = evaluate_plan_steps(
         reward=torch.tensor([1.0, 0.9, 1.4]),
         probability=torch.tensor([0.9, 0.95, 0.4]),
@@ -115,4 +115,5 @@ def test_plan_evaluation_prefers_higher_expected_value_not_raw_reward():
         risk=torch.tensor([0.1, 0.05, 0.8]),
     )
 
-    assert int(torch.argmax(value).item()) == 1
+    assert int(torch.argmax(value).item()) == 0
+    assert value[0] > value[2]
