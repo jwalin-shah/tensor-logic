@@ -30,7 +30,14 @@ def tensorize_generic_context(
 ) -> TensorWorld:
     records = list(_records_from_context(context))
 
-    sections = sorted({record.section for record in records})
+    declared_sections = set(
+        context.get("sections", {}).keys()
+        if isinstance(context.get("sections", {}), dict)
+        else ()
+    )
+    sections = sorted(
+        {record.section for record in records}.union(declared_sections)
+    )
     record_ids = sorted({record.record_id for record in records})
 
     flattened: dict[
@@ -76,6 +83,10 @@ def tensorize_generic_context(
     )
 
     world.add_tensor(
+        "section_present",
+        ("Section",),
+    )
+    world.add_tensor(
         "section_record",
         ("Section", "Record"),
     )
@@ -111,6 +122,16 @@ def tensorize_generic_context(
     )
 
     by_id = {record.record_id: record for record in records}
+    for section_name in sections:
+        world.tensors["section_present"].set(
+            (section_name,),
+            1.0,
+            provenance=CoordinateProvenance(
+                source_refs=("lifeops.context.v1",),
+                metadata={"section": section_name},
+            ),
+        )
+
     for record in records:
         world.tensors["section_record"].set(
             (record.section, record.record_id),
@@ -172,6 +193,48 @@ def tensorize_generic_context(
                 )
 
     return world
+
+
+def reconstruct_generic_context(
+    world: TensorWorld,
+) -> dict[str, Any]:
+    """Reconstruct a LifeOps-style context snapshot from generic tensors."""
+    result = dict(
+        reconstruct_generic_record(
+            world,
+            "context:root",
+        )
+    )
+
+    section_records: dict[str, list[str]] = {}
+    for section, record_id in world.tensors[
+        "section_record"
+    ].coordinates():
+        section_records.setdefault(section, []).append(record_id)
+
+    sections: dict[str, list[Any]] = {}
+    for section in world.axes["Section"].symbols:
+        if section.startswith("__"):
+            continue
+        records = sorted(section_records.get(section, []))
+        sections[section] = [
+            reconstruct_generic_record(world, record_id)
+            for record_id in records
+        ]
+    result["sections"] = sections
+
+    record_axis = world.axes["Record"].index
+    if "source_health:root" in record_axis:
+        result["source_health"] = reconstruct_generic_record(
+            world,
+            "source_health:root",
+        )
+    if "provenance:root" in record_axis:
+        result["provenance"] = reconstruct_generic_record(
+            world,
+            "provenance:root",
+        )
+    return result
 
 
 def reconstruct_generic_record(
