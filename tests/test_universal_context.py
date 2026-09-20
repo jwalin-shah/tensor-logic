@@ -1,4 +1,5 @@
 from tensor_logic.universal_context import (
+    reconstruct_generic_context,
     reconstruct_generic_record,
     tensorize_generic_context,
 )
@@ -64,10 +65,19 @@ def test_generic_context_preserves_root_and_empty_sections():
     assert root["read_only"] is True
     assert root["limitations"] == ["stale_source"]
 
+    assert world.tensors["section_present"].get(("projects",)) == 1.0
     assert "projects" not in {
         coordinate[0]
         for coordinate in world.tensors["section_record"].coordinates()
     }
+
+
+def test_full_context_round_trip_preserves_empty_sections_and_metadata():
+    context = _context()
+    rebuilt = reconstruct_generic_context(
+        tensorize_generic_context(context)
+    )
+    assert rebuilt == context
 
 
 def test_generic_projection_keeps_scalar_types_distinct():
