@@ -144,3 +144,21 @@ def test_unlabeled_pca_beats_random_baseline_on_hidden_world():
 
     assert pca > random
     assert result["pca_minus_random"] >= 0.10
+
+
+def test_non_identifiable_control_is_reported_not_forced_to_success():
+    result = run_unlabeled_benchmark(
+        train_frames=120,
+        test_frames=60,
+        train_seed=11,
+        test_seed=22,
+        random_seed=33,
+    )
+
+    control = result["diagnostics"]["non_identifiable_control"]
+    assert control["status"] == "non_identifiable_by_construction"
+    assert control["expected_unidentifiable_relations"] == [
+        "above",
+        "left_of",
+    ]
+    assert control["intervention"]["removed_feature_indices"] == [0, 1, 6]
