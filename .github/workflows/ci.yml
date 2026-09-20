@@ -110,3 +110,21 @@ jobs:
           assert data["cognitive_program"]["process_digest"]
           print(json.dumps(data, indent=2, sort_keys=True))
           PY
+
+      - name: Run exp99 tensor performance benchmark
+        run: |
+          python experiments/exp99_tensor_performance.py \
+            --out /tmp/exp99-results.json
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/exp99-results.json"))
+          assert data["scale"]["people"] == 1000
+          assert data["scale"]["events"] == 10000
+          assert data["scale"]["sparse_coordinates"] >= 100000
+          assert data["point_lookup"]["lookups"] == 100000
+          assert data["sparse_composition"]["output_nnz"] > 0
+          assert data["attention_scoring"]["candidate_count"] == 10000
+          assert data["generic_context"]["records"] == 1000
+          assert data["cognitive_trace"]["steps"] == 500
+          print(json.dumps(data, indent=2, sort_keys=True))
+          PY
