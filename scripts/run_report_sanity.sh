@@ -16,7 +16,7 @@ python experiments/exp104_kernel_contract.py   --out "$OUT_DIR/exp104-kernel.jso
 
 python experiments/exp105_hybrid_software_world.py   --out "$OUT_DIR/exp105-hybrid-world.json"
 
-python - <<'PY' "$OUT_DIR"
+python - "$OUT_DIR" <<'PY'
 import hashlib
 import json
 import pathlib
