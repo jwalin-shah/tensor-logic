@@ -54,11 +54,12 @@ def test_vectorized_scoring_and_topk():
     scores = vectorized_weighted_score(features, weights)
     values, indices = topk_indices(scores, 2)
 
-    assert scores.tolist() == [
-        0.6000000238418579,
-        0.30000001192092896,
-        0.4000000059604645,
-    ]
+    assert torch.allclose(
+        scores,
+        torch.tensor([0.6, 0.3, 0.4]),
+        atol=1e-6,
+        rtol=0.0,
+    )
     assert indices.tolist() == [0, 2]
     assert values[0] > values[1]
 
