@@ -243,3 +243,89 @@ class MiniJevBackend:
             )
 
         return tuple(results)
+
+
+class ProbabilityCallableBackend:
+    """Adapter for classifiers or constrained LLMs that return distributions.
+
+    callable_fn(state, questions) must return:
+      {
+        question_id: {
+          "probabilities": {label: probability, ...},
+          "prediction": optional legal label,
+          "confidence": optional scalar,
+        }
+      }
+
+    This intentionally refuses label-only outputs because calibration metrics
+    require a full distribution.
+    """
+
+    def __init__(
+        self,
+        callable_fn: Callable[
+            [object, tuple[DecisionQuestion, ...]],
+            Mapping[str, Mapping[str, Any]],
+        ],
+        *,
+        backend: str,
+        model: str,
+        model_version: str,
+        calibration_version: str = "none",
+    ) -> None:
+        self.callable_fn = callable_fn
+        self.backend = backend
+        self.model = model
+        self.model_version = model_version
+        self.calibration_version = calibration_version
+
+    def run(self, case: DecisionCase) -> tuple[DecisionResult, ...]:
+        start = time.perf_counter()
+        raw = self.callable_fn(case.state, case.questions)
+        latency_ms = (time.perf_counter() - start) * 1000.0
+        rows: list[DecisionResult] = []
+
+        for question in case.questions:
+            answer = raw.get(question.question_id)
+            if not isinstance(answer, Mapping):
+                raise ValueError(
+                    f"missing distribution for {question.question_id}"
+                )
+            probs_raw = answer.get("probabilities")
+            if not isinstance(probs_raw, Mapping):
+                raise ValueError(
+                    f"{question.question_id} missing probabilities"
+                )
+            probabilities = {
+                label: float(probs_raw[label])
+                for label in question.labels
+            }
+            prediction = str(
+                answer.get(
+                    "prediction",
+                    max(probabilities, key=probabilities.get),
+                )
+            )
+            confidence = float(
+                answer.get(
+                    "confidence",
+                    probabilities[prediction],
+                )
+            )
+            rows.append(
+                DecisionResult(
+                    case_id=case.case_id,
+                    question_id=question.question_id,
+                    primitive=question.primitive,
+                    labels=question.labels,
+                    prediction=prediction,
+                    probabilities=probabilities,
+                    confidence=confidence,
+                    latency_ms=latency_ms,
+                    backend=self.backend,
+                    model=self.model,
+                    model_version=self.model_version,
+                    calibration_version=self.calibration_version,
+                )
+            )
+        return tuple(rows)
