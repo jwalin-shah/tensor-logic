@@ -380,6 +380,60 @@ def channels_to_world_tensors(
     return worlds
 
 
+
+def mask_directional_information(
+    observations: PairObservations,
+) -> PairObservations:
+    """Remove signed direction and pair-order cues for an identifiability control."""
+    features = observations.features.clone()
+    # dx, dy, and ordered-pair identity are the only directional cues.
+    features[:, 0] = 0
+    features[:, 1] = 0
+    features[:, 6] = 0
+    return PairObservations(
+        features=features,
+        frame_ids=observations.frame_ids.clone(),
+        pair_slots=observations.pair_slots.clone(),
+    )
+
+
+def run_non_identifiable_control(
+    train: HiddenWorldSplit,
+    test: HiddenWorldSplit,
+    *,
+    n_channels: int = 4,
+) -> dict:
+    """Evaluator-declared control where directional predicates cannot be identified.
+
+    The learner still receives no relation labels. The evaluator records why the
+    intervention destroys identifiability rather than treating a forced
+    permutation match as semantic recovery.
+    """
+    masked_train = mask_directional_information(train.observations)
+    masked_test = mask_directional_information(test.observations)
+    model = fit_pca_relations(masked_train, n_channels=n_channels)
+    evaluation = evaluate_anonymous_channels(
+        model.transform(masked_test),
+        test.evaluation,
+    )
+    return {
+        "status": "non_identifiable_by_construction",
+        "intervention": {
+            "removed_feature_indices": [0, 1, 6],
+            "removed_information": [
+                "signed_dx",
+                "signed_dy",
+                "ordered_pair_identity",
+            ],
+        },
+        "expected_unidentifiable_relations": [
+            "above",
+            "left_of",
+        ],
+        "evaluation": evaluation,
+    }
+
+
 def run_unlabeled_benchmark(
     *,
     train_frames: int = 400,
@@ -431,6 +485,16 @@ def run_unlabeled_benchmark(
         random_probs,
         test.evaluation,
     )
+    non_identifiable = run_non_identifiable_control(
+        train,
+        test,
+        n_channels=n_channels,
+    )
+    weak_pca_matches = [
+        match
+        for match in pca_eval["matches"]
+        if match["f1"] < 0.25
+    ]
 
     return {
         "config": {
@@ -450,4 +514,8 @@ def run_unlabeled_benchmark(
             pca_eval["mean_matched_f1"]
             - random_eval["mean_matched_f1"]
         ),
+        "diagnostics": {
+            "weak_pca_matches": weak_pca_matches,
+            "non_identifiable_control": non_identifiable,
+        },
     }
